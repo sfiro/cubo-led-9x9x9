@@ -10,6 +10,9 @@ WIFI_CLAVE = "clave_de_tu_red"
 AP_NOMBRE = "CuboLED"
 AP_CLAVE = "cambiar-esta-clave"
 
+# Diferencia con UTC en horas, para la animacion "reloj" (-5 = Colombia)
+ZONA_HORARIA = -5
+
 # Pines de la Pico W hacia el conector JP7 del cubo
 PIN_DATOS = 2     # GP2 -> DS (pin 14) de U1
 PIN_RELOJ = 3     # GP3 -> SH_CP (pin 11) de todos los registros

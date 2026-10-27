@@ -6,7 +6,7 @@ Arduino por una Pico W.
 | Archivo | Qué hace |
 |---|---|
 | `cubo.py` | Driver: el PIO y el DMA multiplexan los 9 pisos solos, sin usar el CPU. Incluye doble búfer, así que no se ven cuadros a medias |
-| `animaciones.py` | 22 animaciones: las portadas de `prueba_cubo_funcionLED_4.ino`, más otras nuevas con física y geometría |
+| `animaciones.py` | 34 animaciones: las portadas de `prueba_cubo_funcionLED_4.ino`, efectos clásicos de otros cubos y otras nuevas con física y geometría |
 | `fuente.py` | La fuente de letras 8×8 del sketch original |
 | `web.py` | Página para elegir la animación desde el celular |
 | `main.py` | Arranca en modo demo, se conecta al WiFi y levanta la página |
@@ -84,9 +84,28 @@ Después agrégala a `LISTA`, al final del archivo, y aparece sola en la página
 | `fuente` | Chorro de agua en parábola |
 | `vida` | Juego de la vida en 3D, con los bordes del cubo conectados |
 | `espectro` | Ecualizador en cascada que se aleja hacia el fondo |
+| `cajas` | Caja de alambre que crece desde cada esquina, y cajas concéntricas como ondas |
+| `envios` | Cada columna tiene un LED arriba o abajo, y de a uno viajan al lado opuesto |
+| `carita` | Carita, corazón e invasor del espacio girando sobre el eje vertical |
+| `espiral` | Un gusano recorre cada piso en espiral, de arriba abajo |
+| `cinta` | Líneas por el centro de cada piso que forman una cinta retorcida |
+| `esfera_movil` | Esfera hueca que viaja por el cubo y cambia de tamaño |
+| `matrix` | Lluvia de "código" de Matrix por las 4 caras |
+| `rayo` | Tormenta: nubes, rayo con rama, destello y parpadeo |
+| `nieve` | Copos que se mecen, se acumulan en el piso y luego se derriten |
+| `pacman` | Pac-Man con boca y ojos comiendo una fila de puntos |
+| `arbol` | Árbol de navidad con luces que titilan y estrella |
+| `reloj` | La hora (HH:MM) dando vueltas; se sincroniza por internet (NTP) al conectarse al WiFi |
 | `texto`, `bordes`, `flash`, `llenar_vaciar`, `onda`, `aleatorio`, `serpiente`, `esfera`, `ascensores` | Portadas del sketch de Arduino |
 
 Antes de cargarlas en el cubo se pueden ver en el [simulador](../simulador/).
+
+Varias están adaptadas de efectos clásicos de otros cubos:
+- del `effect.c` del cubo de 8×8×8 de chr (Instructables): `cajas`, `envios`, `carita`,
+  `espiral`, `cinta`, `esfera_movil` y `ascensores`;
+- del firmware del cubo L3D: `matrix`, `rayo`, `nieve`, `pacman`, `arbol` y `reloj`.
+
+Para el reloj, configura `ZONA_HORARIA` en `config.py` (-5 es Colombia).
 
 ## Bugs del código original que ya quedaron corregidos
 - `LED()` pegaba a los bordes las coordenadas fuera del cubo, y por eso los fuegos artificiales

@@ -19,6 +19,10 @@ class _Reloj:
     def __init__(self):
         self.ms = 0
 
+    def __getattr__(self, nombre):
+        # time(), localtime(), etc. siguen siendo los reales (para el reloj)
+        return getattr(_time, nombre)
+
     def ticks_ms(self):
         return self.ms
 

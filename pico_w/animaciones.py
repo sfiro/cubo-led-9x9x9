@@ -622,17 +622,22 @@ _PERIMETRO = ([(0, x) for x in range(N)] + [(y, M) for y in range(1, N)] +
               [(M, x) for x in range(M - 1, -1, -1)] + [(y, 0) for y in range(M - 1, 0, -1)])
 
 
+def _dibujar_perimetro(c, columnas, s):
+    # Dibuja las columnas de texto sobre las 4 caras, corridas s posiciones.
+    total = len(columnas)
+    for p, (y, x) in enumerate(_PERIMETRO):
+        col = columnas[(p + s) % total]
+        for i in range(8):
+            if (col >> i) & 1:
+                c.led(M - i, y, x, 1)
+
+
 async def marquesina(c, mensaje="CUBO LED 9X9X9   ", espera_ms=70):
     # Texto que corre alrededor de las cuatro caras del cubo
     columnas = _columnas_texto(mensaje)
-    total = len(columnas)
-    for s in range(total + len(_PERIMETRO)):
+    for s in range(len(columnas) + len(_PERIMETRO)):
         c.apagar()
-        for p, (y, x) in enumerate(_PERIMETRO):
-            col = columnas[(p + s) % total]
-            for i in range(8):
-                if (col >> i) & 1:
-                    c.led(M - i, y, x, 1)
+        _dibujar_perimetro(c, columnas, s)
         await _paso(c, espera_ms)
     c.apagar()
 
@@ -663,21 +668,387 @@ async def espectro(c, duracion=10000):
     c.apagar()
 
 
+# ---------------------------------------------------------------------------
+# Efectos clasicos de otros cubos LED, adaptados al 9x9x9:
+#   - chr (Instructables, 8x8x8): cajas, envios, carita, espiral, cinta, esfera_movil
+#   - cubo L3D (Spark Pixels): matrix, rayo, nieve, pacman, arbol, reloj
+
+def _caja(c, z0, y0, x0, z1, y1, x1):
+    # Las 12 aristas de la caja entre dos esquinas opuestas
+    za, zb = min(z0, z1), max(z0, z1)
+    ya, yb = min(y0, y1), max(y0, y1)
+    xa, xb = min(x0, x1), max(x0, x1)
+    for z in (za, zb):
+        for y in (ya, yb):
+            for x in range(xa, xb + 1):
+                c.led(z, y, x, 1)
+        for x in (xa, xb):
+            for y in range(ya, yb + 1):
+                c.led(z, y, x, 1)
+    for y in (ya, yb):
+        for x in (xa, xb):
+            for z in range(za, zb + 1):
+                c.led(z, y, x, 1)
+
+
+async def cajas(c):
+    # effect_box_shrink_grow + effect_box_woopwoop
+    # 1) Caja que crece desde cada esquina y vuelve a encogerse.
+    for esquina in (0, 7, 3, 4, 5, 2):
+        ez, ey, ex = (esquina >> 2) & 1, (esquina >> 1) & 1, esquina & 1
+        for k in list(range(N)) + list(range(M - 1, -1, -1)):
+            z0, y0, x0 = ez * M, ey * M, ex * M
+            c.apagar()
+            _caja(c, z0, y0, x0, abs(z0 - k), abs(y0 - k), abs(x0 - k))
+            await _paso(c, 35)
+    # 2) Cajas concentricas que nacen en el centro y se expanden como ondas.
+    for t in range(36):
+        c.apagar()
+        for r in range(5):
+            if (t - r) % 4 == 0:
+                _caja(c, 4 - r, 4 - r, 4 - r, 4 + r, 4 + r, 4 + r)
+        await _paso(c, 90)
+    c.apagar()
+
+
+async def envios(c, duracion=12000):
+    # sendvoxels_rand_z: cada columna tiene un LED arriba o abajo y, de a uno,
+    # viajan al lado opuesto.
+    lado = bytearray(_r(2) * M for _ in range(81))
+    viajes = {}                 # columna -> [z, direccion]
+    sigue = _durante(duracion)
+    while sigue() or viajes:
+        if sigue() and len(viajes) < 4 and _r(2) == 0:
+            col = _r(81)
+            if col not in viajes:
+                viajes[col] = [lado[col], 1 if lado[col] == 0 else -1]
+        c.apagar()
+        for col in range(81):
+            if col not in viajes:
+                c.led(lado[col], col // 9, col % 9, 1)
+        for col in list(viajes):
+            v = viajes[col]
+            v[0] += v[1]
+            c.led(v[0], col // 9, col % 9, 1)
+            if v[0] in (0, M):
+                lado[col] = v[0]
+                del viajes[col]
+        await _paso(c, 30)
+    c.apagar()
+
+
+# Dibujos de 8x8 (bit 7 = columna izquierda, fila 0 arriba)
+_DIBUJOS = (
+    (0x3C, 0x42, 0xA5, 0x81, 0xA5, 0x99, 0x42, 0x3C),   # carita feliz
+    (0x00, 0x66, 0xFF, 0xFF, 0xFF, 0x7E, 0x3C, 0x18),   # corazon
+    (0x18, 0x3C, 0x7E, 0xDB, 0xFF, 0x24, 0x5A, 0xA5),   # invasor del espacio
+)
+
+
+async def carita(c, vueltas=2):
+    # effect_smileyspin: un dibujo plano que gira alrededor del eje vertical
+    for dibujo in _DIBUJOS:
+        pixeles = [(M - i, j - 3.5) for i in range(8) for j in range(8) if (dibujo[i] >> (7 - j)) & 1]
+        for paso in range(vueltas * 32 + 1):
+            a = paso * math.pi / 16
+            ca, sa = math.cos(a), math.sin(a)
+            c.apagar()
+            for z, u in pixeles:
+                c.led(z, _i(4 + u * sa), _i(4 + u * ca), 1)
+            await _paso(c, 45)
+    c.apagar()
+
+
+def _orden_espiral():
+    # Recorrido en espiral cuadrada de un piso, de afuera hacia adentro: (y, x)
+    orden = []
+    arriba, abajo, izq, der = 0, M, 0, M
+    while arriba <= abajo and izq <= der:
+        orden += [(arriba, x) for x in range(izq, der + 1)]
+        arriba += 1
+        orden += [(y, der) for y in range(arriba, abajo + 1)]
+        der -= 1
+        if arriba <= abajo:
+            orden += [(abajo, x) for x in range(der, izq - 1, -1)]
+            abajo -= 1
+        if izq <= der:
+            orden += [(y, izq) for y in range(abajo, arriba - 1, -1)]
+            izq += 1
+    return orden
+
+
+async def espiral(c, largo=24):
+    # effect_pathspiral / squarral: un gusano recorre cada piso en espiral,
+    # hacia adentro en un piso y hacia afuera en el siguiente, de arriba abajo.
+    piso = _orden_espiral()
+    camino = []
+    for z in range(M, -1, -1):
+        camino += [(z, y, x) for y, x in (piso if z % 2 == 0 else reversed(piso))]
+    c.apagar()
+    for i, p in enumerate(camino + [None] * largo):
+        if p:
+            c.led(p[0], p[1], p[2], 1)
+        if i >= largo:
+            q = camino[i - largo]
+            c.led(q[0], q[1], q[2], 0)
+        await _paso(c, 12)
+    c.apagar()
+
+
+async def cinta(c, duracion=10000):
+    # linespin: en cada piso una linea que pasa por el centro; el giro cambia
+    # con la altura y forma una cinta que se retuerce.
+    t = 0.0
+    sigue = _durante(duracion)
+    while sigue():
+        torsion = 0.45 * math.sin(t * 0.25)
+        c.apagar()
+        for z in range(N):
+            a = t + z * torsion
+            dy, dx = 4 * math.cos(a), 4 * math.sin(a)
+            _linea(c, (z, 4 - dy, 4 - dx), (z, 4 + dy, 4 + dx))
+        t += 0.12
+        await _paso(c, 40)
+    c.apagar()
+
+
+async def esfera_movil(c, duracion=10000):
+    # spheremove: una esfera hueca que viaja por el cubo y cambia de tamano
+    t = 0.0
+    sigue = _durante(duracion)
+    while sigue():
+        cz = 4 + 2.2 * math.sin(t * 0.7)
+        cy = 4 + 2.2 * math.sin(t * 0.5 + 1)
+        cx = 4 + 2.2 * math.sin(t * 0.9 + 2)
+        r = 2.3 + 0.8 * math.sin(t * 1.3)
+        r_ext, r_int = r * r, (r - 1) * (r - 1)
+        c.apagar()
+        for z in range(max(0, int(cz - r)), min(N, int(cz + r) + 2)):
+            for y in range(max(0, int(cy - r)), min(N, int(cy + r) + 2)):
+                dzy = (z - cz) ** 2 + (y - cy) ** 2
+                for x in range(max(0, int(cx - r)), min(N, int(cx + r) + 2)):
+                    d = dzy + (x - cx) ** 2
+                    if r_int <= d <= r_ext:
+                        c.led(z, y, x, 1)
+        t += 0.08
+        await _paso(c, 40)
+    c.apagar()
+
+
+async def matrix(c, duracion=10000):
+    # Lluvia de "codigo" de Matrix por las 4 caras: cada columna tiene un
+    # chorro con cabeza y estela, y la estela parpadea como caracteres.
+    chorros = [None] * len(_PERIMETRO)
+    t = 0
+    sigue = _durante(duracion)
+    while sigue() or any(chorros):
+        t += 1
+        c.apagar()
+        for i, (y, x) in enumerate(_PERIMETRO):
+            s = chorros[i]
+            if s is None:
+                if sigue() and _r(14) == 0:
+                    chorros[i] = [M + 0.0, 0.2 + _r(40) / 100, 3 + _r(5)]
+                continue
+            s[0] -= s[1]
+            cabeza = _i(s[0])
+            for k in range(s[2]):
+                if k == 0 or (k * 7 + i + t // 3) % 4:
+                    c.led(cabeza + k, y, x, 1)
+            if cabeza + s[2] < 0:
+                chorros[i] = None
+        await _paso(c, 40)
+    c.apagar()
+
+
+def _limitar_borde(v):
+    return 1 if v < 1 else (M - 1 if v > M - 1 else v)
+
+
+async def rayo(c, rayos=6):
+    # Tormenta: nubes en el techo, un rayo zigzagueante con una rama,
+    # destello de todo el cubo y parpadeo.
+    for _ in range(rayos):
+        nube = [(_r(), _r()) for _ in range(28)]
+        camino = []
+        y, x = _r(5) + 2, _r(5) + 2
+        for z in range(M, -1, -1):
+            camino.append((z, y, x))
+            y, x = _limitar_borde(y + _r(3) - 1), _limitar_borde(x + _r(3) - 1)
+        rama = []
+        z, y, x = camino[_r(3) + 2]
+        dy, dx = random.choice(((1, 0), (-1, 0), (0, 1), (0, -1)))
+        for _ in range(3):
+            z, y, x = z - 1, y + dy, x + dx
+            rama.append((z, y, x))
+
+        def dibujar(hasta, con_rama):
+            c.apagar()
+            for ny, nx in nube:
+                c.led(M, ny, nx, 1)
+            for p in camino[:hasta]:
+                c.led(p[0], p[1], p[2], 1)
+            if con_rama:
+                for p in rama:
+                    c.led(p[0], p[1], p[2], 1)
+
+        dibujar(0, False)
+        await _paso(c, 400 + _r(900))
+        for k in range(1, N + 1, 2):                      # el rayo baja
+            dibujar(k, k > 5)
+            await _paso(c, 25)
+        c.encender()                                      # destello
+        await _paso(c, 40)
+        for encendido in (1, 0, 1, 0, 1):
+            dibujar(N if encendido else 0, encendido)
+            await _paso(c, 50)
+        dibujar(0, False)
+        await _paso(c, 200)
+    c.apagar()
+
+
+async def nieve(c, duracion=14000):
+    # Copos que caen meciendose y se acumulan en el piso; al final se derrite.
+    altura = bytearray(81)
+    copos = []          # [z, y, x, fase]
+    sigue = _durante(duracion)
+
+    def dibujar_piso():
+        for col in range(81):
+            for z in range(altura[col]):
+                c.led(z, col // 9, col % 9, 1)
+
+    while sigue() or copos:
+        if sigue() and _r(3) == 0:
+            copos.append([M + 0.0, _r(), _r() + 0.0, _r(628) / 100])
+        c.apagar()
+        dibujar_piso()
+        for f in copos[:]:
+            f[0] -= 0.12
+            f[3] += 0.15
+            y, x = f[1], _limitar(_i(f[2] + 0.6 * math.sin(f[3])))
+            col = y * 9 + x
+            if f[0] <= altura[col]:
+                if altura[col] < 3:
+                    altura[col] += 1
+                copos.remove(f)
+                continue
+            c.led(_i(f[0]), y, x, 1)
+        await _paso(c, 50)
+    while any(altura):                                   # se derrite
+        for col in range(81):
+            if altura[col] and _r(5) == 0:
+                altura[col] -= 1
+        c.apagar()
+        dibujar_piso()
+        await _paso(c, 60)
+
+
+async def pacman(c, vueltas=3):
+    # Pac-Man: esfera con una boca que se abre y se cierra, avanza comiendo
+    # una fila de puntos. Tiene un ojo a cada lado.
+    radio = 2.7
+    for _ in range(vueltas):
+        puntos = [1, 3, 5, 7]
+        for paso in range(34):
+            cx = -3 + paso * 0.45
+            apertura = abs(math.sin(paso * 0.6)) * 0.9      # tangente del angulo de la boca
+            puntos = [p for p in puntos if p > cx]
+            c.apagar()
+            for p in puntos:
+                c.led(4, 4, p, 1)
+            for z in range(1, 8):
+                dz = z - 4
+                for y in range(1, 8):
+                    dy = y - 4
+                    for x in range(max(0, int(cx - radio)), min(N, int(cx + radio) + 2)):
+                        dx = x - cx
+                        d = dz * dz + dy * dy + dx * dx
+                        if not ((radio - 1) ** 2 <= d <= radio * radio):
+                            continue
+                        if dx > 0 and abs(dz) <= dx * apertura:   # boca
+                            continue
+                        if dz == 1 and abs(dy) >= 2 and -0.5 <= dx <= 1:   # ojos
+                            continue
+                        c.led(z, y, x, 1)
+            await _paso(c, 60)
+    c.apagar()
+
+
+async def arbol(c, duracion=10000):
+    # Arbol de navidad: cono con luces que titilan, tronco y estrella.
+    cono = []
+    for z in range(1, 8):
+        r = (7 - z) * 0.55 + 0.4
+        for y in range(N):
+            for x in range(N):
+                d = math.sqrt((y - 4) ** 2 + (x - 4) ** 2)
+                if r - 0.8 <= d <= r:
+                    cono.append((z, y, x))
+    t = 0
+    sigue = _durante(duracion)
+    while sigue():
+        t += 1
+        c.apagar()
+        c.led(0, 4, 4, 1)                                 # tronco
+        for p in cono:
+            if _r(7):                                     # ~15% apagadas: titilan
+                c.led(p[0], p[1], p[2], 1)
+        if t % 6 < 4:                                     # estrella que parpadea
+            c.led(M, 4, 4, 1)
+            for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                c.led(M, 4 + dy, 4 + dx, t % 2)
+        await _paso(c, 120)
+    c.apagar()
+
+
+# Diferencia con UTC en horas (main.py la toma de config.py). -5 = Colombia.
+ZONA_HORARIA = -5
+
+
+async def reloj(c, duracion=12000):
+    # La hora (HH:MM) dando vueltas por las 4 caras. En la Pico W la hora se
+    # sincroniza por internet (NTP) al conectarse al WiFi.
+    s = 0
+    sigue = _durante(duracion)
+    while sigue():
+        t = time.localtime(time.time() + ZONA_HORARIA * 3600)
+        texto = "%02d:%02d   " % (t[3], t[4]) if t[0] >= 2024 else "SIN HORA   "
+        columnas = _columnas_texto(texto)
+        c.apagar()
+        _dibujar_perimetro(c, columnas, s)
+        s += 1
+        await _paso(c, 90)
+    c.apagar()
+
+
 # Orden del modo "demo". El nombre es el que aparece en la pagina web.
 LISTA = (
     ("marquesina", marquesina),
     ("cubo_giratorio", cubo_giratorio),
+    ("cajas", cajas),
     ("lluvia", lluvia),
+    ("rayo", rayo),
     ("fuegos", fuegos),
+    ("carita", carita),
     ("helice", helice),
+    ("matrix", matrix),
     ("planos", planos),
+    ("envios", envios),
     ("rebotes", rebotes),
+    ("pacman", pacman),
     ("disparos", disparos),
+    ("cinta", cinta),
     ("olas", olas),
+    ("espiral", espiral),
     ("tornado", tornado),
+    ("esfera_movil", esfera_movil),
     ("fuente", fuente),
+    ("nieve", nieve),
     ("vida", vida),
     ("espectro", espectro),
+    ("arbol", arbol),
+    ("reloj", reloj),
     ("texto", texto),
     ("bordes", bordes),
     ("flash", flash),

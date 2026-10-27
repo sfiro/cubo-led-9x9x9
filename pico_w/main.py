@@ -55,6 +55,11 @@ async def conectar_wifi():
     if sta.isconnected():
         ip = sta.ifconfig()[0]
         print("Conectado a", config.WIFI_RED, "-> abre http://%s" % ip)
+        try:                                    # hora por internet para la animacion "reloj"
+            import ntptime
+            ntptime.settime()
+        except Exception as e:
+            print("No se pudo obtener la hora:", e)
         return ip
 
     sta.active(False)
@@ -76,6 +81,7 @@ async def principal(cubo):
         await asyncio.sleep(3600)
 
 
+animaciones.ZONA_HORARIA = getattr(config, "ZONA_HORARIA", animaciones.ZONA_HORARIA)
 cubo = Cubo(config.PIN_DATOS, config.PIN_RELOJ, config.PIN_LATCH, config.FREQ_PIO)
 try:
     asyncio.run(principal(cubo))
