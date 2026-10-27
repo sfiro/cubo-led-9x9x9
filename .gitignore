@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Configuracion local con la clave del WiFi (la plantilla es pico_w/config_ejemplo.py)
+pico_w/config.py
+
+# Fotos del armado (~210 MB). Se dejan fuera del repo para no inflar el historial.
+imagenes cubo led/
+
+# Python
+__pycache__/
+*.pyc
