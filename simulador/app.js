@@ -22,14 +22,14 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0x0b0d12);
 
 const escena = new THREE.Scene();
-escena.fog = new THREE.Fog(0x0b0d12, 22, 40);
+escena.fog = new THREE.Fog(0x0b0d12, 30, 70);
 const camara = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
 camara.position.set(11.5, 8.5, 13.5);
 
 const controles = new OrbitControls(camara, lienzo);
 controles.enableDamping = true;
 controles.minDistance = 7;
-controles.maxDistance = 32;
+controles.maxDistance = 60;
 
 // LED (z, y, x) -> posicion en la escena: x a la derecha, z (piso) hacia arriba, y hacia el fondo.
 const centro = (N - 1) / 2;

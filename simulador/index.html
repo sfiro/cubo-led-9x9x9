@@ -97,6 +97,9 @@
   .alerta .btn { margin-top: 8px; }
   .carga { position: absolute; inset: 0; display: grid; place-items: center; color: var(--suave); pointer-events: none; }
 
+  @media (max-width: 460px) {
+    .vistas { top: 50px; left: 16px; right: auto; }
+  }
   @media (max-width: 860px) {
     .app { grid-template-columns: 1fr; grid-template-rows: 58vh auto; height: auto; }
     .escena { height: 58vh; }
