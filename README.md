@@ -39,7 +39,7 @@ Esquemáticos (Fritzing):
 
 | Carpeta | Plataforma | Contenido |
 |---|---|---|
-| `pico_w/` | Pico W, MicroPython | **Versión actual**: driver con PIO+DMA, 14 animaciones, página web |
+| `pico_w/` | Pico W, MicroPython | **Versión actual**: driver con PIO+DMA, 22 animaciones, página web |
 | `simulador/` | Navegador | Simulador 3D (Three.js + MicroPython WebAssembly) y editor de animaciones |
 | `prueba_cubo_funcionLED_4/` | Arduino Mega | Última versión de Arduino para el 9×9×9, con unas 30 animaciones. Es la referencia del port |
 | `cuboLEDeeprom/` | Arduino Mega | Variante para un cubo de 10×10×10, que cambia de animación en cada reinicio usando la EEPROM |

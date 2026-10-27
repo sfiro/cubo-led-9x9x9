@@ -6,7 +6,7 @@ Arduino por una Pico W.
 | Archivo | Qué hace |
 |---|---|
 | `cubo.py` | Driver: el PIO y el DMA multiplexan los 9 pisos solos, sin usar el CPU. Incluye doble búfer, así que no se ven cuadros a medias |
-| `animaciones.py` | 14 animaciones portadas de `prueba_cubo_funcionLED_4.ino` |
+| `animaciones.py` | 22 animaciones: las portadas de `prueba_cubo_funcionLED_4.ino`, más otras nuevas con física y geometría |
 | `fuente.py` | La fuente de letras 8×8 del sketch original |
 | `web.py` | Página para elegir la animación desde el celular |
 | `main.py` | Arranca en modo demo, se conecta al WiFi y levanta la página |
@@ -66,6 +66,27 @@ async def mi_animacion(c):
         await _paso(c, 100)        # muestra el cuadro y espera 100 ms
 ```
 Después agrégala a `LISTA`, al final del archivo, y aparece sola en la página.
+
+## Animaciones
+
+| Nombre | Qué hace |
+|---|---|
+| `marquesina` | Texto que corre alrededor de las 4 caras |
+| `cubo_giratorio` | Cubo de alambre que gira en dos ejes y cambia de tamaño |
+| `lluvia` | Gotas a distinta velocidad, con viento, estela y salpicaduras en el piso |
+| `fuegos` | Cohete que sube y explota con gravedad |
+| `helice` | Doble hélice tipo ADN girando |
+| `planos` | Planos que se abren desde el centro, plano diagonal y plano que gira |
+| `rebotes` | Tres pelotas con gravedad que rebotan |
+| `disparos` | Proyectiles desde las 6 caras con onda expansiva al chocar |
+| `olas` | Interferencia de dos fuentes de ondas en movimiento |
+| `tornado` | Partículas en espiral; el embudo se pasea por el piso |
+| `fuente` | Chorro de agua en parábola |
+| `vida` | Juego de la vida en 3D, con los bordes del cubo conectados |
+| `espectro` | Ecualizador en cascada que se aleja hacia el fondo |
+| `texto`, `bordes`, `flash`, `llenar_vaciar`, `onda`, `aleatorio`, `serpiente`, `esfera`, `ascensores` | Portadas del sketch de Arduino |
+
+Antes de cargarlas en el cubo se pueden ver en el [simulador](../simulador/).
 
 ## Bugs del código original que ya quedaron corregidos
 - `LED()` pegaba a los bordes las coordenadas fuera del cubo, y por eso los fuegos artificiales
