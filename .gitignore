@@ -10,3 +10,6 @@ imagenes cubo led/
 # Python
 __pycache__/
 *.pyc
+
+# Configuracion local de Claude Code (servidor del simulador)
+.claude/

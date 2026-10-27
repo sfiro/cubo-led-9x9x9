@@ -9,6 +9,8 @@ con MicroPython, sin cambiar el hardware del cubo.
 
 - **[pico_w/](pico_w/)**: versión actual (Pico W + MicroPython + control por WiFi).
   Las instrucciones de conexión e instalación están en [pico_w/LEEME.md](pico_w/LEEME.md).
+- **[simulador/](simulador/)**: simulador 3D en el navegador que ejecuta las mismas animaciones
+  de la Pico, con editor para probar animaciones nuevas. Ver [simulador/LEEME.md](simulador/LEEME.md).
 - **[model.md](model.md)**: cómo funciona el sistema completo (hardware, cadena de bits,
   coordenadas, multiplexado y software). Conviene leerlo antes de modificar el driver.
 
@@ -38,6 +40,7 @@ Esquemáticos (Fritzing):
 | Carpeta | Plataforma | Contenido |
 |---|---|---|
 | `pico_w/` | Pico W, MicroPython | **Versión actual**: driver con PIO+DMA, 14 animaciones, página web |
+| `simulador/` | Navegador | Simulador 3D (Three.js + MicroPython WebAssembly) y editor de animaciones |
 | `prueba_cubo_funcionLED_4/` | Arduino Mega | Última versión de Arduino para el 9×9×9, con unas 30 animaciones. Es la referencia del port |
 | `cuboLEDeeprom/` | Arduino Mega | Variante para un cubo de 10×10×10, que cambia de animación en cada reinicio usando la EEPROM |
 | `cuboLED10por10/` | Arduino | Primera versión para el 10×10×10 |
@@ -57,6 +60,15 @@ Los sketches de Arduino se conservan tal como estaban en 2019, como historia y r
 5. Abre en el celular la IP que imprime la consola.
 
 Los detalles están en [pico_w/LEEME.md](pico_w/LEEME.md).
+
+## Probar animaciones sin el cubo
+
+```bash
+python3 -m http.server 8765
+```
+
+Luego abre <http://localhost:8765/simulador/>. También se puede publicar con GitHub Pages
+(los pasos están en [simulador/LEEME.md](simulador/LEEME.md)).
 
 ## Ideas pendientes
 

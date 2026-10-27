@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulador Cubo LED</title>
+<meta name="description" content="Simulador 3D del cubo LED 9x9x9: ejecuta las animaciones de MicroPython de la Pico W en el navegador.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+  }
+}
+</script>
+<style>
+  :root {
+    --fondo: #0b0d12;
+    --panel: #141821;
+    --panel-2: #1c212d;
+    --borde: #262c3a;
+    --texto: #e7eaf0;
+    --suave: #8a93a6;
+    --acento: #3ea8ff;
+    --acento-texto: #04121f;
+    --peligro: #ff6b6b;
+    --aviso: #ffc94d;
+    --ok: #5ad19a;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--fondo); color: var(--texto);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  button, select, input, textarea { font: inherit; color: inherit; }
+
+  .app { display: grid; grid-template-columns: minmax(0, 1fr) 400px; height: 100vh; }
+  .escena { position: relative; min-height: 0; overflow: hidden; }
+  #lienzo { display: block; width: 100%; height: 100%; touch-action: none; }
+  .lateral { border-left: 1px solid var(--borde); background: var(--panel); overflow-y: auto;
+    display: flex; flex-direction: column; }
+
+  .cabecera { padding: 16px 16px 12px; border-bottom: 1px solid var(--borde); }
+  .cabecera h1 { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: .2px; }
+  .cabecera p { margin: 2px 0 0; color: var(--suave); font-size: 13px; }
+  .seccion { padding: 14px 16px; border-bottom: 1px solid var(--borde); }
+  .seccion h2 { margin: 0 0 10px; font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--suave); }
+
+  .botones { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 6px; }
+  .btn { background: var(--panel-2); border: 1px solid var(--borde); border-radius: 8px;
+    padding: 8px 10px; cursor: pointer; text-align: center; transition: background .12s, border-color .12s; }
+  .btn:hover { border-color: #3a4256; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.activo { background: var(--acento); border-color: var(--acento); color: var(--acento-texto); font-weight: 600; }
+  .btn.principal { background: var(--acento); border-color: var(--acento); color: var(--acento-texto); font-weight: 600; }
+  .fila { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .fila .btn { flex: 1; }
+  label.opcion { display: flex; align-items: center; gap: 8px; color: var(--suave); }
+  .control { display: grid; grid-template-columns: 82px 1fr 48px; align-items: center; gap: 8px; margin-top: 10px; color: var(--suave); }
+  .control output { text-align: right; color: var(--texto); font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--acento); }
+  input[type=color] { width: 36px; height: 26px; border: 1px solid var(--borde); border-radius: 6px; background: none; padding: 0; }
+
+  .datos { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .dato { background: var(--panel-2); border-radius: 8px; padding: 8px 10px; }
+  .dato span { display: block; font-size: 11px; color: var(--suave); }
+  .dato b { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .dato.aviso b { color: var(--aviso); }
+
+  textarea#codigo { width: 100%; min-height: 260px; resize: vertical; background: #0e1118; border: 1px solid var(--borde);
+    border-radius: 8px; padding: 10px; font: 12.5px/1.5 var(--mono); tab-size: 4; white-space: pre; overflow: auto; }
+  textarea#codigo:focus { outline: 2px solid color-mix(in srgb, var(--acento) 55%, transparent); outline-offset: -1px; }
+  select { background: var(--panel-2); border: 1px solid var(--borde); border-radius: 8px; padding: 7px 8px; }
+  .ayuda { color: var(--suave); font-size: 12.5px; margin: 8px 0 0; }
+  .ayuda code { font-family: var(--mono); font-size: 12px; color: var(--texto); }
+
+  #consola { margin: 0; background: #0e1118; border: 1px solid var(--borde); border-radius: 8px; padding: 8px 10px;
+    font: 12px/1.45 var(--mono); max-height: 180px; min-height: 60px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+  #consola .error { color: var(--peligro); }
+  #consola .info { color: var(--suave); }
+
+  .estado { position: absolute; left: 16px; top: 14px; display: flex; gap: 8px; align-items: center;
+    background: rgba(11, 13, 18, .72); border: 1px solid var(--borde); border-radius: 999px; padding: 5px 12px;
+    font-size: 13px; backdrop-filter: blur(6px); }
+  .punto { width: 8px; height: 8px; border-radius: 50%; background: var(--suave); }
+  .punto.ok { background: var(--ok); } .punto.pausa { background: var(--aviso); } .punto.error { background: var(--peligro); }
+  .ejes { position: absolute; left: 16px; bottom: 14px; font-size: 12px; color: var(--suave);
+    background: rgba(11, 13, 18, .72); border: 1px solid var(--borde); border-radius: 8px; padding: 6px 10px; }
+  .ejes i { font-style: normal; font-weight: 700; }
+  .vistas { position: absolute; right: 14px; top: 12px; display: flex; gap: 4px; }
+  .vistas .btn { padding: 5px 10px; font-size: 12.5px; background: rgba(28, 33, 45, .85); }
+  .tip { position: absolute; pointer-events: none; background: #000c; border: 1px solid var(--borde); border-radius: 6px;
+    padding: 3px 7px; font: 12px var(--mono); display: none; white-space: nowrap; }
+  .alerta { position: absolute; inset: auto 16px 56px 16px; margin: 0 auto; max-width: 520px; display: none;
+    background: #2a1416; border: 1px solid #5c2a2e; color: #ffd6d6; border-radius: 10px; padding: 10px 12px; }
+  .alerta .btn { margin-top: 8px; }
+  .carga { position: absolute; inset: 0; display: grid; place-items: center; color: var(--suave); pointer-events: none; }
+
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: 58vh auto; height: auto; }
+    .escena { height: 58vh; }
+    .lateral { border-left: 0; border-top: 1px solid var(--borde); overflow: visible; }
+    .seccion, .cabecera { padding-left: 16px; padding-right: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="escena">
+    <canvas id="lienzo" aria-label="Vista 3D del cubo LED"></canvas>
+    <div class="estado"><span class="punto" id="punto"></span><span id="estado-texto">Cargando MicroPython…</span></div>
+    <div class="ejes"><i style="color:#ff6b6b">x</i> columna · <i style="color:#4d8dff">y</i> fila · <i style="color:#5ad19a">z</i> piso — arrastra para girar</div>
+    <div class="vistas" role="group" aria-label="Vista de la cámara">
+      <button class="btn" data-vista="3d">3D</button>
+      <button class="btn" data-vista="frente">Frente</button>
+      <button class="btn" data-vista="lado">Lado</button>
+      <button class="btn" data-vista="arriba">Arriba</button>
+    </div>
+    <div class="tip" id="tip"></div>
+    <div class="carga" id="carga">Cargando MicroPython…</div>
+    <div class="alerta" id="alerta" role="alert">
+      <b>La animación no responde.</b> Probablemente hay un bucle sin <code>await _paso(...)</code>.
+      <div><button class="btn" id="btn-reiniciar-py">Reiniciar Python</button></div>
+    </div>
+  </main>
+
+  <aside class="lateral">
+    <header class="cabecera">
+      <h1>Cubo LED 9×9×9 · Simulador</h1>
+      <p>Corre el mismo <code>animaciones.py</code> de la Pico W.</p>
+    </header>
+
+    <section class="seccion">
+      <h2>Animaciones</h2>
+      <div class="botones" id="lista">
+        <button class="btn" data-anim="demo" disabled>demo (todas)</button>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <h2>Reproducción</h2>
+      <div class="fila">
+        <button class="btn" id="btn-pausa">⏸ Pausa</button>
+        <button class="btn" id="btn-paso" disabled>⏭ Cuadro</button>
+        <button class="btn" id="btn-reiniciar">↺ Reiniciar</button>
+        <button class="btn" id="btn-detener">■ Detener</button>
+      </div>
+      <div class="control"><span>Velocidad</span><input type="range" id="velocidad" min="0" max="6" step="1" value="3" aria-label="Velocidad"><output id="velocidad-txt">1×</output></div>
+      <div class="fila" style="margin-top:10px; justify-content:space-between">
+        <label class="opcion"><input type="checkbox" id="repetir" checked> Repetir</label>
+        <label class="opcion"><input type="checkbox" id="brillo" checked> Resplandor</label>
+        <label class="opcion"><input type="checkbox" id="estructura" checked> Alambres</label>
+        <label class="opcion">Color <input type="color" id="color" value="#3ea8ff"></label>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <h2>Datos</h2>
+      <div class="datos">
+        <div class="dato"><span>Tiempo de la animación</span><b id="d-tiempo">0.0 s</b></div>
+        <div class="dato"><span>Cuadros por segundo</span><b id="d-fps">0</b></div>
+        <div class="dato"><span>LEDs encendidos</span><b id="d-leds">0</b></div>
+        <div class="dato" id="caja-calc"><span>Cálculo del cuadro</span><b id="d-calc">0 ms</b></div>
+        <div class="dato" id="caja-fuera" style="grid-column: span 2"><span>LEDs dibujados fuera del cubo (se ignoran)</span><b id="d-fuera">0</b></div>
+      </div>
+      <p class="ayuda">El navegador es más rápido que la Pico: una animación pesada puede ir más lenta en el cubo real.</p>
+    </section>
+
+    <section class="seccion">
+      <h2>Editor</h2>
+      <textarea id="codigo" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Código de la animación"></textarea>
+      <div class="fila" style="margin-top:8px">
+        <select id="funcion" aria-label="Función a ejecutar" style="flex:1"></select>
+        <button class="btn principal" id="btn-ejecutar" disabled>▶ Ejecutar</button>
+      </div>
+      <div class="fila" style="margin-top:6px">
+        <button class="btn" id="btn-copiar">Copiar código</button>
+        <button class="btn" id="btn-plantilla">Restaurar ejemplo</button>
+      </div>
+      <p class="ayuda">Define una función <code>async def nombre(c)</code> que dibuje con <code>c.led(z, y, x, 1)</code> y llame a <code>await _paso(c, ms)</code>.
+        Para pasarla al cubo, pégala en <code>pico_w/animaciones.py</code> y agrégala a <code>LISTA</code>.</p>
+    </section>
+
+    <section class="seccion" style="flex:1">
+      <div class="fila" style="justify-content:space-between; margin-bottom:8px">
+        <h2 style="margin:0">Consola</h2>
+        <button class="btn" id="btn-limpiar" style="flex:0; padding:4px 10px">Limpiar</button>
+      </div>
+      <pre id="consola"></pre>
+    </section>
+  </aside>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

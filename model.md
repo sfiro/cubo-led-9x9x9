@@ -134,3 +134,19 @@ respuesta de la web, pero no el refresco del cubo.
   - GP2 (DATA), GP3 (CLOCK) y GP4 (LATCH).
   - PIO0 SM0 para el cubo. El WiFi de la Pico W usa PIO1.
   - 2 canales de DMA.
+
+## 7. Simulador
+
+`simulador/` ejecuta `pico_w/animaciones.py` sin cambios, con MicroPython para WebAssembly dentro
+de un Web Worker:
+- `cubo_sim.py` reemplaza a `cubo.py` con la misma interfaz. `mostrar()` envía los 729 vóxeles a
+  la página en hexadecimal: un byte 0 cortaría el texto al pasar de Python a JavaScript.
+- `sim_runner.py` cambia los módulos `time` y `asyncio` de las animaciones por un reloj virtual:
+  `ticks_ms()` solo avanza con las esperas de `_paso`. Eso permite pausar, avanzar cuadro a
+  cuadro y cambiar la velocidad sin que cambien las duraciones.
+- La página (`app.js`, Three.js) dibuja el cubo con las mismas coordenadas de la sección 3.
+  También detecta si Python deja de responder, con un latido cada 500 ms.
+
+Cualquier animación nueva debe usar solo la interfaz de `Cubo` y esperar con `await _paso(...)`.
+Así funciona igual en el simulador y en la Pico.
+
