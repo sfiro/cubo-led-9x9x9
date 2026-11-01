@@ -3,6 +3,12 @@
 Mismo hardware del Instructable: 12 registros 74HC595 y 18 transistores. Solo cambia el
 Arduino por una Pico W.
 
+**También funciona con la Raspberry Pi Pico normal** (sin W). Tiene el mismo chip, así que el
+driver y las animaciones son iguales. Como no tiene WiFi, `main.py` lo detecta y deja el cubo
+en modo demo, recorriendo todas las animaciones. No hay página web, y el reloj solo tiene hora
+si Thonny se la ajustó al conectarla. En la Pico normal no hace falta copiar `web.py`; el
+firmware es el de <https://micropython.org/download/RPI_PICO/>.
+
 | Archivo | Qué hace |
 |---|---|
 | `cubo.py` | Driver: el PIO y el DMA multiplexan los 9 pisos solos, sin usar el CPU. Incluye doble búfer, así que no se ven cuadros a medias |

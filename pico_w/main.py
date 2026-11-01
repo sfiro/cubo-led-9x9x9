@@ -1,18 +1,21 @@
-# Programa principal del cubo LED 9x9x9 con Raspberry Pi Pico W.
-# Arranca en modo "demo" y, en paralelo, se conecta al WiFi y levanta
-# la pagina web para elegir la animacion. La IP se imprime por la consola.
+# Programa principal del cubo LED 9x9x9 con Raspberry Pi Pico W o Pico normal.
+# Arranca en modo "demo". En la Pico W, en paralelo, se conecta al WiFi y
+# levanta la pagina web para elegir la animacion (la IP se imprime por la
+# consola). La Pico normal no tiene WiFi: se queda en modo demo.
 
 import asyncio
 import time
 
-import network
+try:
+    import network
+except ImportError:          # Pico normal (sin WiFi)
+    network = None
 
 import animaciones
 try:
     import config
 except ImportError:          # sin config.py propio: usar la plantilla
     import config_ejemplo as config
-import web
 from cubo import Cubo
 
 
@@ -75,8 +78,12 @@ async def conectar_wifi():
 async def principal(cubo):
     control = Control(cubo)
     control.elegir("demo")
-    await conectar_wifi()
-    await web.servir(control)
+    if network is None:
+        print("Pico sin WiFi: modo demo con las", len(animaciones.LISTA), "animaciones")
+    else:
+        import web
+        await conectar_wifi()
+        await web.servir(control)
     while True:
         await asyncio.sleep(3600)
 

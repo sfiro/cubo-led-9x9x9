@@ -2,8 +2,8 @@
 
 #define latch_pin 2// can use any pin you want to latch the shift registers
 #define blank_pin 4// same, can use any pin you want for this, just make sure you pull up via a 1k to 5V
-#define data_pin 11// used by SPI, must be pin 11
-#define clock_pin 13// used by SPI, must be 13
+#define data_pin 51// used by SPI, must be pin 11
+#define clock_pin 52// used by SPI, must be 13
 
 int shift_out;
 byte anode[18];

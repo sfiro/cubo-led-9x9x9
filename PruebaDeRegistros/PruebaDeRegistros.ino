@@ -4,8 +4,8 @@
 #include <SPI.h>                                        // Librerìa para manejo de registro de desplazamiento
 
 #define latch_pin 2                                     // Pin conocido como Latch, en el integrado es el pin 12
-#define data_pin 11                                     // Pin conocido como data, en el integrado es el pin 14
-#define clock_pin 13                                    // Pin conocido como Clock, en el integrado es el pin 13
+#define data_pin 51                                     // Pin conocido como data, en el integrado es el pin 14
+#define clock_pin 52                                    // Pin conocido como Clock, en el integrado es el pin 13
 
 
 void setup() {

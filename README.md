@@ -48,6 +48,12 @@ Esquemáticos (Fritzing):
 | `prueba_BAM_multiplexion_3/` | Arduino | Prueba de 4 niveles de brillo (Bit Angle Modulation) |
 | `Prueba_multiplexion_2/`, `CuboLed1/`, `timer/` | Arduino | Pruebas del multiplexado y del Timer1 |
 | `PruebaDeRegistros/`, `prueba_registros_num1/` | Arduino | Pruebas de los 74HC595 |
+| `prueba_chips/` | Arduino Mega/UNO | Diagnóstico chip por chip desde el Monitor Serie: sonda en Q7', salidas una por una, envío lento y salida fija para medir |
+| `prueba_arduino_uno/`, `prueba_polaridad/`, `prueba_mapa/` | Arduino Mega/UNO | Pruebas de pisos, de polaridad y del mapa de bits, imprimiendo los bytes enviados |
+
+Si el cubo no enciende, revisa primero la fuente (5 V firmes con todo encendido, 2 A o más) y que
+**CLOCK vaya al pin 11 y LATCH al pin 12** de los 74HC595: si están cruzados, los datos avanzan
+un solo lugar por envío y nada funciona.
 
 Los sketches de Arduino se conservan tal como estaban en 2019, como historia y referencia.
 
