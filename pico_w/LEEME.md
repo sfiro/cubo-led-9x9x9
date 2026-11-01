@@ -18,6 +18,13 @@ firmware es el de <https://micropython.org/download/RPI_PICO/>.
 | `main.py` | Arranca en modo demo, se conecta al WiFi y levanta la página |
 | `config_ejemplo.py` | Plantilla de configuración. Cópiala como `config.py`, que queda fuera del repo |
 | `prueba.py` | Prueba de pisos y de LED por LED, para revisar el cableado |
+| `diagnostico.py` | Diagnóstico en 3 etapas: señales a mano, PIO solo y driver completo |
+| `prueba_arranque.py` | Arranca el driver como `main.py` e imprime el estado del PIO, el DMA y los pines |
+
+Si después de un Stop en Thonny el cubo queda apagado aunque la consola muestre las animaciones,
+desconecta y vuelve a conectar el USB. El *soft reboot* no reinicia el DMA. El driver actual
+aborta sus canales al arrancar para evitarlo, pero una versión vieja de `cubo.py` en la Pico se
+puede trabar así.
 
 ## Conexión
 

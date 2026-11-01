@@ -4,6 +4,7 @@
 # consola). La Pico normal no tiene WiFi: se queda en modo demo.
 
 import asyncio
+import sys
 import time
 
 try:
@@ -42,10 +43,22 @@ class Control:
             return
         while True:
             if nombre == "demo":
-                for _, animacion in animaciones.LISTA:
-                    await animacion(c)
+                for nombre_anim, animacion in animaciones.LISTA:
+                    await self._una(nombre_anim, animacion)
             else:
-                await animaciones.POR_NOMBRE[nombre](c)
+                await self._una(nombre, animaciones.POR_NOMBRE[nombre])
+
+    async def _una(self, nombre, animacion):
+        # Corre una animacion; si falla, muestra el error y sigue con la proxima
+        print("Animacion:", nombre)
+        try:
+            await animacion(self.cubo)
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:
+            print("Error en", nombre)
+            sys.print_exception(e)
+            await asyncio.sleep_ms(500)
 
 
 async def conectar_wifi():
@@ -90,6 +103,12 @@ async def principal(cubo):
 
 animaciones.ZONA_HORARIA = getattr(config, "ZONA_HORARIA", animaciones.ZONA_HORARIA)
 cubo = Cubo(config.PIN_DATOS, config.PIN_RELOJ, config.PIN_LATCH, config.FREQ_PIO)
+print("Prueba de arranque: todo el cubo encendido 1 s")
+cubo.encender()
+cubo.mostrar()
+time.sleep(1)
+cubo.apagar()
+cubo.mostrar()
 try:
     asyncio.run(principal(cubo))
 finally:

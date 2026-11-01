@@ -7,6 +7,8 @@
 #   - el PIO saca los 96 bits de un piso por DATA/CLOCK, da el pulso de LATCH
 #     y espera un rato antes de pasar al siguiente piso;
 #   - dos canales de DMA le entregan el cuadro al PIO en un ciclo infinito.
+#     Al arrancar y al detener se abortan, para que no quede uno andando
+#     de una corrida anterior.
 # Asi el cubo no parpadea aunque Python este ocupado, recolectando basura
 # o atendiendo el WiFi.
 #
@@ -16,6 +18,7 @@
 #   c.mostrar()            # publica lo dibujado (doble buffer, sin parpadeo)
 
 import array
+import sys
 import time
 
 import micropython
@@ -31,7 +34,11 @@ _PALABRAS_CUADRO = const(36)            # 9 pisos x (3 palabras de datos + 1 de 
 _BYTES_CUADRO = const(144)
 
 _DMA_BASE = const(0x50000000)
-_PADS_BANK0 = const(0x4001C000)
+# Algunos registros cambian de lugar en la RP2350 (Pico 2 y clones)
+_RP2350 = "RP2350" in sys.implementation._machine
+_PADS_BANK0 = 0x40038000 if _RP2350 else 0x4001C000
+_DMA_ABORT = _DMA_BASE + (0x464 if _RP2350 else 0x444)
+_CHAIN_TO = 13 if _RP2350 else 11        # posicion del campo CHAIN_TO en CTRL
 
 
 def _bit_en_cadena(registro, bit):
@@ -114,6 +121,19 @@ class Cubo:
         self._atras = 1
         self._dir = array.array("I", [uctypes.addressof(self._cuadros[0])])
 
+        # Reservar los canales de DMA y frenarlos ANTES de tocar el PIO: si una
+        # corrida anterior los dejo andando (Stop en Thonny, soft reboot), siguen
+        # escribiendo en el FIFO del PIO y el cubo se queda sin mostrar nada.
+        self._dma_datos = rp2.DMA()
+        self._dma_ctrl = rp2.DMA()
+        self._reg_lectura = _DMA_BASE + self._dma_datos.channel * 0x40
+        _abortar_dma(self._dma_ctrl.channel, self._dma_datos.channel)
+
+        # Primero como salidas comunes: deja el pad listo (en la RP2350 lo saca
+        # del aislamiento). Sin esto, recien encendida, la Pico podia no sacar
+        # nada por los pines; diagnostico.py funcionaba porque su etapa 1 lo hacia.
+        for pin in (pin_datos, pin_reloj, pin_latch):
+            Pin(pin, Pin.OUT, value=0)
         self._sm = self._iniciar_sm()
         for pin in (pin_datos, pin_reloj, pin_latch):
             _fuerza_pin(pin)
@@ -121,10 +141,6 @@ class Cubo:
         pio, sm = sm_id // 4, sm_id % 4
         fifo_tx = 0x50200010 + pio * 0x100000 + sm * 4
         dreq = pio * 8 + sm
-
-        self._dma_datos = rp2.DMA()
-        self._dma_ctrl = rp2.DMA()
-        self._reg_lectura = _DMA_BASE + self._dma_datos.channel * 0x40
 
         # Canal de datos: cuadro -> FIFO del PIO; al terminar dispara al de control.
         self._dma_datos.config(
@@ -193,6 +209,7 @@ class Cubo:
 
     def detener(self):
         # Para el refresco y deja todos los LEDs apagados.
+        _abortar_dma(self._dma_ctrl.channel, self._dma_datos.channel)
         self._dma_ctrl.close()
         self._dma_datos.close()
         self._sm.active(0)
@@ -203,8 +220,24 @@ class Cubo:
         self._sm.active(0)
 
 
+def _abortar_dma(*canales):
+    # Detiene los canales del todo. Primero los deshabilita y les quita el
+    # encadenamiento (AL1_CTRL = 0, CHAIN_TO = el mismo canal), porque al abortar
+    # un canal encadenado la RP2040 puede disparar al otro (errata RP2040-E13).
+    mascara = 0
+    for ch in canales:
+        mem32[_DMA_BASE + ch * 0x40 + 0x10] = ch << _CHAIN_TO
+        mascara |= 1 << ch
+    mem32[_DMA_ABORT] = mascara
+    t = time.ticks_ms()
+    while mem32[_DMA_ABORT] & mascara and time.ticks_diff(time.ticks_ms(), t) < 10:
+        pass
+
+
 def _fuerza_pin(n):
     # Maxima corriente (12 mA) y flancos rapidos: el CLOCK y el LATCH van a 12
     # registros en paralelo y a 3.3 V la senal llega justa.
+    # Tambien borra OD (bit 7, salida desactivada) e ISO (bit 8, aislamiento
+    # del pad en la RP2350; en la RP2040 ese bit no existe).
     dir_pad = _PADS_BANK0 + 4 + 4 * n
-    mem32[dir_pad] = (mem32[dir_pad] & ~0x30) | 0x30 | 0x01
+    mem32[dir_pad] = (mem32[dir_pad] & ~0x1B0) | 0x30 | 0x01
