@@ -1,0 +1,21 @@
+# Arranque automatico para la Raspberry Pi con escritorio (PipeWire).
+# Corre como servicio del usuario, dentro de su sesion, para poder usar el
+# audio de PipeWire. Las rutas usan %h (la carpeta del usuario): sirve sin
+# cambios si el repo esta en ~/cubo-led-9x9x9.
+# Instalacion: ver la seccion "Arranque automatico" del README.
+
+[Unit]
+Description=Asistente de voz con cubo LED
+After=pipewire.service wireplumber.service
+Wants=pipewire.service
+
+[Service]
+WorkingDirectory=%h/cubo-led-9x9x9/asistente_voz/raspberry
+ExecStart=%h/cubo-led-9x9x9/asistente_voz/raspberry/.venv/bin/python asistente.py
+Environment=PYTHONUNBUFFERED=1
+# Si Ollama todavia no arranco, falla y se reintenta
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

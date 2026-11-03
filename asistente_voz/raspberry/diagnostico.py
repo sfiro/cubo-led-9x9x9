@@ -61,6 +61,10 @@ def cubo():
 def dispositivos():
     import sounddevice as sd
     print(sd.query_devices())
+    if len(sd.query_devices()) == 0:
+        raise RuntimeError("PortAudio no ve ningun dispositivo. Si la Pi tiene escritorio "
+                           "(PipeWire), instala pipewire-alsa y revisa XDG_RUNTIME_DIR "
+                           "(ver 'Audio con PipeWire' en el README)")
     entrada = sd.query_devices(config.MICROFONO, "input")
     salida = sd.query_devices(config.PARLANTE, "output")
     print("  Microfono elegido: %s (%d Hz)" % (entrada["name"], entrada["default_samplerate"]))

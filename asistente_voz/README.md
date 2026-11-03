@@ -64,7 +64,8 @@ Raspberry Pi 5 ──USB──► Pico ──GP2/GP3/GP4 + GND──► conector
 | `raspberry/prueba_usb.py` | Prueba la conexión: piso por piso y velocidad |
 | `raspberry/medir_microfono.py` | Muestra el volumen del micrófono para ajustar `UMBRAL_VOZ` |
 | `raspberry/config_ejemplo.py` | Plantilla de configuración. Cópiala como `config.py`, que queda fuera del repo |
-| `raspberry/asistente.service` | Servicio para que arranque solo al encender la Pi |
+| `raspberry/asistente.service` | Servicio para que arranque solo al encender la Pi (Raspberry Pi OS Lite) |
+| `raspberry/asistente-usuario.service` | Lo mismo, para la Pi con escritorio (PipeWire) |
 | `raspberry/instalar.sh` | Instala todo en la Pi 5 (paquetes, Python, voz, Ollama y modelo, permisos) |
 | `raspberry/cargar_pico.sh` | Respalda lo que tiene la Pico y le carga el firmware (`--restaurar` lo devuelve) |
 | `raspberry/diagnostico.py` | Prueba cada parte por separado sin que nadie hable, y termina con el cubo hablando |
@@ -122,7 +123,8 @@ Agrega `--modo espectro` para la música, o `--sin-cubo` para probar sin la Pico
 ## 3. Instalar la Raspberry Pi 5
 
 ### Instalación rápida
-Si la Pi ya tiene Raspberry Pi OS funcionando, tres comandos hacen casi todo. Primero clona el
+Si la Pi ya tiene Raspberry Pi OS funcionando (Lite o con escritorio), tres comandos hacen
+casi todo. Primero clona el
 repo (paso 3.2) y luego, dentro de `asistente_voz/raspberry`:
 ```bash
 ./instalar.sh
@@ -134,14 +136,17 @@ repo (paso 3.2) y luego, dentro de `asistente_voz/raspberry`:
 .venv/bin/python diagnostico.py
 ```
 `instalar.sh` usa `sudo`, se puede repetir sin problema y no toca un `config.py` que ya exista.
-Después ajusta el audio (paso 3.3) y prueba las fases. Para que lo haga el agente OpenClaw,
+Si detecta PipeWire (la versión con escritorio), instala también `pipewire-alsa`. Al final
+muestra los dispositivos de audio que encontró. Después ajusta el audio (paso 3.3) y prueba las fases. Para que lo haga el agente OpenClaw,
 sigue [OPENCLAW.md](OPENCLAW.md).
 
 Los pasos de abajo explican lo mismo, uno por uno.
 
 ### 3.1 Sistema
 1. Con [Raspberry Pi Imager](https://www.raspberrypi.com/software/) graba
-   **Raspberry Pi OS Lite (64-bit)** en la microSD. En la configuración del Imager pon:
+   **Raspberry Pi OS Lite (64-bit)** en la microSD. La versión con escritorio también sirve,
+   pero el audio pasa por PipeWire (ver [Audio con PipeWire](#audio-con-pipewire-versión-con-escritorio)).
+   En la configuración del Imager pon:
    - nombre del equipo: `cubo`;
    - tu usuario y contraseña;
    - tu red WiFi;
@@ -206,6 +211,37 @@ Cada vez que entres por SSH, activa el entorno antes de correr los programas:
    ```bash
    python medir_microfono.py
    ```
+
+#### Audio con PipeWire (versión con escritorio)
+En la versión con escritorio, PipeWire tiene tomados el micrófono y el parlante. Por eso
+`aplay -D hw:...` da `Device or resource busy`, y sin el puente `pipewire-alsa`,
+`python -m sounddevice` no muestra nada. Con el puente, `python -m sounddevice` muestra solo
+`pipewire` y `default`, y es PipeWire el que decide qué micrófono y qué parlante usar:
+1. Deja `MICROFONO = None` y `PARLANTE = None` en `config.py`.
+2. Mira los dispositivos. Los predeterminados tienen un `*`:
+   ```bash
+   wpctl status
+   ```
+3. Si los predeterminados no son tu micrófono y tu parlante USB, elígelos con el número que
+   aparece en `Sinks` (parlante) y en `Sources` (micrófono). Por ejemplo:
+   ```bash
+   wpctl set-default 108
+   ```
+   ```bash
+   wpctl set-default 57
+   ```
+   PipeWire recuerda la elección aunque reinicies la Pi. Los números pueden cambiar en cada
+   arranque, así que revísalos con `wpctl status` antes de repetirlo.
+4. Si otro programa usa la cancelación de eco de PipeWire (nodos `echo-cancel-sink` y
+   `echo-cancel-source`) y la deja como predeterminada, el asistente también la usará. Funciona,
+   pero cambia el volumen del micrófono: vuelve a medir `UMBRAL_VOZ`.
+5. Si entras por SSH o lo corre un agente y no aparece ningún dispositivo, falta la variable de
+   la sesión:
+   ```bash
+   export XDG_RUNTIME_DIR=/run/user/$(id -u)
+   ```
+6. No dejes corriendo al mismo tiempo otro asistente de voz que use el mismo micrófono: los dos
+   responderían.
 
 ### 3.4 Fase 1: el cubo sigue un audio
 ```bash
@@ -289,13 +325,33 @@ siguiendo la documentación de openWakeWord.
    journalctl -u asistente -f
    ```
 
-El servicio usa el audio de ALSA directamente, que es lo que hay en Raspberry Pi OS Lite. Con
-la versión de escritorio el audio pasa por PipeWire y el servicio puede no encontrarlo.
+Ese servicio usa el audio de ALSA directamente, que es lo que hay en Raspberry Pi OS Lite.
+
+**Con escritorio (PipeWire)**, el asistente tiene que correr dentro de la sesión del usuario,
+que es donde está PipeWire. Para eso está `asistente-usuario.service`, que no hay que editar
+si el repo está en `~/cubo-led-9x9x9`:
+```bash
+mkdir -p ~/.config/systemd/user && cp asistente-usuario.service ~/.config/systemd/user/asistente.service
+```
+```bash
+systemctl --user daemon-reload && systemctl --user enable --now asistente
+```
+Para que arranque al encender la Pi aunque nadie inicie sesión:
+```bash
+sudo loginctl enable-linger $USER
+```
+Para ver lo que imprime:
+```bash
+journalctl --user -u asistente -f
+```
 
 ## Problemas comunes
 
 | Síntoma | Qué revisar |
 |---|---|
+| `python -m sounddevice` no muestra nada | La Pi tiene PipeWire y falta el puente: `sudo apt install pipewire-alsa`. Ver [Audio con PipeWire](#audio-con-pipewire-versión-con-escritorio) |
+| `aplay` da `Device or resource busy` | PipeWire tiene tomado el dispositivo. Es normal con escritorio: usa `aplay -D default` |
+| Usa otro micrófono o parlante | Con PipeWire, elige los predeterminados con `wpctl set-default` |
 | `No encontre la Pico por USB` | El cable USB tiene que ser de datos, no solo de carga. Revisa `ls /dev/ttyACM*` |
 | `La Pico ... no responde` | Cierra Thonny, revisa que en la Pico estén `cubo.py` y el `main.py` de `asistente_voz/pico`, y reconéctala |
 | La esfera de espera no aparece al conectar la Pico | Revisa el cableado y el driver con `pico_w/diagnostico.py` |

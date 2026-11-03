@@ -38,7 +38,7 @@ que pasa dentro del cubo (registros, mapa de bits, multiplexado) está en el
 |---|---|---|
 | Pi 5 → Pico | USB (CDC serie, `/dev/ttyACM0`) | Alimenta a la Pico. Al ser USB, no hay problema de niveles de 3.3 V |
 | Pico → cubo | GP2 DATA, GP3 CLOCK, GP4 LATCH, GND | Igual que en `pico_w/` |
-| Pi 5 → audio | USB | La Pi 5 no tiene salida de 3.5 mm |
+| Pi 5 → audio | USB | La Pi 5 no tiene salida de 3.5 mm. En Lite, PortAudio usa ALSA directo; con escritorio pasa por PipeWire (`pipewire-alsa`) y PipeWire elige los dispositivos |
 
 El cubo tiene su propia fuente de 5 V. La Pi, la Pico y el cubo comparten el GND a través del
 USB y del cable de GND entre la Pico y el cubo.
