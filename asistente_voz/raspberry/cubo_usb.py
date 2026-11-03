@@ -2,7 +2,8 @@
 # El protocolo esta en ../model.md (seccion 3).
 #
 # Para probar sin el cubo, abrir_cubo("consola") devuelve un cubo falso que
-# dibuja en la terminal una barra con la cantidad de LEDs encendidos.
+# dibuja en la terminal una barra con la cantidad de LEDs encendidos, y
+# abrir_cubo("silencio") uno que no muestra nada.
 
 import time
 
@@ -67,10 +68,15 @@ class CuboUSB:
 
 
 class CuboConsola:
-    # Cubo falso: muestra en la terminal cuantos LEDs estarian encendidos
-    puerto = "consola"
+    # Cubo falso: muestra en la terminal cuantos LEDs estarian encendidos.
+    # Con barra=False no muestra nada (para no tapar lo que se escribe).
+    def __init__(self, barra=True):
+        self.puerto = "consola" if barra else "ninguno"
+        self._barra = barra
 
     def mostrar(self, vox):
+        if not self._barra:
+            return
         n = int(np.count_nonzero(vox))
         print("\r[%-60s] %3d LEDs" % ("#" * (n * 60 // 729), n), end="", flush=True)
 
@@ -82,6 +88,6 @@ class CuboConsola:
 
 
 def abrir_cubo(puerto=None):
-    if puerto == "consola":
-        return CuboConsola()
+    if puerto in ("consola", "silencio"):
+        return CuboConsola(barra=puerto == "consola")
     return CuboUSB(puerto)

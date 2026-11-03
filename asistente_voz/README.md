@@ -2,7 +2,11 @@
 
 Un asistente de voz que funciona **completamente local** en una Raspberry Pi 5, sin nube.
 El cubo de 9×9×9 es su cara: se ilumina al ritmo de la voz cuando el asistente habla, y
-muestra otra animación mientras escucha y mientras piensa.
+muestra otra animación mientras escucha y mientras piensa. Desde la v2 también se le pueden
+pedir con la voz las 34 animaciones del cubo ("pon la lluvia", "¿qué hora es?", "para").
+
+**Versión actual: 2.0.** Lo que trae cada versión y cómo volver a una anterior está en
+[versiones/](versiones/README.md).
 
 ```
  Micrófono ─► Raspberry Pi 5 ──────────────────────────────────► Parlante
@@ -23,6 +27,7 @@ están en [model.md](model.md).
 | Pensando | Una doble hélice girando |
 | Hablando | Ondas que salen del centro con cada sílaba (o una esfera, o un ecualizador) |
 | Sin la Pi | La Pico muestra sola una esfera que respira |
+| Con una animación elegida (v2) | La animación, en vez de la esfera de reposo |
 
 ## Qué se necesita
 
@@ -58,7 +63,9 @@ Raspberry Pi 5 ──USB──► Pico ──GP2/GP3/GP4 + GND──► conector
 | `raspberry/audio.py` | Analiza el volumen y las frecuencias, reproduce el audio sincronizado con el cubo y captura el micrófono |
 | `raspberry/visual.py` | Las animaciones de cada estado y el hilo que manda 40 cuadros por segundo |
 | `raspberry/voz.py` | Texto a voz con Piper, y la limpieza y división en frases del texto del modelo |
-| `raspberry/asistente.py` | El asistente completo (fase 3) |
+| `raspberry/asistente.py` | El asistente completo (fase 3). `--escribir` para probarlo escribiendo |
+| `raspberry/animaciones_pi.py` | Corre en la Pi las 34 animaciones de `pico_w/animaciones.py` (v2) |
+| `raspberry/comandos.py` | Comandos de voz para las animaciones y lo que el modelo sabe de ellas (v2) |
 | `raspberry/reproducir.py` | Fase 1: el cubo sigue un archivo WAV |
 | `raspberry/decir.py` | Fase 2: el cubo dice con voz lo que escribas |
 | `raspberry/prueba_usb.py` | Prueba la conexión: piso por piso y velocidad |
@@ -69,6 +76,7 @@ Raspberry Pi 5 ──USB──► Pico ──GP2/GP3/GP4 + GND──► conector
 | `raspberry/instalar.sh` | Instala todo en la Pi 5 (paquetes, Python, voz, Ollama y modelo, permisos) |
 | `raspberry/cargar_pico.sh` | Respalda lo que tiene la Pico y le carga el firmware (`--restaurar` lo devuelve) |
 | `raspberry/diagnostico.py` | Prueba cada parte por separado sin que nadie hable, y termina con el cubo hablando |
+| `versiones/` | Un documento por versión: qué cambió, cómo se usa y cómo se probó |
 | `OPENCLAW.md` | Mensaje para que el agente OpenClaw de la Pi lo instale y lo pruebe |
 
 ## 1. Preparar la Pico
@@ -301,6 +309,27 @@ Para cambiar de modelo, descárgalo con `ollama pull` y ponlo en `MODELO` en `co
 Los modelos cambian rápido: cualquiera de 1 a 4 mil millones de parámetros que esté en Ollama
 sirve. Si un modelo "piensa en voz alta" (`<think>`), el asistente no lee esa parte.
 
+### Controlar el cubo con la voz (v2)
+Mientras conversas, puedes pedirle animaciones:
+
+| Dices | Qué pasa |
+|---|---|
+| "Pon la lluvia", "muéstrame los fuegos artificiales", o solo "Matrix" | Pone esa animación. Se repite hasta que pidas otra |
+| "Escribe feliz cumpleaños" | El texto corre por las caras del cubo |
+| "¿Qué hora es?" | Dice la hora y la muestra |
+| "Modo demo" | Recorre las 34 animaciones |
+| "Para", "detente", "apaga las luces" | Quita la animación |
+| "Pon algo relajante" | El modelo elige una (las olas, por ejemplo) |
+
+Lo demás es conversación normal. Cuando el asistente escucha o habla, el cubo muestra la voz y
+después vuelve a la animación. La lista completa de comandos y de nombres está en
+[versiones/v2.md](versiones/v2.md).
+
+Para probar los comandos y el modelo sin hablar:
+```bash
+python asistente.py --escribir
+```
+
 ### 3.7 Palabra de activación (opcional)
 Con `ACTIVACION = "voz"`, el asistente responde a cualquier frase que escuche. Para que espere
 una palabra:
@@ -364,6 +393,7 @@ journalctl --user -u asistente -f
 | Las luces no van con la voz | Ajusta `AJUSTE_SINCRONIA_S` (positivo si las luces van antes que el sonido) |
 
 ## Ideas para seguir
+- Control de velocidad y duración de las animaciones ("más rápido", "por 5 minutos").
 - Interrumpir al asistente mientras habla (necesita cancelación de eco).
 - Niveles de brillo en el cubo, para que las ondas se desvanezcan suavemente.
 - Que el modelo pueda elegir animaciones o mostrar texto ("muéstrame la hora").

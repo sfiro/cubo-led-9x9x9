@@ -1,0 +1,47 @@
+# Versiones del asistente de voz
+
+Cada versión queda guardada en GitHub con una **etiqueta** (`asistente-v1.0`, `asistente-v2.0`…)
+y tiene su propio documento aquí: qué cambió, cómo se usa y cómo probarla. El código siempre
+está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estaba en esa versión.
+
+| Versión | Etiqueta | Fecha | Qué trae |
+|---|---|---|---|
+| [2.0](v2.md) | `asistente-v2.0` | 2026-11-02 | Controlar las animaciones del cubo con la voz, sin dejar de conversar |
+| [1.0](v1.md) | `asistente-v1.0` | 2026-11-02 | Asistente de voz local; el cubo se ilumina al ritmo de la voz |
+
+El programa dice su versión al arrancar (`Asistente de voz v2.0`), y el diagnóstico también.
+
+## Volver a una versión anterior
+
+En la Pi, dentro de `~/cubo-led-9x9x9`:
+```bash
+git fetch --tags
+```
+```bash
+git checkout asistente-v1.0
+```
+Para volver a la última:
+```bash
+git checkout main
+```
+
+`config.py`, las voces y el entorno de Python no están en el repo, así que no cambian al pasar
+de una versión a otra. Una versión nueva puede agregar opciones a `config_ejemplo.py`; si tu
+`config.py` no las tiene, el programa usa sus valores predeterminados.
+
+También se puede descargar cada versión como `.zip` desde la página de etiquetas del repo:
+<https://github.com/sfiro/cubo-led-9x9x9/tags>.
+
+## Cómo se agrega una versión
+
+1. Hacer los cambios y probarlos.
+2. Subir `VERSION` en `raspberry/asistente.py`.
+3. Escribir `versiones/vN.md` con el mismo formato de las anteriores, y agregar la fila en esta
+   tabla.
+4. Commit, y luego la etiqueta, y subir las dos:
+   ```bash
+   git tag -a asistente-vN.0 -m "Asistente de voz vN.0"
+   ```
+   ```bash
+   git push origin main asistente-vN.0
+   ```

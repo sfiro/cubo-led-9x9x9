@@ -9,6 +9,11 @@ ANIMACION_HABLANDO = "ondas"    # "ondas", "esfera" o "espectro"
 # Subelo si las luces van antes que el sonido (parlantes Bluetooth: ~0.2)
 AJUSTE_SINCRONIA_S = 0.0
 
+# Animaciones con la voz (v2)
+COMANDOS_DIRECTOS = True    # "pon la lluvia", "para", "escribe HOLA" sin pasar por el modelo
+VOZ_SOBRE_ANIMACION = True  # al escuchar/pensar/hablar se ve la voz, y luego vuelve la animacion.
+                            # False: la animacion elegida sigue aunque el asistente hable
+
 # ---- Audio ------------------------------------------------------------------
 # None = el dispositivo predeterminado. Si no, el numero o parte del nombre
 # que muestra "python -m sounddevice"

@@ -16,6 +16,8 @@ try:
 except ImportError:
     import config_ejemplo as config
 
+from asistente import VERSION
+
 FRASE = "Hola, soy el cubo de luz. Esta es una prueba del asistente de voz."
 resultados = []
 
@@ -56,6 +58,52 @@ def cubo():
     time.sleep(0.5)
     c.apagar()
     return c
+
+
+def animaciones(c):
+    # v2: las 34 animaciones de la Pico corriendo en la Pi
+    from animaciones_pi import NOMBRES, MotorAnimaciones
+    motor = MotorAnimaciones()
+    sin_luz = []
+    for nombre in NOMBRES:
+        motor.iniciar(nombre)
+        maximo = 0
+        fin = time.monotonic() + (2.0 if nombre == "lluvia" else 0.3)
+        while time.monotonic() < fin:
+            cuadro = motor.cuadro()
+            maximo = max(maximo, int(cuadro.sum()))
+            if c is not None:
+                c.mostrar(cuadro)
+            time.sleep(0.025)
+        if maximo == 0:
+            sin_luz.append(nombre)
+    motor.detener()
+    if c is not None:
+        c.apagar()
+    print("  %d animaciones probadas (en el cubo se ve cada una un momento, la lluvia 2 s)"
+          % len(NOMBRES))
+    if sin_luz:
+        raise RuntimeError("no encendieron ningun LED: %s" % ", ".join(sin_luz))
+
+
+def etiquetas():
+    # v2: el modelo tiene que saber pedir animaciones con [ANIMACION: nombre]
+    import comandos
+    from asistente import preguntar
+    from voz import Frases
+    frases = Frases()
+    respuesta = ""
+    pedido = [{"role": "user", "content": "Pon en el cubo algo de Navidad, por favor."}]
+    for pedazo in preguntar(pedido, comandos.instrucciones_cubo()):
+        respuesta += pedazo
+        frases.agregar(pedazo)
+    frases.terminar()
+    acciones = [comandos.de_etiqueta(t, v) for t, v in frases.etiquetas]
+    print("  Pregunta: %s\n  Respuesta: %s\n  Acciones: %s"
+          % (pedido[0]["content"], respuesta.strip(), [a for a in acciones if a] or "ninguna"))
+    if not any(acciones):
+        print("  AVISO: el modelo no pidio ninguna animacion. Los comandos directos (\"pon el "
+              "arbol\") funcionan igual; para pedidos libres conviene un modelo mas grande.")
 
 
 def dispositivos():
@@ -148,10 +196,12 @@ def hablar(c, voz, texto):
 p = argparse.ArgumentParser(description="Diagnostico del asistente de voz")
 p.add_argument("--sin-sonido", action="store_true", help="no usar el parlante ni el microfono")
 args = p.parse_args()
+print("Diagnostico del asistente de voz v%s" % VERSION)
 
 probar("Paquetes de Python", paquetes)
 c = probar("Cubo por USB (Pico)", cubo)
 c = None if c is True else c
+probar("Animaciones en la Pi (v2)", animaciones, c)
 probar("Dispositivos de audio", dispositivos)
 if not args.sin_sonido:
     probar("Microfono", microfono)
@@ -159,6 +209,8 @@ piper_ok = probar("Texto a voz (Piper)", voz_piper)
 if piper_ok:
     probar("Voz a texto (Whisper)", whisper, *piper_ok)
 respuesta = probar("Modelo de lenguaje (Ollama)", ollama)
+if respuesta:
+    probar("El modelo elige animaciones (v2)", etiquetas)
 if piper_ok and not args.sin_sonido:
     probar("Hablar con el cubo", hablar, c, piper_ok[0],
            respuesta if isinstance(respuesta, str) else FRASE)

@@ -177,7 +177,45 @@ cada turno.
 | Piper, primera frase | 0.2 a 0.6 s (más con voces `high`) |
 | **Desde que te callas hasta que empieza a hablar** | **unos 3 a 4 s** |
 
-## 10. Decisiones y límites
+## 10. Control de las animaciones con la voz (v2)
+
+```
+texto ─► comandos.interpretar ──sí──► Accion ─► MotorAnimaciones.iniciar / detener
+            │ no                          ▲
+            ▼                             │ comandos.de_etiqueta
+         Ollama (instrucciones + lista) ─► Frases: quita [ANIMACION: x] y la guarda
+```
+
+- **MotorAnimaciones** (`animaciones_pi.py`) carga `pico_w/animaciones.py` por su ruta, sin
+  agregar `pico_w/` a `sys.path` (allí hay otro `config.py`, el de la Pico). Le cambia `time` y
+  `asyncio` por versiones con `ticks_ms()` y `sleep_ms()`, que MicroPython tiene y Python no,
+  como hace el simulador. Las corre en un bucle asyncio en su propio hilo. Elegir otra
+  animación cancela la tarea, que es lo mismo que hace la página web de la Pico.
+- **CuboVirtual**: misma interfaz que `pico_w/cubo.py`. Su `mostrar()` guarda una copia del
+  cuadro como arreglo de numpy, que el `Animador` toma 40 veces por segundo.
+- **Prioridad en el Animador**:
+  1. si `VOZ_SOBRE_ANIMACION` es `False` y hay animación, la animación;
+  2. si el reproductor está sonando, la animación de hablar;
+  3. escuchando o pensando;
+  4. la animación elegida, o si no hay, el reposo.
+- **Comandos directos** (`comandos.interpretar`): el texto se normaliza (minúsculas, sin tildes
+  ni signos) y se reconoce en este orden:
+  1. parar, solo si la frase entera es la orden ("para", "apaga las luces"), para no confundir
+     "¿para qué sirve…?";
+  2. escribir texto;
+  3. la hora;
+  4. verbo más nombre de animación, o solo el nombre. Se buscan primero los nombres más largos,
+     para que "esfera móvil" le gane a "esfera".
+- **Etiquetas del modelo**: `instrucciones_cubo()` agrega a las instrucciones la lista de
+  animaciones, la que se está mostrando, y la fecha y la hora. `voz.Frases` quita las
+  etiquetas completas, y un `[` sin cerrar lo guarda hasta que llegue el resto, para que una
+  etiqueta cortada en dos pedazos no se lea en voz alta. Una etiqueta con un nombre que no
+  existe se ignora y se avisa en la consola.
+- **Historial**: también los comandos directos se guardan con su etiqueta ("Listo, pongo la
+  lluvia. [ANIMACION: lluvia]"). Así el modelo ve ejemplos del formato y sabe qué se está
+  mostrando.
+
+## 11. Decisiones y límites
 
 - **Half duplex**: el micrófono se ignora mientras el asistente habla. Para poder interrumpirlo
   hace falta cancelación de eco (un altavoz de conferencias, o el módulo AEC de

@@ -32,6 +32,8 @@ _FORMATO = re.compile(r"[*#_`>\[\]|~]")
 _EMOJIS = re.compile("[\U00010000-\U0010FFFF\u2600-\u27BF\uFE0F]")
 _PENSAMIENTO = re.compile(r"<think>.*?</think>", re.S)
 _FIN_FRASE = re.compile(r"[.!?…;:\n]+[\"')»]*\s")
+# Etiquetas para el cubo que escribe el modelo (v2): [ANIMACION: lluvia], [PARAR]
+_ETIQUETA = re.compile(r"\[\s*(ANIMACI[OÓ]N|TEXTO|PARAR)\s*(?::\s*([^\]]*))?\]", re.I)
 
 
 def limpiar(texto):
@@ -42,10 +44,19 @@ def limpiar(texto):
 class Frases:
     # Junta los pedazos que llegan del modelo y entrega frases completas, para
     # empezar a hablar la primera mientras el modelo sigue escribiendo.
+    # Las etiquetas para el cubo no se dicen: se guardan en .etiquetas como
+    # pares (tipo, valor).
     MINIMO = 12             # no cortar en frases demasiado cortas ("Si.")
 
     def __init__(self):
         self._texto = ""
+        self.etiquetas = []
+
+    def _quitar_etiquetas(self, texto):
+        def guardar(m):
+            self.etiquetas.append((m.group(1), m.group(2)))
+            return " "
+        return _ETIQUETA.sub(guardar, texto)
 
     def agregar(self, pedazo):
         self._texto += pedazo
@@ -53,16 +64,22 @@ class Frases:
             if "</think>" not in self._texto:
                 return []
             self._texto = _PENSAMIENTO.sub("", self._texto)
+        self._texto = self._quitar_etiquetas(self._texto)
+        # Un "[" sin cerrar puede ser una etiqueta a medio llegar: se guarda para despues
+        abierto = self._texto.rfind("[")
+        corte = abierto if abierto >= 0 and "]" not in self._texto[abierto:] else len(self._texto)
+        listo, pendiente = self._texto[:corte], self._texto[corte:]
         frases = []
         inicio = 0
-        for m in _FIN_FRASE.finditer(self._texto):
+        for m in _FIN_FRASE.finditer(listo):
             if m.end() - inicio >= self.MINIMO:
-                frases.append(self._texto[inicio:m.end()])
+                frases.append(listo[inicio:m.end()])
                 inicio = m.end()
-        self._texto = self._texto[inicio:]
+        self._texto = listo[inicio:] + pendiente
         return [f for f in map(limpiar, frases) if f]
 
     def terminar(self):
-        resto = limpiar(_PENSAMIENTO.sub("", self._texto).replace("<think>", ""))
+        resto = self._quitar_etiquetas(_PENSAMIENTO.sub("", self._texto).replace("<think>", ""))
+        resto = limpiar(re.sub(r"\[[^\]]*$", "", resto))      # etiqueta cortada al final
         self._texto = ""
         return [resto] if resto else []

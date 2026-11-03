@@ -82,7 +82,11 @@ MODOS_HABLANDO = {
 class Animador(threading.Thread):
     # estado: "reposo", "escuchando" o "pensando". Mientras el reproductor
     # tiene audio sonando, el estado es "hablando" automaticamente.
-    def __init__(self, cubo, reproductor=None, microfono=None, modo="ondas", fps=40):
+    # motor (v2): si hay una animacion elegida, se muestra en vez del reposo.
+    # Con voz_sobre_animacion, al escuchar, pensar y hablar se ve la voz y luego
+    # vuelve la animacion; sin eso, la animacion no se interrumpe.
+    def __init__(self, cubo, reproductor=None, microfono=None, modo="ondas", fps=40,
+                 motor=None, voz_sobre_animacion=True):
         super().__init__(daemon=True)
         if modo not in MODOS_HABLANDO:
             raise ValueError("Animacion desconocida: %s (opciones: %s)"
@@ -90,6 +94,8 @@ class Animador(threading.Thread):
         self.cubo = cubo
         self.reproductor = reproductor
         self.microfono = microfono
+        self.motor = motor
+        self.voz_sobre_animacion = voz_sobre_animacion
         self.estado = "reposo"
         self._hablando = MODOS_HABLANDO[modo]()
         self._periodo = 1.0 / fps
@@ -97,6 +103,9 @@ class Animador(threading.Thread):
         self._ultimo_error = None
 
     def cuadro(self, t):
+        animacion = self.motor.cuadro() if self.motor is not None else None
+        if animacion is not None and not self.voz_sobre_animacion:
+            return animacion
         if self.reproductor is not None and self.reproductor.sonando():
             nivel, bandas = self.reproductor.estado_audio()
             return self._hablando(t, nivel, bandas)
@@ -104,7 +113,7 @@ class Animador(threading.Thread):
             return escuchando(t, nivel_db(self.microfono.rms) if self.microfono else 0.0)
         if self.estado == "pensando":
             return pensando(t)
-        return reposo(t)
+        return animacion if animacion is not None else reposo(t)
 
     def run(self):
         inicio = time.monotonic()

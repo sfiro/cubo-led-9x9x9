@@ -3,9 +3,18 @@
 #   microfono -> faster-whisper -> Ollama -> Piper -> parlante
 #                                              \-> cubo (al ritmo de la voz)
 #
+# v2: ademas se pueden elegir las animaciones con la voz ("pon la lluvia",
+# "para", "escribe HOLA"), sin dejar de conversar con el modelo. Ver
+# ../versiones/v2.md.
+#
 # Un turno a la vez: mientras el cubo habla, el microfono se ignora para que
 # no se escuche a si mismo. Ctrl-C para salir.
+#
+#   python asistente.py               hablando por el microfono
+#   python asistente.py --escribir    escribiendo las preguntas (para probar)
+#   python asistente.py --sin-cubo    sin la Pico conectada
 
+import argparse
 import json
 import queue
 import threading
@@ -18,11 +27,14 @@ try:
     import config
 except ImportError:
     import config_ejemplo as config
+import comandos
+from animaciones_pi import MotorAnimaciones
 from audio import Microfono, Reproductor, remuestrear
 from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz
 
+VERSION = "2.0"
 SR_WHISPER = 16000
 
 
@@ -76,11 +88,12 @@ def escuchar_pregunta(mic, anim, espera_max_s=None):
 # ---- pensar -----------------------------------------------------------------
 
 
-def preguntar(historial):
-    # Pide la respuesta a Ollama y la entrega en pedazos a medida que se genera
+def preguntar(historial, extra=""):
+    # Pide la respuesta a Ollama y la entrega en pedazos a medida que se genera.
+    # extra: lo que se agrega a las instrucciones (la lista de animaciones)
     cuerpo = {
         "model": config.MODELO,
-        "messages": [{"role": "system", "content": config.INSTRUCCIONES}] + historial,
+        "messages": [{"role": "system", "content": config.INSTRUCCIONES + extra}] + historial,
         "stream": True,
         "keep_alive": "30m",        # deja el modelo cargado entre preguntas
     }
@@ -124,22 +137,95 @@ class Locutor(threading.Thread):
 # ---- programa principal -----------------------------------------------------
 
 
-def principal():
-    print("Cargando...")
-    from faster_whisper import WhisperModel
-    whisper = WhisperModel(config.WHISPER_MODELO, device="cpu", compute_type="int8")
-    voz = Voz(config.VOZ_PIPER)
-    detector = None
-    if config.ACTIVACION == "palabra":
-        import openwakeword
-        from openwakeword.model import Model
-        openwakeword.utils.download_models()
-        detector = Model(wakeword_models=[config.PALABRA_ACTIVACION], inference_framework="onnx")
+def ejecutar(accion, motor):
+    if accion.tipo == "parar":
+        motor.detener()
+        print("      [cubo] animacion detenida")
+    else:
+        motor.iniciar(accion.nombre, accion.mensaje)
+        print("      [cubo] %s%s" % (accion.nombre,
+                                   " '%s'" % accion.mensaje.strip() if accion.mensaje else ""))
 
-    cubo = abrir_cubo(config.PUERTO_CUBO)
+
+def entender(whisper, audio):
+    t = time.monotonic()
+    segmentos, _ = whisper.transcribe(audio, language=config.IDIOMA, beam_size=1,
+                                      vad_filter=True)
+    texto = " ".join(s.text.strip() for s in segmentos).strip()
+    if len(texto) >= 2:
+        print("\nTu:   %s  (%.1f s)" % (texto, time.monotonic() - t))
+    return texto
+
+
+def responder(texto, historial, motor, locutor):
+    # Comando directo o pregunta al modelo. Devuelve la respuesta, con sus
+    # etiquetas, para guardarla en el historial.
+    accion = comandos.interpretar(texto) if getattr(config, "COMANDOS_DIRECTOS", True) else None
+    if accion is not None:
+        print("Cubo: %s  (comando directo)" % accion.respuesta)
+        ejecutar(accion, motor)
+        locutor.frases.put(accion.respuesta)
+        return accion.respuesta + " " + accion.etiqueta()
+
+    t = time.monotonic()
+    frases = Frases()
+    respuesta = ""
+    primera = None
+    extra = comandos.instrucciones_cubo(motor.actual, motor.mensaje)
+    try:
+        for pedazo in preguntar(historial + [{"role": "user", "content": texto}], extra):
+            respuesta += pedazo
+            for frase in frases.agregar(pedazo):
+                primera = primera or time.monotonic()
+                locutor.frases.put(frase)
+    except Exception as e:
+        print("[ollama] %s" % e)
+        if not respuesta:
+            respuesta = "Perdón, tuve un problema para pensar la respuesta."
+            frases.agregar(respuesta)
+    for frase in frases.terminar():
+        primera = primera or time.monotonic()
+        locutor.frases.put(frase)
+    print("Cubo: %s  (1a frase en %.1f s)" % (respuesta.strip(), (primera or time.monotonic()) - t))
+    for tipo, valor in frases.etiquetas:
+        accion = comandos.de_etiqueta(tipo, valor)
+        if accion is not None:
+            ejecutar(accion, motor)
+        else:
+            print("      [cubo] etiqueta ignorada: %s %s" % (tipo, valor or ""))
+    return respuesta.strip()
+
+
+def principal():
+    p = argparse.ArgumentParser(description="Asistente de voz con el cubo LED")
+    p.add_argument("--escribir", action="store_true",
+                   help="escribir las preguntas en vez de hablar (sin microfono ni Whisper)")
+    p.add_argument("--sin-cubo", action="store_true", help="probar sin la Pico conectada")
+    args = p.parse_args()
+
+    print("Asistente de voz v%s. Cargando..." % VERSION)
+    whisper = detector = None
+    if not args.escribir:
+        from faster_whisper import WhisperModel
+        whisper = WhisperModel(config.WHISPER_MODELO, device="cpu", compute_type="int8")
+        if config.ACTIVACION == "palabra":
+            import openwakeword
+            from openwakeword.model import Model
+            openwakeword.utils.download_models()
+            detector = Model(wakeword_models=[config.PALABRA_ACTIVACION],
+                             inference_framework="onnx")
+    voz = Voz(config.VOZ_PIPER)
+    motor = MotorAnimaciones()
+
+    if args.sin_cubo:
+        cubo = abrir_cubo("silencio" if args.escribir else "consola")
+    else:
+        cubo = abrir_cubo(config.PUERTO_CUBO)
     rep = Reproductor(config.PARLANTE, config.AJUSTE_SINCRONIA_S)
-    mic = Microfono(config.MICROFONO)
-    anim = Animador(cubo, rep, mic, modo=config.ANIMACION_HABLANDO, fps=config.CUADROS_POR_SEGUNDO)
+    mic = None if args.escribir else Microfono(config.MICROFONO)
+    anim = Animador(cubo, rep, mic, modo=config.ANIMACION_HABLANDO,
+                    fps=config.CUADROS_POR_SEGUNDO, motor=motor,
+                    voz_sobre_animacion=getattr(config, "VOZ_SOBRE_ANIMACION", True))
     locutor = Locutor(voz, rep)
     anim.start()
     locutor.start()
@@ -153,65 +239,50 @@ def principal():
         raise SystemExit(1)
 
     historial = []
-    if detector:
+    if args.escribir:
+        print("Listo. Escribe tu pregunta o un comando (por ejemplo: pon la lluvia).")
+    elif detector:
         print("Listo. Di '%s' y luego tu pregunta." % config.PALABRA_ACTIVACION)
     else:
-        print("Listo. Habla cuando quieras.")
+        print("Listo. Habla cuando quieras (por ejemplo: pon la lluvia).")
     try:
         while True:
             anim.estado = "reposo"
-            if detector:
-                esperar_palabra(mic, detector)
-                anim.estado = "escuchando"
-                audio = escuchar_pregunta(mic, anim, espera_max_s=6)
+            if args.escribir:
+                texto = input("\nTu:   ").strip()
             else:
-                audio = escuchar_pregunta(mic, anim)
-            if audio is None:
+                if detector:
+                    esperar_palabra(mic, detector)
+                    anim.estado = "escuchando"
+                    audio = escuchar_pregunta(mic, anim, espera_max_s=6)
+                else:
+                    audio = escuchar_pregunta(mic, anim)
+                if audio is None:
+                    continue
+                anim.estado = "pensando"
+                texto = entender(whisper, audio)
+            if len(texto) < 2:
                 continue
 
             anim.estado = "pensando"
-            t0 = time.monotonic()
-            segmentos, _ = whisper.transcribe(audio, language=config.IDIOMA, beam_size=1,
-                                              vad_filter=True)
-            texto = " ".join(s.text.strip() for s in segmentos).strip()
-            t1 = time.monotonic()
-            if len(texto) < 2:
-                continue
-            print("\nTu:   %s  (%.1f s)" % (texto, t1 - t0))
-
-            historial.append({"role": "user", "content": texto})
-            frases = Frases()
-            respuesta = ""
-            primera = None
-            try:
-                for pedazo in preguntar(historial):
-                    respuesta += pedazo
-                    for frase in frases.agregar(pedazo):
-                        primera = primera or time.monotonic()
-                        locutor.frases.put(frase)
-            except Exception as e:
-                print("[ollama] %s" % e)
-                if not respuesta:
-                    respuesta = "Perdón, tuve un problema para pensar la respuesta."
-                    frases.agregar(respuesta)
-            for frase in frases.terminar():
-                primera = primera or time.monotonic()
-                locutor.frases.put(frase)
-            print("Cubo: %s  (1a frase en %.1f s)"
-                  % (respuesta.strip(), (primera or time.monotonic()) - t1))
-            historial.append({"role": "assistant", "content": respuesta})
+            respuesta = responder(texto, historial, motor, locutor)
+            historial += [{"role": "user", "content": texto},
+                          {"role": "assistant", "content": respuesta}]
             historial = historial[-config.MAX_HISTORIAL:]
 
             locutor.frases.join()       # espera a que todas las frases tengan audio
             rep.esperar()
-            time.sleep(0.3)             # deja apagar el eco de la sala
-            mic.vaciar()
-    except KeyboardInterrupt:
+            if mic is not None:
+                time.sleep(0.3)         # deja apagar el eco de la sala
+                mic.vaciar()
+    except (KeyboardInterrupt, EOFError):
         print()
     finally:
+        motor.detener()
         anim.detener()
         rep.cerrar()
-        mic.cerrar()
+        if mic is not None:
+            mic.cerrar()
         cubo.cerrar()
 
 
