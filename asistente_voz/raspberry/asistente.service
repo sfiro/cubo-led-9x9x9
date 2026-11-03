@@ -1,0 +1,19 @@
+# Arranca el asistente al encender la Raspberry Pi.
+# Cambia "pi" por tu usuario y la ruta si clonaste el repo en otro lugar.
+# Instalacion: ver la seccion "Arranque automatico" del README.
+
+[Unit]
+Description=Asistente de voz con cubo LED
+After=network-online.target sound.target ollama.service
+Wants=ollama.service
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/cubo-led-9x9x9/asistente_voz/raspberry
+ExecStart=/home/pi/cubo-led-9x9x9/asistente_voz/raspberry/.venv/bin/python asistente.py
+Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

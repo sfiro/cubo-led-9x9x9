@@ -11,6 +11,9 @@ con MicroPython, sin cambiar el hardware del cubo.
   Las instrucciones de conexión e instalación están en [pico_w/LEEME.md](pico_w/LEEME.md).
 - **[simulador/](simulador/)**: simulador 3D en el navegador que ejecuta las mismas animaciones
   de la Pico, con editor para probar animaciones nuevas. Ver [simulador/LEEME.md](simulador/LEEME.md).
+- **[asistente_voz/](asistente_voz/)**: proyecto aparte. Un asistente de voz local en una
+  Raspberry Pi 5, con el cubo como interfaz: se ilumina al ritmo de la voz. Ver
+  [asistente_voz/README.md](asistente_voz/README.md).
 - **[model.md](model.md)**: cómo funciona el sistema completo (hardware, cadena de bits,
   coordenadas, multiplexado y software). Conviene leerlo antes de modificar el driver.
 
@@ -40,6 +43,7 @@ Esquemáticos (Fritzing):
 | Carpeta | Plataforma | Contenido |
 |---|---|---|
 | `pico_w/` | Pico W, MicroPython | **Versión actual**: driver con PIO+DMA, 34 animaciones, página web |
+| `asistente_voz/` | Raspberry Pi 5 + Pico | Asistente de voz local: la Pi escucha, piensa y habla, y la Pico muestra la voz en el cubo |
 | `simulador/` | Navegador | Simulador 3D (Three.js + MicroPython WebAssembly) y editor de animaciones |
 | `prueba_cubo_funcionLED_4/` | Arduino Mega | Última versión de Arduino para el 9×9×9, con unas 30 animaciones. Es la referencia del port |
 | `cuboLEDeeprom/` | Arduino Mega | Variante para un cubo de 10×10×10, que cambia de animación en cada reinicio usando la EEPROM |

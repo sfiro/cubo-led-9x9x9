@@ -1,0 +1,9 @@
+# Fases 1 y 2 (tambien en la Mac): numpy, sounddevice y pyserial (+ piper-tts para la fase 2)
+numpy
+sounddevice
+pyserial
+piper-tts
+# Fase 3
+faster-whisper
+# Opcional, solo con ACTIVACION = "palabra" en config.py:
+# openwakeword

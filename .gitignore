@@ -3,6 +3,14 @@
 
 # Configuracion local con la clave del WiFi (la plantilla es pico_w/config_ejemplo.py)
 pico_w/config.py
+asistente_voz/raspberry/config.py
+
+# Asistente de voz: entorno de Python, voces de Piper y audios de prueba
+asistente_voz/raspberry/.venv/
+asistente_voz/raspberry/voces/
+asistente_voz/raspberry/*.wav
+asistente_voz/raspberry/*.log
+asistente_voz/raspberry/respaldo_pico/
 
 # Fotos del armado (~210 MB). Se dejan fuera del repo para no inflar el historial.
 imagenes cubo led/
