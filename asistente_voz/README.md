@@ -5,7 +5,10 @@ El cubo de 9×9×9 es su cara: se ilumina al ritmo de la voz cuando el asistente
 muestra otra animación mientras escucha y mientras piensa. Desde la v2 también se le pueden
 pedir con la voz las 34 animaciones del cubo ("pon la lluvia", "¿qué hora es?", "para").
 
-**Versión actual: 2.0.** Lo que trae cada versión y cómo volver a una anterior está en
+Desde la v3 el cubo tiene 16 niveles de brillo: bordes suaves, estela en las animaciones y
+brillo por voz ("baja el brillo").
+
+**Versión actual: 3.0.** Lo que trae cada versión y cómo volver a una anterior está en
 [versiones/](versiones/README.md).
 
 ```
@@ -325,6 +328,9 @@ Lo demás es conversación normal. Cuando el asistente escucha o habla, el cubo 
 después vuelve a la animación. La lista completa de comandos y de nombres está en
 [versiones/v2.md](versiones/v2.md).
 
+Desde la v3 también se puede cambiar el brillo: "baja el brillo", "sube el brillo", "brillo al
+máximo", "pon el brillo al 40 %". Ver [versiones/v3.md](versiones/v3.md).
+
 Para probar los comandos y el modelo sin hablar:
 ```bash
 python asistente.py --escribir
@@ -395,6 +401,4 @@ journalctl --user -u asistente -f
 ## Ideas para seguir
 - Control de velocidad y duración de las animaciones ("más rápido", "por 5 minutos").
 - Interrumpir al asistente mientras habla (necesita cancelación de eco).
-- Niveles de brillo en el cubo, para que las ondas se desvanezcan suavemente.
-- Que el modelo pueda elegir animaciones o mostrar texto ("muéstrame la hora").
 - Una palabra de activación entrenada en español.

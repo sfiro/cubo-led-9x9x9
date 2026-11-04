@@ -82,7 +82,8 @@ Luego abre <http://localhost:8765/simulador/>. También se puede publicar con Gi
 
 ## Ideas pendientes
 
-- Niveles de brillo por LED (BAM) en el driver de la Pico.
+- Usar los niveles de brillo (BAM, ya en `pico_w/cubo.py` con `Cubo(bits=4)`) también en las
+  animaciones de la Pico sola. Hoy los usa el asistente de voz.
 - Portar las animaciones del Arduino que faltan: `folder`, `sinwaveTwo`, `rotacion` y
   `wipe_out`, entre otras.
 - Juegos interactivos desde el celular (por ejemplo, la serpiente 3D).

@@ -87,7 +87,7 @@ def etapa2(freq):
     cuadro = array.array("I", [0] * 36)
     for n in range(9):
         cuadro[n * 4 + 3] = 1000
-    cubo._empaquetar(vox, cuadro, cubo._TABLA)
+    cubo._empaquetar(vox, cuadro, cubo._TABLA, 1)
     sm = rp2.StateMachine(0, cubo._pio_cubo, freq=freq, out_base=Pin(config.PIN_DATOS),
                           sideset_base=Pin(config.PIN_RELOJ), set_base=Pin(config.PIN_LATCH))
     sm.active(1)

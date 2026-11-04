@@ -12,10 +12,17 @@
 # Asi el cubo no parpadea aunque Python este ocupado, recolectando basura
 # o atendiendo el WiFi.
 #
+# Niveles de brillo (opcional, bits=2..4): BAM (Bit Angle Modulation). Cada
+# piso se muestra en "bits" pasadas; la pasada b dura 2**b veces la primera y
+# enciende los LEDs que tienen el bit b de su nivel en 1. Con bits=4 hay 16
+# niveles (0..15). Con bits=1 (lo normal) es encendido/apagado, como siempre.
+#
 # Uso:
 #   c = Cubo()
 #   c.led(z, y, x, 1)      # z = piso, y = fila, x = columna (0..8)
 #   c.mostrar()            # publica lo dibujado (doble buffer, sin parpadeo)
+#   c = Cubo(bits=4)
+#   c.brillo(z, y, x, 7)   # nivel 0..15 (c.maximo)
 
 import array
 import sys
@@ -30,8 +37,10 @@ from micropython import const
 TAM = const(9)
 LEDS_PISO = const(81)
 TOTAL = const(729)
-_PALABRAS_CUADRO = const(36)            # 9 pisos x (3 palabras de datos + 1 de espera)
-_BYTES_CUADRO = const(144)
+_PALABRAS_PASADA = const(4)             # 3 palabras de datos + 1 de espera
+# Ciclos del PIO para sacar los 96 bits y dar el LATCH (ver _pio_cubo): mientras
+# tanto sigue encendida la pasada anterior, asi que se descuentan de su espera.
+_CICLOS_CARGA = const(204)
 
 _DMA_BASE = const(0x50000000)
 # Algunos registros cambian de lugar en la RP2350 (Pico 2 y clones)
@@ -81,43 +90,61 @@ def _pio_cubo():
 
 
 @micropython.viper
-def _empaquetar(vox: ptr8, cuadro: ptr32, tabla: ptr8):
-    # Convierte los 729 voxeles (1 byte cada uno) en las palabras que lee el PIO.
-    # La 4a palabra de cada piso (la espera) no se toca.
+def _empaquetar(vox: ptr8, cuadro: ptr32, tabla: ptr8, bits: int):
+    # Convierte los 729 voxeles (1 byte = nivel de brillo) en las palabras que
+    # lee el PIO: por piso, una pasada por cada bit del nivel. El catodo del
+    # piso va en todas las pasadas. La 4a palabra (la espera) no se toca.
     for n in range(9):
-        b = n * 4
-        cuadro[b] = 0
-        cuadro[b + 1] = 0
-        cuadro[b + 2] = 0
         base = n * 81
-        for p in range(81):
-            if vox[base + p]:
-                s = tabla[p]
-                i = b + (s >> 5)
-                cuadro[i] = cuadro[i] | (1 << (31 - (s & 31)))
-        s = tabla[81 + n]
-        i = b + (s >> 5)
-        cuadro[i] = cuadro[i] | (1 << (31 - (s & 31)))
+        for k in range(bits):
+            b = (n * bits + k) * 4
+            cuadro[b] = 0
+            cuadro[b + 1] = 0
+            cuadro[b + 2] = 0
+            for p in range(81):
+                if (vox[base + p] >> k) & 1:
+                    s = tabla[p]
+                    i = b + (s >> 5)
+                    cuadro[i] = cuadro[i] | (1 << (31 - (s & 31)))
+            s = tabla[81 + n]
+            i = b + (s >> 5)
+            cuadro[i] = cuadro[i] | (1 << (31 - (s & 31)))
 
 
 class Cubo:
     def __init__(self, pin_datos=2, pin_reloj=3, pin_latch=4,
-                 freq_pio=5_000_000, espera=1000, sm_id=0):
+                 freq_pio=5_000_000, espera=1000, sm_id=0, bits=1, base_us=60):
         # freq_pio: cada bit toma 2 ciclos -> 5 MHz da 2.5 MHz en CLOCK.
         #   Si aparecen LEDs locos (senal de 3.3 V debil), bajarla a 1_000_000.
-        # espera: ciclos del PIO que cada piso queda encendido despues de
-        #   cargarse (1000 a 5 MHz = 200 us -> ~460 cuadros por segundo).
+        # espera: con bits=1, ciclos del PIO que cada piso queda encendido despues
+        #   de cargarse (1000 a 5 MHz = 200 us -> ~460 cuadros por segundo).
+        # bits: 1 = encendido/apagado; 2, 3 o 4 = 4, 8 o 16 niveles de brillo.
+        # base_us: con bits >= 2, lo que dura la pasada mas corta. Con 4 bits y
+        #   60 us, cada piso toma 15 x 60 = 900 us -> ~120 cuadros por segundo.
+        #   No puede ser menor que la carga de los 96 bits (~40 us a 5 MHz).
+        if not 1 <= bits <= 4:
+            raise ValueError("bits debe ser 1, 2, 3 o 4")
+        self.bits = bits
+        self.maximo = (1 << bits) - 1
         self.vox = bytearray(TOTAL)
         self._ceros = bytes(TOTAL)
-        self._unos = b"\x01" * TOTAL
+        self._unos = bytes([self.maximo]) * TOTAL
         self._args_sm = (sm_id, _pio_cubo, freq_pio, pin_datos, pin_reloj, pin_latch)
 
-        self._cuadros = (array.array("I", [0] * _PALABRAS_CUADRO),
-                         array.array("I", [0] * _PALABRAS_CUADRO))
+        if bits == 1:
+            esperas = (espera,)
+        else:
+            corta = max(base_us * freq_pio // 1_000_000, _CICLOS_CARGA + 20)
+            esperas = [(corta << k) - _CICLOS_CARGA for k in range(bits)]
+        self._palabras = TAM * bits * _PALABRAS_PASADA
+        self._bytes = self._palabras * 4
+        self._cuadros = (array.array("I", [0] * self._palabras),
+                         array.array("I", [0] * self._palabras))
         for cuadro in self._cuadros:
             for n in range(TAM):
-                cuadro[n * 4 + 3] = espera
-            _empaquetar(self.vox, cuadro, _TABLA)
+                for k in range(bits):
+                    cuadro[(n * bits + k) * 4 + 3] = esperas[k]
+            _empaquetar(self.vox, cuadro, _TABLA, bits)
         self._atras = 1
         self._dir = array.array("I", [uctypes.addressof(self._cuadros[0])])
 
@@ -144,7 +171,7 @@ class Cubo:
 
         # Canal de datos: cuadro -> FIFO del PIO; al terminar dispara al de control.
         self._dma_datos.config(
-            read=self._dir[0], write=fifo_tx, count=_PALABRAS_CUADRO,
+            read=self._dir[0], write=fifo_tx, count=self._palabras,
             ctrl=self._dma_datos.pack_ctrl(size=2, inc_read=True, inc_write=False,
                                            treq_sel=dreq, chain_to=self._dma_ctrl.channel),
             trigger=False)
@@ -167,7 +194,12 @@ class Cubo:
     def led(self, z, y, x, v=1):
         # Coordenadas fuera del cubo se ignoran (antes se pegaban a los bordes).
         if 0 <= z < TAM and 0 <= y < TAM and 0 <= x < TAM:
-            self.vox[z * 81 + y * 9 + x] = 1 if v else 0
+            self.vox[z * 81 + y * 9 + x] = self.maximo if v else 0
+
+    def brillo(self, z, y, x, nivel):
+        # nivel 0..self.maximo (con bits=1, 0 o 1)
+        if 0 <= z < TAM and 0 <= y < TAM and 0 <= x < TAM:
+            self.vox[z * 81 + y * 9 + x] = max(0, min(self.maximo, int(nivel)))
 
     def leer(self, z, y, x):
         if 0 <= z < TAM and 0 <= y < TAM and 0 <= x < TAM:
@@ -198,10 +230,10 @@ class Cubo:
         ini = uctypes.addressof(atras)
         t = time.ticks_ms()
         # Si el DMA todavia esta leyendo este buffer, esperar (maximo un cuadro).
-        while (ini <= mem32[self._reg_lectura] <= ini + _BYTES_CUADRO
+        while (ini <= mem32[self._reg_lectura] <= ini + self._bytes
                and time.ticks_diff(time.ticks_ms(), t) < 20):
             pass
-        _empaquetar(self.vox, atras, _TABLA)
+        _empaquetar(self.vox, atras, _TABLA, self.bits)
         self._dir[0] = ini
         self._atras ^= 1
 

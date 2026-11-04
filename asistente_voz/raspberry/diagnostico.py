@@ -56,6 +56,18 @@ def cubo():
         time.sleep(0.15)
     c.mostrar(np.ones((9, 9, 9), bool))
     time.sleep(0.5)
+    if c.bits > 1:
+        # v3: cada piso con un brillo distinto, del 1 (abajo) al 15 (arriba)
+        print("  La Pico tiene %d niveles de brillo: ahora cada piso brilla distinto, "
+              "mas tenue abajo y mas fuerte arriba" % (1 << c.bits))
+        niveles = np.zeros((9, 9, 9), np.uint8)
+        for z in range(9):
+            niveles[z] = round(1 + 14 * z / 8)
+        c.mostrar(niveles)
+        time.sleep(2)
+    else:
+        print("  AVISO: la Pico no tiene niveles de brillo (firmware de la v1 o v2). "
+              "Cargale el nuevo con ./cargar_pico.sh")
     c.apagar()
     return c
 
@@ -68,8 +80,10 @@ def animaciones(c):
     for nombre in NOMBRES:
         motor.iniciar(nombre)
         maximo = 0
-        fin = time.monotonic() + (2.0 if nombre == "lluvia" else 0.3)
-        while time.monotonic() < fin:
+        inicio = time.monotonic()
+        minimo = 2.0 if nombre == "lluvia" else 0.3
+        # algunas (disparos) tardan un poco en encender el primer LED: hasta 2 s
+        while time.monotonic() - inicio < (minimo if maximo else max(minimo, 2.0)):
             cuadro = motor.cuadro()
             maximo = max(maximo, int(cuadro.sum()))
             if c is not None:

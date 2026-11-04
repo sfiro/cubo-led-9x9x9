@@ -52,7 +52,8 @@ importa):
 |---|---|---|
 | `F` + 184 dígitos hexadecimales | Un cuadro: 92 bytes = 736 bits, se usan los primeros 729 | Ninguna |
 | `A` | Apagar todo y no mostrar la animación de espera | Ninguna |
-| `?` | Pregunta quién es | `CUBO9 <versión>` |
+| `G` + 730 dígitos hexadecimales (v3) | Un cuadro con brillo: 365 bytes, 4 bits por LED (niveles 0..15) | Ninguna |
+| `?` | Pregunta quién es | `CUBO9 <versión> <bits>` (el firmware de la v1 responde solo `CUBO9 1`) |
 
 **Orden de los bits**: el bit `b` (0 = el menos significativo) del byte `k` es el LED
 `i = 8k + b`, con `i = z*81 + y*9 + x`, las mismas coordenadas de la sección 3 del
@@ -220,8 +221,11 @@ texto ─► comandos.interpretar ──sí──► Accion ─► MotorAnimacio
 - **Half duplex**: el micrófono se ignora mientras el asistente habla. Para poder interrumpirlo
   hace falta cancelación de eco (un altavoz de conferencias, o el módulo AEC de
   PipeWire/WebRTC).
-- **Sin niveles de brillo**: el driver de la Pico es de 1 bit por LED. Con BAM las ondas podrían
-  desvanecerse; el protocolo tendría que enviar más bits por LED.
+- **Niveles de brillo (v3)**: 16 niveles con BAM en el driver de la Pico, a 123 Hz. El cálculo
+  de las pasadas, la gamma, la estela y el protocolo `G` están en
+  [versiones/v3.md](versiones/v3.md#cómo-funciona-bam). Si la Pico tiene el firmware de la v1,
+  la Pi le envía cuadros `F` y los bordes suaves se cortan a la mitad, con las mismas formas de
+  la v2.
 - **Un solo cliente**: el puerto serie lo abre un programa a la vez. `reproducir.py`, `decir.py`
   y `asistente.py` no pueden correr juntos, ni con Thonny abierto.
 - **Configuración**: `config.py` es local y no se sube al repo. Si falta, se usa

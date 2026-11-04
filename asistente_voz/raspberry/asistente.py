@@ -6,6 +6,8 @@
 # v2: ademas se pueden elegir las animaciones con la voz ("pon la lluvia",
 # "para", "escribe HOLA"), sin dejar de conversar con el modelo. Ver
 # ../versiones/v2.md.
+# v3: niveles de brillo en el cubo (bordes suaves, estela en las animaciones)
+# y brillo por voz ("baja el brillo"). Ver ../versiones/v3.md.
 #
 # Un turno a la vez: mientras el cubo habla, el microfono se ignora para que
 # no se escuche a si mismo. Ctrl-C para salir.
@@ -34,7 +36,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz
 
-VERSION = "2.0"
+VERSION = "3.0"
 SR_WHISPER = 16000
 
 
@@ -137,10 +139,16 @@ class Locutor(threading.Thread):
 # ---- programa principal -----------------------------------------------------
 
 
-def ejecutar(accion, motor):
+def ejecutar(accion, motor, anim):
     if accion.tipo == "parar":
         motor.detener()
         print("      [cubo] animacion detenida")
+    elif accion.tipo == "brillo":
+        anim.brillo = comandos.nuevo_brillo(anim.brillo, accion.valor)
+        print("      [cubo] brillo al %d %%" % comandos.porcentaje(anim.brillo))
+        if getattr(anim.cubo, "bits", 1) == 1:
+            print("      AVISO: la Pico no tiene niveles de brillo. Carga el firmware nuevo "
+                  "con ./cargar_pico.sh")
     else:
         motor.iniciar(accion.nombre, accion.mensaje)
         print("      [cubo] %s%s" % (accion.nombre,
@@ -157,13 +165,13 @@ def entender(whisper, audio):
     return texto
 
 
-def responder(texto, historial, motor, locutor):
+def responder(texto, historial, motor, locutor, anim):
     # Comando directo o pregunta al modelo. Devuelve la respuesta, con sus
     # etiquetas, para guardarla en el historial.
     accion = comandos.interpretar(texto) if getattr(config, "COMANDOS_DIRECTOS", True) else None
     if accion is not None:
         print("Cubo: %s  (comando directo)" % accion.respuesta)
-        ejecutar(accion, motor)
+        ejecutar(accion, motor, anim)
         locutor.frases.put(accion.respuesta)
         return accion.respuesta + " " + accion.etiqueta()
 
@@ -171,7 +179,7 @@ def responder(texto, historial, motor, locutor):
     frases = Frases()
     respuesta = ""
     primera = None
-    extra = comandos.instrucciones_cubo(motor.actual, motor.mensaje)
+    extra = comandos.instrucciones_cubo(motor.actual, motor.mensaje, anim.brillo)
     try:
         for pedazo in preguntar(historial + [{"role": "user", "content": texto}], extra):
             respuesta += pedazo
@@ -190,7 +198,7 @@ def responder(texto, historial, motor, locutor):
     for tipo, valor in frases.etiquetas:
         accion = comandos.de_etiqueta(tipo, valor)
         if accion is not None:
-            ejecutar(accion, motor)
+            ejecutar(accion, motor, anim)
         else:
             print("      [cubo] etiqueta ignorada: %s %s" % (tipo, valor or ""))
     return respuesta.strip()
@@ -220,12 +228,16 @@ def principal():
     if args.sin_cubo:
         cubo = abrir_cubo("silencio" if args.escribir else "consola")
     else:
-        cubo = abrir_cubo(config.PUERTO_CUBO)
+        cubo = abrir_cubo(config.PUERTO_CUBO, getattr(config, "GAMMA_BRILLO", 2.2))
+        print("Pico en %s, con %s" % (cubo.puerto, "16 niveles de brillo" if cubo.bits == 4 else
+                                      "%d niveles de brillo" % (1 << cubo.bits) if cubo.bits > 1 else
+                                      "encendido/apagado (firmware viejo: corre ./cargar_pico.sh)"))
     rep = Reproductor(config.PARLANTE, config.AJUSTE_SINCRONIA_S)
     mic = None if args.escribir else Microfono(config.MICROFONO)
     anim = Animador(cubo, rep, mic, modo=config.ANIMACION_HABLANDO,
                     fps=config.CUADROS_POR_SEGUNDO, motor=motor,
-                    voz_sobre_animacion=getattr(config, "VOZ_SOBRE_ANIMACION", True))
+                    voz_sobre_animacion=getattr(config, "VOZ_SOBRE_ANIMACION", True),
+                    brillo=getattr(config, "BRILLO", 1.0), estela_ms=getattr(config, "ESTELA_MS", 150))
     locutor = Locutor(voz, rep)
     anim.start()
     locutor.start()
@@ -265,7 +277,7 @@ def principal():
                 continue
 
             anim.estado = "pensando"
-            respuesta = responder(texto, historial, motor, locutor)
+            respuesta = responder(texto, historial, motor, locutor, anim)
             historial += [{"role": "user", "content": texto},
                           {"role": "assistant", "content": respuesta}]
             historial = historial[-config.MAX_HISTORIAL:]

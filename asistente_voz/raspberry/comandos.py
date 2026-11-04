@@ -70,7 +70,13 @@ _ESCRIBIR = re.compile(
     r"muestra el mensaje)\s+(?:la palabra |el texto |el mensaje |que diga |esto )?(.+)")
 _HORA = re.compile(r"\b(que hora es|que horas son|dime la hora|me dices la hora|sabes la hora)\b")
 _VERBO = re.compile(r"\b(%s)\b" % _VERBOS)
-_ETIQUETA = re.compile(r"\[\s*(ANIMACI[OÓ]N|TEXTO|PARAR)\s*(?::\s*([^\]]*))?\]", re.I)
+_BRILLO = re.compile(r"\b(brillo|luz|luces|intensidad)\b")
+_BRILLO_MAX = re.compile(r"\b(maximo|maxima|al tope|todo el brillo|a tope)\b")
+_BRILLO_MIN = re.compile(r"\b(minimo|minima)\b")
+_BRILLO_BAJA = re.compile(r"\b(baja|bajale|bajar|bajalo|menos|reduce|disminuye|mas oscuro|mas tenue)\b")
+_BRILLO_SUBE = re.compile(r"\b(sube|subele|subir|subelo|mas|aumenta)\b")
+_NUMERO = re.compile(r"\b(\d{1,3})\b")
+BRILLO_MINIMO = 0.25        # menos que esto y los LEDs quedan en el nivel 0 (apagados)
 
 # Formas de pedirla -> nombre, de la mas larga a la mas corta: "esfera movil"
 # tiene que ganarle a "esfera", y "fuegos artificiales" a "fuegos".
@@ -111,23 +117,61 @@ def texto_para_cubo(texto):
 
 
 class Accion:
-    # tipo: "animacion" (nombre, mensaje opcional) o "parar"
-    def __init__(self, tipo, nombre=None, mensaje=None, respuesta=None):
+    # tipo: "animacion" (nombre, mensaje opcional), "parar" o "brillo" (v3).
+    # El valor del brillo es "+", "-" o un porcentaje 0..100.
+    def __init__(self, tipo, nombre=None, mensaje=None, respuesta=None, valor=None):
         self.tipo = tipo
         self.nombre = nombre
         self.mensaje = mensaje
+        self.valor = valor
         self.respuesta = respuesta      # lo que dice el asistente, si es un comando directo
 
     def etiqueta(self):
         # Como la escribiria el modelo: se guarda en el historial para que aprenda el formato
         if self.tipo == "parar":
             return "[PARAR]"
+        if self.tipo == "brillo":
+            return "[BRILLO: %s]" % self.valor
         if self.mensaje:
             return "[TEXTO: %s]" % self.mensaje.strip()
         return "[ANIMACION: %s]" % self.nombre
 
     def __repr__(self):
+        if self.tipo == "brillo":
+            return "Accion(brillo, %s)" % self.valor
         return "Accion(%s, %s, %r)" % (self.tipo, self.nombre, self.mensaje)
+
+
+def nuevo_brillo(actual, valor):
+    # Brillo 0..1 que queda despues de un pedido ("+", "-" o un porcentaje)
+    if valor == "+":
+        return min(1.0, actual / 0.7)
+    if valor == "-":
+        return max(BRILLO_MINIMO, actual * 0.7)
+    return BRILLO_MINIMO + (1 - BRILLO_MINIMO) * max(0, min(100, int(valor))) / 100
+
+
+def porcentaje(brillo):
+    return int(round((brillo - BRILLO_MINIMO) / (1 - BRILLO_MINIMO) * 100))
+
+
+def _pedido_brillo(t):
+    # "baja el brillo", "brillo al maximo", "pon la luz al 40" -> Accion, o None
+    if not _BRILLO.search(t):
+        return None
+    numero = _NUMERO.search(t)
+    if _BRILLO_MAX.search(t):
+        return Accion("brillo", valor=100, respuesta="Brillo al máximo.")
+    if _BRILLO_MIN.search(t):
+        return Accion("brillo", valor=0, respuesta="Brillo al mínimo.")
+    if numero:
+        valor = min(100, int(numero.group(1)))
+        return Accion("brillo", valor=valor, respuesta="Pongo el brillo al %d por ciento." % valor)
+    if _BRILLO_BAJA.search(t):
+        return Accion("brillo", valor="-", respuesta=random.choice(["Bajo el brillo.", "Listo, más tenue."]))
+    if _BRILLO_SUBE.search(t):
+        return Accion("brillo", valor="+", respuesta=random.choice(["Subo el brillo.", "Listo, más brillo."]))
+    return None
 
 
 def interpretar(texto):
@@ -145,6 +189,9 @@ def interpretar(texto):
                           random.choice(["Listo, lo escribo en el cubo.", "Va, lo escribo."]))
     if _HORA.search(t):
         return Accion("animacion", "reloj", respuesta=hora_hablada() + ".")
+    brillo = _pedido_brillo(t)
+    if brillo is not None:
+        return brillo
     sin_articulo = re.sub(r"^(?:el|la|los|las|un|una|modo) ", "", t)
     if _VERBO.search(t) or sin_articulo in dict(_ALIAS):     # "pon la lluvia" o solo "lluvia"
         nombre = buscar_animacion(t)
@@ -163,6 +210,13 @@ def de_etiqueta(tipo, valor):
     valor = (valor or "").strip()
     if tipo == "parar":
         return Accion("parar")
+    if tipo == "brillo":
+        if valor in ("+", "-"):
+            return Accion("brillo", valor=valor)
+        v = normalizar(valor)
+        if v.isdigit():
+            return Accion("brillo", valor=min(100, int(v)))
+        return _pedido_brillo("brillo " + v)        # "maximo", "bajar"...
     if tipo == "texto" and texto_para_cubo(valor):
         return Accion("animacion", "marquesina", texto_para_cubo(valor) + "   ")
     if tipo == "animacion":
@@ -175,7 +229,7 @@ def de_etiqueta(tipo, valor):
     return None
 
 
-def instrucciones_cubo(actual=None, mensaje=None):
+def instrucciones_cubo(actual=None, mensaje=None, brillo=None):
     # Lo que se agrega a las instrucciones del modelo en cada pregunta
     lista = "\n".join("- %s: %s" % (n, d) for n, (_, d, _) in CATALOGO.items())
     if actual is None:
@@ -184,6 +238,8 @@ def instrucciones_cubo(actual=None, mensaje=None):
         estado = "Ahora el cubo muestra el texto %s." % mensaje.strip()
     else:
         estado = "Ahora el cubo muestra la animación %s." % actual
+    if brillo is not None:
+        estado += " El brillo está al %d por ciento." % porcentaje(brillo)
     ahora = time.localtime()
     dias = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
     meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
@@ -197,6 +253,7 @@ def instrucciones_cubo(actual=None, mensaje=None):
         "o algo de Navidad), responde con una frase corta y escribe al final UNA etiqueta:\n"
         "[ANIMACION: nombre] para poner una animación de la lista,\n"
         "[TEXTO: palabras] para escribir un texto corto en el cubo,\n"
-        "[PARAR] para apagar la animación.\n"
+        "[PARAR] para apagar la animación,\n"
+        "[BRILLO: número de 0 a 100] para cambiar el brillo del cubo.\n"
         "Si solo están conversando, no escribas ninguna etiqueta. Nunca leas ni expliques "
         "las etiquetas. Animaciones disponibles:\n%s\n%s %s" % (lista, estado, fecha))

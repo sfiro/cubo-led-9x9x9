@@ -22,7 +22,8 @@ p.add_argument("--sin-cubo", action="store_true", help="probar sin la Pico conec
 args = p.parse_args()
 
 voz = Voz(config.VOZ_PIPER)
-cubo = abrir_cubo("consola" if args.sin_cubo else config.PUERTO_CUBO)
+cubo = abrir_cubo("consola" if args.sin_cubo else config.PUERTO_CUBO,
+                  getattr(config, "GAMMA_BRILLO", 2.2))
 rep = Reproductor(config.PARLANTE, config.AJUSTE_SINCRONIA_S)
 anim = Animador(cubo, rep, modo=args.modo, fps=config.CUADROS_POR_SEGUNDO)
 anim.start()

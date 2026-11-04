@@ -32,8 +32,9 @@ _FORMATO = re.compile(r"[*#_`>\[\]|~]")
 _EMOJIS = re.compile("[\U00010000-\U0010FFFF\u2600-\u27BF\uFE0F]")
 _PENSAMIENTO = re.compile(r"<think>.*?</think>", re.S)
 _FIN_FRASE = re.compile(r"[.!?…;:\n]+[\"')»]*\s")
-# Etiquetas para el cubo que escribe el modelo (v2): [ANIMACION: lluvia], [PARAR]
-_ETIQUETA = re.compile(r"\[\s*(ANIMACI[OÓ]N|TEXTO|PARAR)\s*(?::\s*([^\]]*))?\]", re.I)
+# Etiquetas para el cubo que escribe el modelo (v2): [ANIMACION: lluvia], [PARAR],
+# y desde la v3 [BRILLO: 50]
+_ETIQUETA = re.compile(r"\[\s*(ANIMACI[OÓ]N|TEXTO|PARAR|BRILLO)\s*(?::\s*([^\]]*))?\]", re.I)
 
 
 def limpiar(texto):

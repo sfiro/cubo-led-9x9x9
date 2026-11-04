@@ -6,10 +6,11 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 
 | Versión | Etiqueta | Fecha | Qué trae |
 |---|---|---|---|
+| [3.0](v3.md) | `asistente-v3.0` | 2026-11-03 | 16 niveles de brillo (BAM): bordes suaves, estela en las animaciones y brillo por voz |
 | [2.0](v2.md) | `asistente-v2.0` | 2026-11-02 | Controlar las animaciones del cubo con la voz, sin dejar de conversar |
 | [1.0](v1.md) | `asistente-v1.0` | 2026-11-02 | Asistente de voz local; el cubo se ilumina al ritmo de la voz |
 
-El programa dice su versión al arrancar (`Asistente de voz v2.0`), y el diagnóstico también.
+El programa dice su versión al arrancar (`Asistente de voz v3.0`), y el diagnóstico también.
 
 ## Volver a una versión anterior
 

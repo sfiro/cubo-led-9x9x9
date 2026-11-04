@@ -14,6 +14,12 @@ COMANDOS_DIRECTOS = True    # "pon la lluvia", "para", "escribe HOLA" sin pasar 
 VOZ_SOBRE_ANIMACION = True  # al escuchar/pensar/hablar se ve la voz, y luego vuelve la animacion.
                             # False: la animacion elegida sigue aunque el asistente hable
 
+# Niveles de brillo (v3). Necesitan el firmware nuevo en la Pico (./cargar_pico.sh)
+BRILLO = 1.0                # brillo al arrancar, 0.25..1 (se cambia con la voz)
+ESTELA_MS = 150             # en las animaciones, lo que se apaga se desvanece en este tiempo.
+                            # 0 = sin estela
+GAMMA_BRILLO = 2.2          # corrige el brillo para que los niveles se vean parejos
+
 # ---- Audio ------------------------------------------------------------------
 # None = el dispositivo predeterminado. Si no, el numero o parte del nombre
 # que muestra "python -m sounddevice"

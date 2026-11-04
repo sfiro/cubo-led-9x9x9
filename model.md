@@ -101,8 +101,18 @@ El CPU no participa en el refresco. Todo lo hacen periféricos:
   el cuadro nuevo cuando termina el actual. Antes de reutilizar un cuadro, se espera a que el
   DMA haya salido de él (leyendo `READ_ADDR`).
 - **Brillo**: el tiempo de espera no cambia el brillo, porque siempre hay un piso encendido.
-  Solo cambia la frecuencia de refresco. Para tener niveles de brillo hace falta BAM: varios
-  cuadros con esperas de 1×, 2×, 4×, … (pendiente).
+  Solo cambia la frecuencia de refresco.
+- **Niveles de brillo (BAM)**, con `Cubo(bits=2..4)`:
+  - Cada piso se muestra en `bits` pasadas. La pasada `b` enciende los LEDs que tienen en 1 el
+    bit `b` de su nivel, y dura `2^b` veces la primera (`base_us`, 60 µs).
+  - El cuadro pasa a tener `9 × bits × 4` palabras, y el programa PIO no cambia.
+  - De cada espera se descuentan los ~204 ciclos de cargar los 96 bits siguientes, porque
+    mientras tanto sigue encendida la pasada anterior. Así el tiempo encendido es exactamente
+    `nivel / (2^bits − 1)` del tiempo del piso.
+  - Con 4 bits a 5 MHz hay 16 niveles, unos 123 Hz.
+  - Con `bits=1` (el predeterminado) el cuadro es idéntico al de siempre.
+  - Lo usa el asistente de voz: ver
+    [asistente_voz/versiones/v3.md](asistente_voz/versiones/v3.md).
 
 ## 5. Software de la Pico W
 
