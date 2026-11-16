@@ -146,6 +146,10 @@ class Reproductor:
     def sonando(self):
         return self._pendiente > 0 or time.monotonic() < self._fin_sonido
 
+    def ocupado(self, margen_s=0.4):
+        # Sonando, o termino hace menos de margen_s (el eco de la sala sigue)
+        return self._pendiente > 0 or time.monotonic() < self._fin_sonido + margen_s
+
     def estado_audio(self):
         # Nivel y bandas del bloque que esta sonando en este momento
         ahora = time.monotonic()

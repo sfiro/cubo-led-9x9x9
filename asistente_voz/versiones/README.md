@@ -6,12 +6,13 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 
 | Versión | Etiqueta | Fecha | Qué trae |
 |---|---|---|---|
+| [4.1](v4.1.md) | `asistente-v4.1` | 2026-11-16 | El modo demo dice el nombre de cada animación antes de mostrarla |
 | [4.0](v4.md) | `asistente-v4.0` | 2026-11-16 | Se despierta con "hola cubo" y queda atento para conversar |
 | [3.0](v3.md) | `asistente-v3.0` | 2026-11-03 | 16 niveles de brillo (BAM): bordes suaves, estela en las animaciones y brillo por voz |
 | [2.0](v2.md) | `asistente-v2.0` | 2026-11-02 | Controlar las animaciones del cubo con la voz, sin dejar de conversar |
 | [1.0](v1.md) | `asistente-v1.0` | 2026-11-02 | Asistente de voz local; el cubo se ilumina al ritmo de la voz |
 
-El programa dice su versión al arrancar (`Asistente de voz v4.0`), y el diagnóstico también.
+El programa dice su versión al arrancar (`Asistente de voz v4.1`), y el diagnóstico también.
 
 ## Volver a una versión anterior
 

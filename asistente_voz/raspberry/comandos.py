@@ -100,6 +100,13 @@ def buscar_animacion(texto):
     return None
 
 
+def nombre_hablado(nombre):
+    # Como se dice una animacion: "lluvia" -> "la lluvia"
+    if nombre in CATALOGO:
+        return CATALOGO[nombre][0]
+    return {"texto": "las letras"}.get(nombre, nombre.replace("_", " "))
+
+
 def hora_hablada(t=None):
     t = time.localtime(t)
     h, m = t.tm_hour % 12 or 12, t.tm_min

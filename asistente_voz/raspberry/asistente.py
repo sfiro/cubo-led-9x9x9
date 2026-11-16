@@ -9,6 +9,7 @@
 # v3: niveles de brillo en el cubo (bordes suaves, estela en las animaciones)
 # y brillo por voz ("baja el brillo"). Ver ../versiones/v3.md.
 # v4: se despierta al oir "hola cubo" y queda atento un rato. Ver ../versiones/v4.md.
+# v4.1: en el modo demo dice el nombre de cada animacion antes de mostrarla.
 #
 # Un turno a la vez: mientras el cubo habla, el microfono se ignora para que
 # no se escuche a si mismo. Ctrl-C para salir.
@@ -39,7 +40,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz
 
-VERSION = "4.0"
+VERSION = "4.1"
 SR_WHISPER = 16000
 
 
@@ -59,10 +60,12 @@ def esperar_palabra(mic, detector):
                 return
 
 
-def escuchar_pregunta(mic, anim, espera_max_s=None, mostrar=True):
+def escuchar_pregunta(mic, anim, espera_max_s=None, mostrar=True, rep=None):
     # Espera a que alguien hable y graba hasta un silencio. Devuelve el audio a
     # 16 kHz (o None si no hubo voz, o fue solo un ruido corto) y el momento en
     # que empezo la voz. mostrar=False: el cubo no reacciona (asistente dormido).
+    # rep (v4.1): mientras el parlante suena (por ejemplo, el nombre de una
+    # animacion del modo demo) lo que entra se descarta, para no escucharse a si mismo.
     mic.vaciar()
     bloque_s = 0.03
     previo = []                     # 0.3 s antes de detectar la voz, para no cortar el inicio
@@ -71,6 +74,11 @@ def escuchar_pregunta(mic, anim, espera_max_s=None, mostrar=True):
     esperado = 0.0
     while True:
         x = mic.cola.get()
+        if rep is not None and rep.ocupado():
+            previo, grabado, silencio = [], [], 0.0
+            if mostrar and anim.estado == "escuchando":
+                anim.estado = "reposo"
+            continue
         hay_voz = float(np.sqrt(np.mean(x * x))) > config.UMBRAL_VOZ
         if not grabado:
             previo = (previo + [x])[-10:]
@@ -244,6 +252,20 @@ def principal():
                     voz_sobre_animacion=getattr(config, "VOZ_SOBRE_ANIMACION", True),
                     brillo=getattr(config, "BRILLO", 1.0), estela_ms=getattr(config, "ESTELA_MS", 150))
     locutor = Locutor(voz, rep)
+
+    turno = threading.Lock()        # para que un anuncio no se meta en medio de una respuesta
+
+    def anunciar(nombre):
+        # Modo demo: dice el nombre de la animacion y espera a que termine de sonar
+        texto = "Ahora, %s." % comandos.nombre_hablado(nombre)
+        with turno:
+            print("      [demo] %s" % texto)
+            locutor.frases.put(texto)
+            locutor.frases.join()
+            rep.esperar()
+
+    if getattr(config, "ANUNCIAR_DEMO", True):
+        motor.al_empezar = anunciar
     anim.start()
     locutor.start()
 
@@ -283,9 +305,9 @@ def principal():
                 if detector:
                     esperar_palabra(mic, detector)
                     anim.estado = "escuchando"
-                    audio, inicio = escuchar_pregunta(mic, anim, espera_max_s=6)
+                    audio, inicio = escuchar_pregunta(mic, anim, espera_max_s=6, rep=rep)
                 else:
-                    audio, inicio = escuchar_pregunta(mic, anim, mostrar=atento)
+                    audio, inicio = escuchar_pregunta(mic, anim, mostrar=atento, rep=rep)
                 if audio is None:
                     continue
                 # Cuenta si estaba atento cuando EMPEZO a hablar, aunque la ventana
@@ -331,13 +353,14 @@ def principal():
                 continue
 
             anim.estado = "pensando"
-            respuesta = responder(texto, historial, motor, locutor, anim)
+            with turno:
+                respuesta = responder(texto, historial, motor, locutor, anim)
+                locutor.frases.join()   # espera a que todas las frases tengan audio
+                rep.esperar()
             historial += [{"role": "user", "content": texto},
                           {"role": "assistant", "content": respuesta}]
             historial = historial[-config.MAX_HISTORIAL:]
 
-            locutor.frases.join()       # espera a que todas las frases tengan audio
-            rep.esperar()
             if mic is not None:
                 time.sleep(0.3)         # deja apagar el eco de la sala
                 mic.vaciar()

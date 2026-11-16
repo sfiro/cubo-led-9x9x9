@@ -104,8 +104,12 @@ class CuboVirtual:
 class MotorAnimaciones:
     # La animacion elegida se repite hasta que se elige otra o se detiene.
     # "demo" las recorre todas.
-    def __init__(self):
+    # al_empezar (v4.1): funcion que se llama en el modo demo antes de cada
+    # animacion, con su nombre. Puede tardar (decir el nombre en voz alta): la
+    # animacion empieza cuando termina. Corre en otro hilo, para no frenar el motor.
+    def __init__(self, al_empezar=None):
         self.cubo = CuboVirtual()
+        self.al_empezar = al_empezar
         self.actual = None              # nombre de la animacion, o None
         self.mensaje = None             # texto de la marquesina, si hay
         self._tarea = None
@@ -135,8 +139,13 @@ class MotorAnimaciones:
     async def _repetir(self, nombre, mensaje):
         while True:
             lista = animaciones.LISTA if nombre == "demo" else [(nombre, animaciones.POR_NOMBRE[nombre])]
-            for _, funcion in lista:
+            for nombre_animacion, funcion in lista:
                 try:
+                    if nombre == "demo" and self.al_empezar is not None:
+                        self.cubo.apagar()
+                        self.cubo.mostrar()
+                        await asyncio.get_running_loop().run_in_executor(
+                            None, self.al_empezar, nombre_animacion)
                     if mensaje:
                         await funcion(self.cubo, mensaje=mensaje)
                     else:

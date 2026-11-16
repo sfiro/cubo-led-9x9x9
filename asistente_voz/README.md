@@ -8,7 +8,7 @@ pedir con la voz las 34 animaciones del cubo ("pon la lluvia", "¿qué hora es?"
 Desde la v3 el cubo tiene 16 niveles de brillo: bordes suaves, estela en las animaciones y
 brillo por voz ("baja el brillo"). Desde la v4 duerme hasta que le dices **"hola cubo"**.
 
-**Versión actual: 4.0.** Lo que trae cada versión y cómo volver a una anterior está en
+**Versión actual: 4.1**: en el modo demo, dice el nombre de cada animación antes de mostrarla. Lo que trae cada versión y cómo volver a una anterior está en
 [versiones/](versiones/README.md).
 
 ```
@@ -321,7 +321,7 @@ Mientras conversas, puedes pedirle animaciones:
 | "Pon la lluvia", "muéstrame los fuegos artificiales", o solo "Matrix" | Pone esa animación. Se repite hasta que pidas otra |
 | "Escribe feliz cumpleaños" | El texto corre por las caras del cubo |
 | "¿Qué hora es?" | Dice la hora y la muestra |
-| "Modo demo" | Recorre las 34 animaciones |
+| "Modo demo" | Recorre las 34 animaciones y dice el nombre de cada una antes (v4.1) |
 | "Para", "detente", "apaga las luces" | Quita la animación |
 | "Pon algo relajante" | El modelo elige una (las olas, por ejemplo) |
 
