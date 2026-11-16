@@ -236,6 +236,25 @@ def saber():
         raise RuntimeError("sin el modelo de embeddings (la busqueda por palabras funciona)")
 
 
+def base_productos():
+    # v5.1: la base de productos importada y la busqueda de precios
+    import conocimiento
+    import productos
+    carpeta = conocimiento.carpeta_conocimiento(getattr(config, "CARPETA_CONOCIMIENTO", None))
+    mensaje = productos.preparar(carpeta)
+    if mensaje:
+        print("  " + mensaje)
+    if not os.path.exists(os.path.join(carpeta, "productos.json")):
+        print("  No hay base de productos: copia el Excel como %s/productos.xlsx" % carpeta)
+        return
+    catalogo = productos.Catalogo(carpeta)
+    print("  %d productos en la base" % len(catalogo.productos))
+    for pregunta in ["¿Cuánto vale un imán?", "¿Tienen llaveros del gato de Tejada?",
+                     "¿Qué tienen de la Ermita?", "¿Tienen camisetas?"]:
+        _, resumen = catalogo.buscar(pregunta)
+        print("  %-38s -> %s" % (pregunta, resumen or "nada"))
+
+
 def ollama():
     from asistente import preguntar
     t = time.monotonic()
@@ -285,6 +304,7 @@ if piper_ok:
     modelo_whisper = probar("Voz a texto (Whisper)", whisper, *piper_ok)
     if modelo_whisper:
         probar("Frase de activacion (v4)", activacion, piper_ok[0], modelo_whisper)
+probar("Base de productos (v5.1)", base_productos)
 probar("Conocimiento (v5)", saber)
 respuesta = probar("Modelo de lenguaje (Ollama)", ollama)
 if respuesta:

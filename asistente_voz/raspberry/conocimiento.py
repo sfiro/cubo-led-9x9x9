@@ -24,7 +24,7 @@ import numpy as np
 from comandos import normalizar
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-ESPECIALES = {"preguntas_frecuentes.md", "personalidad.md", "leeme.md", "readme.md"}
+ESPECIALES = {"preguntas_frecuentes.md", "personalidad.md", "nombres_productos.md", "leeme.md", "readme.md"}
 MAX_CARACTERES = 900        # una seccion mas larga se parte por parrafos
 _CACHE = os.path.join(AQUI, ".cache_conocimiento.json")
 _PALABRAS_VACIAS = set(
@@ -36,7 +36,10 @@ REGLAS = (
     "\n\nPara datos de la tienda (horarios, precios, productos, dirección, pagos, envíos) y de "
     "Cali (lugares, eventos, comida, transporte) usa SOLO la información que viene con la "
     "pregunta. Si la respuesta no está ahí, di con naturalidad que no tienes ese dato y sugiere "
-    "preguntar en caja. Nunca inventes precios, horarios, direcciones ni fechas.")
+    "preguntar en caja. Nunca inventes precios, horarios, direcciones ni fechas. "
+    "Para los productos usa solo los de la lista \"Productos de la tienda\", con su precio "
+    "exacto; si son muchos, menciona dos o tres y el rango de precios. No sabes si quedan "
+    "unidades: para eso, que pregunten en caja. No des precios al por mayor.")
 
 
 def carpeta_conocimiento(ruta=None):

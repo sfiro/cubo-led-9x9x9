@@ -2,6 +2,7 @@
 numpy
 sounddevice
 pyserial
+openpyxl        # v5.1: leer la base de productos (productos.xlsx)
 piper-tts
 # Fase 3
 faster-whisper

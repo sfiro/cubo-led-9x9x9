@@ -13,6 +13,8 @@
 # v5: responde con la informacion de ../conocimiento/ (la tienda y Cali): busca
 # los fragmentos que sirven para cada pregunta (RAG) y contesta al instante las
 # preguntas frecuentes. Ver ../versiones/v5.md.
+# v5.1: busca en la base de productos (productos.xlsx) los que nombra el cliente,
+# con su precio real. Ver ../versiones/v5.1.md.
 #
 # Un turno a la vez: mientras el cubo habla, el microfono se ignora para que
 # no se escuche a si mismo. Ctrl-C para salir.
@@ -38,6 +40,7 @@ except ImportError:
     import config_ejemplo as config
 import comandos
 import conocimiento
+import productos
 from activacion import Vigilia, buscar_frase, es_despedida
 from animaciones_pi import MotorAnimaciones
 from audio import Microfono, Reproductor, remuestrear
@@ -45,11 +48,12 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.0"
+VERSION = "5.1"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
 SABER = None
+CATALOGO = None             # v5.1: productos.Catalogo
 SR_WHISPER = 16000
 
 
@@ -215,6 +219,11 @@ def responder(texto, historial, motor, locutor, anim):
             print("[conocimiento] %s" % e)
             contexto, fuentes = "", []
         print("      [docs] %s" % (", ".join(fuentes) or "nada que sirva"))
+        if CATALOGO is not None:
+            encontrados, resumen = CATALOGO.buscar(texto)
+            if encontrados:
+                print("      [productos] %s" % resumen)
+                contexto = (encontrados + "\n" + contexto).strip()
         if contexto:
             # Los documentos van con la pregunta y no en las instrucciones: asi las
             # instrucciones no cambian y Ollama reusa lo que ya leyo de ellas
@@ -270,9 +279,20 @@ def principal():
     voz = Voz(config.VOZ_PIPER)
     motor = MotorAnimaciones()
 
-    global INSTRUCCIONES, SABER
+    global INSTRUCCIONES, SABER, CATALOGO
     carpeta = conocimiento.carpeta_conocimiento(getattr(config, "CARPETA_CONOCIMIENTO", None))
     if getattr(config, "USAR_CONOCIMIENTO", True) and carpeta:
+        # v5.1: si hay una base de productos nueva, se importa antes de leer los documentos,
+        # porque genera catalogo.md
+        try:
+            mensaje = productos.preparar(carpeta)
+            if mensaje:
+                print(mensaje)
+            if os.path.exists(os.path.join(carpeta, "productos.json")):
+                CATALOGO = productos.Catalogo(carpeta)
+                print("Productos: %d en la base" % len(CATALOGO.productos))
+        except Exception as e:
+            print("AVISO: no pude leer la base de productos: %s" % e)
         INSTRUCCIONES = (conocimiento.cargar_personalidad(carpeta) or config.INSTRUCCIONES) \
             + conocimiento.REGLAS
         SABER = conocimiento.Conocimiento(

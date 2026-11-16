@@ -56,6 +56,15 @@ ollama pull "$EMBEDDINGS"
 if [ ! -d ../conocimiento ]; then
     cp -r ../conocimiento_ejemplo ../conocimiento
     echo "../conocimiento creado desde la plantilla: llena negocio.md y revisa cali.md"
+else
+    # Plantillas nuevas de versiones posteriores (nombres_productos.md en la v5.1),
+    # sin tocar los archivos que ya llenaste
+    for f in ../conocimiento_ejemplo/*; do
+        if [ ! -e "../conocimiento/$(basename "$f")" ]; then
+            cp "$f" ../conocimiento/
+            echo "Agregado a ../conocimiento: $(basename "$f")"
+        fi
+    done
 fi
 
 echo "== 6/7 Permisos para el USB y el audio =="
