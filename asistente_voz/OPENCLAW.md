@@ -60,7 +60,7 @@ OpenClaw:
 Hay una versión nueva del asistente de voz del cubo LED. En ~/cubo-led-9x9x9:
 1. Detén el asistente si está corriendo (pkill -f asistente.py) y actualiza con git pull.
 2. Lee asistente_voz/versiones/README.md y el documento de la versión nueva (por ejemplo, asistente_voz/versiones/v2.md), y dime en dos líneas qué trae.
-3. Si ese documento dice que hay que reinstalar algo o volver a cargar la Pico, hazlo con instalar.sh o cargar_pico.sh.
+3. Si ese documento dice que hay que reinstalar algo, volver a cargar la Pico o cambiar algo en config.py (por ejemplo, ACTIVACION), hazlo: con instalar.sh, cargar_pico.sh o editando asistente_voz/raspberry/config.py.
 4. cd asistente_voz/raspberry y corre .venv/bin/python diagnostico.py. Muéstrame el resumen completo.
 5. Si todo sale OK, lanza el asistente en segundo plano como antes: nohup .venv/bin/python -u asistente.py > asistente.log 2>&1 &. Avísame para que lo pruebe, y muéstrame las líneas "Tu:", "Cubo:" y "[cubo]" del log.
 Las mismas reglas de antes: no modifiques el repositorio, solo config.py, y pregúntame antes de reiniciar.

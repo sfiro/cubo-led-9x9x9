@@ -8,6 +8,7 @@
 # ../versiones/v2.md.
 # v3: niveles de brillo en el cubo (bordes suaves, estela en las animaciones)
 # y brillo por voz ("baja el brillo"). Ver ../versiones/v3.md.
+# v4: se despierta al oir "hola cubo" y queda atento un rato. Ver ../versiones/v4.md.
 #
 # Un turno a la vez: mientras el cubo habla, el microfono se ignora para que
 # no se escuche a si mismo. Ctrl-C para salir.
@@ -18,6 +19,7 @@
 
 import argparse
 import json
+import random
 import queue
 import threading
 import time
@@ -30,13 +32,14 @@ try:
 except ImportError:
     import config_ejemplo as config
 import comandos
+from activacion import Vigilia, buscar_frase, es_despedida
 from animaciones_pi import MotorAnimaciones
 from audio import Microfono, Reproductor, remuestrear
 from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz
 
-VERSION = "3.0"
+VERSION = "4.0"
 SR_WHISPER = 16000
 
 
@@ -56,9 +59,10 @@ def esperar_palabra(mic, detector):
                 return
 
 
-def escuchar_pregunta(mic, anim, espera_max_s=None):
+def escuchar_pregunta(mic, anim, espera_max_s=None, mostrar=True):
     # Espera a que alguien hable y graba hasta un silencio. Devuelve el audio a
-    # 16 kHz, o None si no hubo voz (o fue solo un ruido corto).
+    # 16 kHz (o None si no hubo voz, o fue solo un ruido corto) y el momento en
+    # que empezo la voz. mostrar=False: el cubo no reacciona (asistente dormido).
     mic.vaciar()
     bloque_s = 0.03
     previo = []                     # 0.3 s antes de detectar la voz, para no cortar el inicio
@@ -73,9 +77,11 @@ def escuchar_pregunta(mic, anim, espera_max_s=None):
             esperado += bloque_s
             if hay_voz:
                 grabado = previo
-                anim.estado = "escuchando"
+                inicio = time.monotonic()
+                if mostrar:
+                    anim.estado = "escuchando"
             elif espera_max_s and esperado > espera_max_s:
-                return None
+                return None, None
             continue
         grabado.append(x)
         silencio = 0.0 if hay_voz else silencio + len(x) / mic.sr
@@ -83,8 +89,8 @@ def escuchar_pregunta(mic, anim, espera_max_s=None):
         if silencio >= config.SILENCIO_FIN_S or duracion >= config.MAX_PREGUNTA_S:
             break
     if duracion - silencio < 0.4:
-        return None
-    return remuestrear(np.concatenate(grabado), mic.sr, SR_WHISPER)
+        return None, inicio
+    return remuestrear(np.concatenate(grabado), mic.sr, SR_WHISPER), inicio
 
 
 # ---- pensar -----------------------------------------------------------------
@@ -155,14 +161,13 @@ def ejecutar(accion, motor, anim):
                                    " '%s'" % accion.mensaje.strip() if accion.mensaje else ""))
 
 
-def entender(whisper, audio):
+def entender(whisper, audio, guia=None):
+    # Devuelve (texto, segundos que tardo). guia (v4): texto que Whisper toma como
+    # contexto previo, para que escriba bien la frase de activacion.
     t = time.monotonic()
     segmentos, _ = whisper.transcribe(audio, language=config.IDIOMA, beam_size=1,
-                                      vad_filter=True)
-    texto = " ".join(s.text.strip() for s in segmentos).strip()
-    if len(texto) >= 2:
-        print("\nTu:   %s  (%.1f s)" % (texto, time.monotonic() - t))
-    return texto
+                                      vad_filter=True, initial_prompt=guia)
+    return " ".join(s.text.strip() for s in segmentos).strip(), time.monotonic() - t
 
 
 def responder(texto, historial, motor, locutor, anim):
@@ -250,8 +255,18 @@ def principal():
         print("No pude hablar con Ollama en %s: %s" % (config.OLLAMA_URL, e))
         raise SystemExit(1)
 
+    # v4: con ACTIVACION = "frase" duerme hasta oir FRASE_ACTIVACION ("hola cubo")
+    con_frase = config.ACTIVACION == "frase"
+    frase = getattr(config, "FRASE_ACTIVACION", "hola cubo")
+    guia = frase.title() + "."                      # "Hola Cubo."
+    vigilia = Vigilia(getattr(config, "VENTANA_CONVERSACION_S", 20))
+    aviso = getattr(config, "RESPUESTA_ACTIVACION", "¿Sí?")
+    audio_aviso = voz.sintetizar(aviso) if con_frase and aviso else None
+
     historial = []
-    if args.escribir:
+    if con_frase:
+        print('Listo. Di "%s" para despertarlo%s.' % (frase, " (o escríbelo)" if args.escribir else ""))
+    elif args.escribir:
         print("Listo. Escribe tu pregunta o un comando (por ejemplo: pon la lluvia).")
     elif detector:
         print("Listo. Di '%s' y luego tu pregunta." % config.PALABRA_ACTIVACION)
@@ -259,6 +274,8 @@ def principal():
         print("Listo. Habla cuando quieras (por ejemplo: pon la lluvia).")
     try:
         while True:
+            atento = not con_frase or vigilia.atento()
+            anim.atento = atento
             anim.estado = "reposo"
             if args.escribir:
                 texto = input("\nTu:   ").strip()
@@ -266,14 +283,51 @@ def principal():
                 if detector:
                     esperar_palabra(mic, detector)
                     anim.estado = "escuchando"
-                    audio = escuchar_pregunta(mic, anim, espera_max_s=6)
+                    audio, inicio = escuchar_pregunta(mic, anim, espera_max_s=6)
                 else:
-                    audio = escuchar_pregunta(mic, anim)
+                    audio, inicio = escuchar_pregunta(mic, anim, mostrar=atento)
                 if audio is None:
                     continue
-                anim.estado = "pensando"
-                texto = entender(whisper, audio)
+                # Cuenta si estaba atento cuando EMPEZO a hablar, aunque la ventana
+                # se haya cerrado mientras hablaba
+                atento = not con_frase or vigilia.atento(inicio)
+                if atento:
+                    anim.estado = "pensando"
+                texto, segundos = entender(whisper, audio, None if atento else guia)
             if len(texto) < 2:
+                continue
+
+            if not atento:
+                encontrada, resto = buscar_frase(texto, frase)
+                if not encontrada:
+                    print("      [dormido] %s" % texto)
+                    continue
+                vigilia.despertar()
+                anim.atento = True
+                if not args.escribir:
+                    print("\nTu:   %s  (%.1f s)" % (texto, segundos))
+                print("      [cubo] despierto: te escucho %d s" % vigilia.ventana_s)
+                if len(resto) < 2:              # solo "hola cubo": contesta y espera la pregunta
+                    if audio_aviso is not None:
+                        print("Cubo: %s" % aviso)
+                        rep.agregar(audio_aviso, voz.sr)
+                        rep.esperar()
+                    if mic is not None:
+                        time.sleep(0.2)
+                        mic.vaciar()
+                    vigilia.despertar()
+                    continue
+                texto = resto                   # "hola cubo, pon la lluvia"
+            elif not args.escribir:
+                print("\nTu:   %s  (%.1f s)" % (texto, segundos))
+
+            if con_frase and es_despedida(texto):
+                adios = random.choice(["¡Chao!", "Hasta luego.", "Aquí estaré."])
+                print("Cubo: %s  (se duerme)" % adios)
+                locutor.frases.put(adios)
+                locutor.frases.join()
+                rep.esperar()
+                vigilia.dormir()
                 continue
 
             anim.estado = "pensando"
@@ -287,6 +341,7 @@ def principal():
             if mic is not None:
                 time.sleep(0.3)         # deja apagar el eco de la sala
                 mic.vaciar()
+            vigilia.despertar()         # la ventana cuenta desde que termino de hablar
     except (KeyboardInterrupt, EOFError):
         print()
     finally:

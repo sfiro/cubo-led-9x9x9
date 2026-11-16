@@ -6,9 +6,9 @@ muestra otra animación mientras escucha y mientras piensa. Desde la v2 también
 pedir con la voz las 34 animaciones del cubo ("pon la lluvia", "¿qué hora es?", "para").
 
 Desde la v3 el cubo tiene 16 niveles de brillo: bordes suaves, estela en las animaciones y
-brillo por voz ("baja el brillo").
+brillo por voz ("baja el brillo"). Desde la v4 duerme hasta que le dices **"hola cubo"**.
 
-**Versión actual: 3.0.** Lo que trae cada versión y cómo volver a una anterior está en
+**Versión actual: 4.0.** Lo que trae cada versión y cómo volver a una anterior está en
 [versiones/](versiones/README.md).
 
 ```
@@ -69,6 +69,7 @@ Raspberry Pi 5 ──USB──► Pico ──GP2/GP3/GP4 + GND──► conector
 | `raspberry/asistente.py` | El asistente completo (fase 3). `--escribir` para probarlo escribiendo |
 | `raspberry/animaciones_pi.py` | Corre en la Pi las 34 animaciones de `pico_w/animaciones.py` (v2) |
 | `raspberry/comandos.py` | Comandos de voz para las animaciones y lo que el modelo sabe de ellas (v2) |
+| `raspberry/activacion.py` | Reconoce "hola cubo" y lleva la cuenta de si está atento o dormido (v4) |
 | `raspberry/reproducir.py` | Fase 1: el cubo sigue un archivo WAV |
 | `raspberry/decir.py` | Fase 2: el cubo dice con voz lo que escribas |
 | `raspberry/prueba_usb.py` | Prueba la conexión: piso por piso y velocidad |
@@ -336,9 +337,15 @@ Para probar los comandos y el modelo sin hablar:
 python asistente.py --escribir
 ```
 
-### 3.7 Palabra de activación (opcional)
-Con `ACTIVACION = "voz"`, el asistente responde a cualquier frase que escuche. Para que espere
-una palabra:
+### 3.7 "Hola cubo" y otras formas de activarlo
+Con `ACTIVACION = "frase"` (desde la v4) duerme hasta oír **"hola cubo"** y luego queda atento
+20 s para conversar. "Adiós cubo" lo vuelve a dormir. Los detalles están en
+[versiones/v4.md](versiones/v4.md). La frase se cambia en `FRASE_ACTIVACION`.
+
+Con `ACTIVACION = "voz"`, el asistente responde a cualquier frase que escuche.
+
+Con `ACTIVACION = "palabra"` usa openWakeWord, un detector especializado, más liviano pero en
+inglés:
 ```bash
 pip install openwakeword
 ```
@@ -401,4 +408,5 @@ journalctl --user -u asistente -f
 ## Ideas para seguir
 - Control de velocidad y duración de las animaciones ("más rápido", "por 5 minutos").
 - Interrumpir al asistente mientras habla (necesita cancelación de eco).
-- Una palabra de activación entrenada en español.
+- Un detector de "hola cubo" entrenado (openWakeWord), para no depender de Whisper estando
+  dormido.

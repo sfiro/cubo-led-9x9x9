@@ -27,9 +27,13 @@ MICROFONO = None
 PARLANTE = None
 
 # ---- Escuchar ---------------------------------------------------------------
+# "frase": duerme hasta oir FRASE_ACTIVACION ("hola cubo") y luego queda atento (v4).
 # "voz": escucha siempre y responde a cualquier frase.
-# "palabra": espera la palabra de activacion (necesita openwakeword instalado).
-ACTIVACION = "voz"
+# "palabra": espera la palabra de activacion de openWakeWord (en ingles, hay que instalarlo).
+ACTIVACION = "frase"
+FRASE_ACTIVACION = "hola cubo"
+VENTANA_CONVERSACION_S = 20     # despues de responder, sigue atento este tiempo sin la frase
+RESPUESTA_ACTIVACION = "¿Sí?"   # lo que dice si solo le dices "hola cubo" ("" = solo luz)
 PALABRA_ACTIVACION = "hey_jarvis"   # modelos que trae openWakeWord (en ingles)
 UMBRAL_VOZ = 0.02           # volumen (RMS) desde el que se considera que alguien habla.
                             # Medirlo con: python medir_microfono.py

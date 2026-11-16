@@ -90,7 +90,10 @@ completa.
 ## 5. Flujo de una conversación
 
 1. **Reposo**: el hilo principal lee bloques del micrófono. Con `ACTIVACION = "palabra"`,
-   antes espera a que openWakeWord dé más de 0.5 con trozos de 80 ms a 16 kHz.
+   antes espera a que openWakeWord dé más de 0.5 con trozos de 80 ms a 16 kHz. Con
+   `ACTIVACION = "frase"` (v4), mientras duerme transcribe cada frase con la guía
+   "Hola Cubo." y solo sigue si `activacion.buscar_frase` la encuentra. Después queda atento
+   `VENTANA_CONVERSACION_S` (ver [versiones/v4.md](versiones/v4.md#cómo-funciona)).
 2. **Escuchando**: cuando el volumen (RMS) pasa `UMBRAL_VOZ`, empieza a grabar e incluye los
    0.3 s anteriores, para no cortar la primera sílaba. Termina tras `SILENCIO_FIN_S` de silencio
    o `MAX_PREGUNTA_S`. Si hubo menos de 0.4 s de voz, lo descarta como ruido.

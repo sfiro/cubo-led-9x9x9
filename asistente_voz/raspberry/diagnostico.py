@@ -173,6 +173,35 @@ def whisper(voz, audio):
     print("  Dije:     %s\n  Entendio: %s  (%.1f s)" % (FRASE, texto, time.monotonic() - t))
     if not texto:
         raise RuntimeError("no transcribio nada")
+    return modelo
+
+
+def activacion(voz, modelo):
+    # v4: Whisper tiene que reconocer la frase de activacion, y no confundirla
+    from activacion import buscar_frase
+
+    from audio import remuestrear
+    frase = getattr(config, "FRASE_ACTIVACION", "hola cubo")
+    pruebas = [("%s, pon la lluvia." % frase.capitalize(), True),
+               ("%s." % frase.capitalize(), True),
+               ("Hola, ¿cómo estás?", False)]
+    errores = []
+    for dicho, esperado in pruebas:
+        audio = remuestrear(voz.sintetizar(dicho), voz.sr, 16000)
+        segmentos, _ = modelo.transcribe(audio, language=config.IDIOMA, beam_size=1,
+                                         vad_filter=True, initial_prompt=frase.title() + ".")
+        texto = " ".join(s.text.strip() for s in segmentos).strip()
+        encontrada, resto = buscar_frase(texto, frase)
+        print("  Dije: %-28s Entendio: %-30s -> %s%s" % (
+            dicho, texto, "despierta" if encontrada else "sigue dormido",
+            " y hace: %s" % resto if resto else ""))
+        if encontrada != esperado:
+            errores.append(dicho)
+    if config.ACTIVACION != "frase":
+        print('  AVISO: en config.py ACTIVACION = "%s"; para usar "%s" pon ACTIVACION = "frase"'
+              % (config.ACTIVACION, frase))
+    if errores:
+        raise RuntimeError("se equivoco con: %s" % "; ".join(errores))
 
 
 def ollama():
@@ -221,7 +250,9 @@ if not args.sin_sonido:
     probar("Microfono", microfono)
 piper_ok = probar("Texto a voz (Piper)", voz_piper)
 if piper_ok:
-    probar("Voz a texto (Whisper)", whisper, *piper_ok)
+    modelo_whisper = probar("Voz a texto (Whisper)", whisper, *piper_ok)
+    if modelo_whisper:
+        probar("Frase de activacion (v4)", activacion, piper_ok[0], modelo_whisper)
 respuesta = probar("Modelo de lenguaje (Ollama)", ollama)
 if respuesta:
     probar("El modelo elige animaciones (v2)", etiquetas)

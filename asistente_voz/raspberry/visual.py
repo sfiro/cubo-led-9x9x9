@@ -110,6 +110,7 @@ class Animador(threading.Thread):
         self.motor = motor
         self.voz_sobre_animacion = voz_sobre_animacion
         self.estado = "reposo"
+        self.atento = True          # v4: dormido (esperando "hola cubo") = reposo tenue y lento
         self._hablando = MODOS_HABLANDO[modo]()
         self._periodo = 1.0 / fps
         self.brillo = brillo
@@ -133,6 +134,8 @@ class Animador(threading.Thread):
             return pensando(t), False
         if animacion is not None:
             return animacion, True
+        if not self.atento and getattr(self.cubo, "bits", 1) > 1:
+            return reposo(t * 0.6) * 0.5, False
         return reposo(t), False
 
     def componer(self, t):
