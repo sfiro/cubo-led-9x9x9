@@ -6,6 +6,7 @@
 #   python diagnostico.py --sin-sonido    sin usar el parlante ni el microfono
 
 import argparse
+import os
 import sys
 import time
 
@@ -204,6 +205,37 @@ def activacion(voz, modelo):
         raise RuntimeError("se equivoco con: %s" % "; ".join(errores))
 
 
+def saber():
+    # v5: los documentos de ../conocimiento/ y la busqueda en ellos
+    import conocimiento
+    carpeta = conocimiento.carpeta_conocimiento(getattr(config, "CARPETA_CONOCIMIENTO", None))
+    if carpeta is None:
+        raise RuntimeError("no esta la carpeta ../conocimiento ni ../conocimiento_ejemplo")
+    s = conocimiento.Conocimiento(carpeta, config.OLLAMA_URL,
+                                  getattr(config, "MODELO_EMBEDDINGS", "bge-m3"),
+                                  getattr(config, "FRAGMENTOS", 3),
+                                  getattr(config, "UMBRAL_FRAGMENTO", 0.35),
+                                  getattr(config, "UMBRAL_PREGUNTA_EXACTA", 0.88))
+    print("  Carpeta: %s\n  %d secciones, %d preguntas frecuentes, %d parrafos sin completar"
+          % (carpeta, len(s.fragmentos), len(s.preguntas), s.pendientes))
+    if os.path.basename(carpeta) == "conocimiento_ejemplo":
+        print("  AVISO: se esta usando la plantilla. Corre ./instalar.sh para crear ../conocimiento "
+              "y llena negocio.md con los datos de la tienda")
+    if s.aviso:
+        print("  AVISO: " + s.aviso)
+    for pregunta in ["¿A qué hora abren?", "¿Cómo te llamas?", "¿Qué es el champús?",
+                     "¿Dónde puedo bailar salsa?", "¿Qué paseos puedo hacer cerca de Cali?",
+                     "¿Cuánto cuesta una mochila wayúu?"]:
+        exacta = s.pregunta_exacta(pregunta)
+        if exacta:
+            print("  %-42s -> pregunta frecuente '%s' (%.2f)" % (pregunta, exacta[1], exacta[2]))
+        else:
+            print("  %-42s -> %s" % (pregunta, ", ".join(
+                "%s %.2f" % (f.nombre(), p) for p, f in s.buscar(pregunta)) or "nada"))
+    if s.aviso:
+        raise RuntimeError("sin el modelo de embeddings (la busqueda por palabras funciona)")
+
+
 def ollama():
     from asistente import preguntar
     t = time.monotonic()
@@ -253,6 +285,7 @@ if piper_ok:
     modelo_whisper = probar("Voz a texto (Whisper)", whisper, *piper_ok)
     if modelo_whisper:
         probar("Frase de activacion (v4)", activacion, piper_ok[0], modelo_whisper)
+probar("Conocimiento (v5)", saber)
 respuesta = probar("Modelo de lenguaje (Ollama)", ollama)
 if respuesta:
     probar("El modelo elige animaciones (v2)", etiquetas)

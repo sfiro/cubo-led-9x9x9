@@ -50,6 +50,13 @@ if ! command -v ollama > /dev/null; then
 fi
 MODELO=$(.venv/bin/python -c "import config; print(config.MODELO)")
 ollama pull "$MODELO"
+# v5: modelo para buscar en los documentos de ../conocimiento/
+EMBEDDINGS=$(.venv/bin/python -c "import config; print(getattr(config, 'MODELO_EMBEDDINGS', 'bge-m3'))")
+ollama pull "$EMBEDDINGS"
+if [ ! -d ../conocimiento ]; then
+    cp -r ../conocimiento_ejemplo ../conocimiento
+    echo "../conocimiento creado desde la plantilla: llena negocio.md y revisa cali.md"
+fi
 
 echo "== 6/7 Permisos para el USB y el audio =="
 if id -nG | grep -qw dialout && id -nG | grep -qw audio; then

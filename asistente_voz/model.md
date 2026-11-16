@@ -219,7 +219,29 @@ texto ─► comandos.interpretar ──sí──► Accion ─► MotorAnimacio
   lluvia. [ANIMACION: lluvia]"). Así el modelo ve ejemplos del formato y sabe qué se está
   mostrando.
 
-## 11. Decisiones y límites
+## 11. Documentos y preguntas frecuentes (v5)
+
+```
+texto ─► comandos ─► pregunta frecuente (≥ UMBRAL_PREGUNTA_EXACTA) ─► respuesta tal cual
+                          │ no
+                          ▼
+         conocimiento.buscar: coseno(bge-m3) + 0.15·BM25 ─► 3 secciones ─┐
+                                                                         ▼
+   Ollama: [personalidad.md + REGLAS + lista de animaciones] + historial + "Información… Pregunta…"
+```
+
+- `conocimiento.py` parte cada `.md` de `../conocimiento/` en secciones (`##`) e ignora los
+  comentarios y los párrafos con `[COMPLETAR`. Los vectores se calculan con `/api/embed` de
+  Ollama y se guardan, por modelo y por texto (SHA-1), en `.cache_conocimiento.json`.
+- Los fragmentos van en el último mensaje del usuario, no en las instrucciones. Así las
+  instrucciones no cambian entre preguntas y Ollama reusa lo que ya leyó.
+- `num_ctx = 8192`: la ventana se fija, porque Ollama corta sin avisar el principio de lo que no
+  cabe.
+- Sin el modelo de embeddings, la búsqueda es solo por palabras (BM25), y las preguntas
+  frecuentes se reconocen si comparten el 80 % de las palabras.
+- Los detalles y los umbrales están en [versiones/v5.md](versiones/v5.md).
+
+## 12. Decisiones y límites
 
 - **Half duplex**: el micrófono se ignora mientras el asistente habla. Para poder interrumpirlo
   hace falta cancelación de eco (un altavoz de conferencias, o el módulo AEC de

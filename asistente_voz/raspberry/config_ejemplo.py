@@ -55,5 +55,18 @@ INSTRUCCIONES = (
 )
 MAX_HISTORIAL = 6           # mensajes anteriores que el modelo recuerda
 
+# ---- Lo que sabe el cubo (v5) ----------------------------------------------
+# Documentos en ../conocimiento/ (la tienda, Cali, preguntas frecuentes). Si esa
+# carpeta no existe se usa ../conocimiento_ejemplo/. Ver ../conocimiento_ejemplo/LEEME.md
+USAR_CONOCIMIENTO = True
+MODELO_EMBEDDINGS = "bge-m3"    # para buscar en los documentos (entiende espanol)
+FRAGMENTOS = 3                  # secciones que se le pasan al modelo en cada pregunta
+UMBRAL_FRAGMENTO = 0.35         # parecido minimo para pasarle una seccion
+UMBRAL_PREGUNTA_EXACTA = 0.88   # parecido para contestar tal cual una pregunta frecuente
+NUM_CTX = 8192                  # ventana de contexto del modelo, en tokens
+# Palabras que Whisper debe escribir bien cuando esta atento (nombres de productos y lugares)
+PISTA_WHISPER = ("Conversación en una tienda de artesanías en Cali: mochila wayúu, sombrero "
+                 "vueltiao, champús, lulada, Cristo Rey, San Antonio, Petronio Álvarez.")
+
 # ---- Texto a voz (Piper) ---------------------------------------------------
 VOZ_PIPER = "voces/es_MX-claude-high.onnx"   # relativo a esta carpeta

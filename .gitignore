@@ -12,6 +12,11 @@ asistente_voz/raspberry/*.wav
 asistente_voz/raspberry/*.log
 asistente_voz/raspberry/respaldo_pico/
 
+# Lo que sabe el cubo: los datos reales de la tienda quedan solo en la Pi (la plantilla
+# es asistente_voz/conocimiento_ejemplo/), y los vectores calculados de los documentos
+asistente_voz/conocimiento/
+asistente_voz/raspberry/.cache_conocimiento.json
+
 # Fotos del armado (~210 MB). Se dejan fuera del repo para no inflar el historial.
 imagenes cubo led/
 

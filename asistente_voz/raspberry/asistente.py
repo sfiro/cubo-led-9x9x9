@@ -10,6 +10,9 @@
 # y brillo por voz ("baja el brillo"). Ver ../versiones/v3.md.
 # v4: se despierta al oir "hola cubo" y queda atento un rato. Ver ../versiones/v4.md.
 # v4.1: en el modo demo dice el nombre de cada animacion antes de mostrarla.
+# v5: responde con la informacion de ../conocimiento/ (la tienda y Cali): busca
+# los fragmentos que sirven para cada pregunta (RAG) y contesta al instante las
+# preguntas frecuentes. Ver ../versiones/v5.md.
 #
 # Un turno a la vez: mientras el cubo habla, el microfono se ignora para que
 # no se escuche a si mismo. Ctrl-C para salir.
@@ -20,6 +23,7 @@
 
 import argparse
 import json
+import os
 import random
 import queue
 import threading
@@ -33,14 +37,19 @@ try:
 except ImportError:
     import config_ejemplo as config
 import comandos
+import conocimiento
 from activacion import Vigilia, buscar_frase, es_despedida
 from animaciones_pi import MotorAnimaciones
 from audio import Microfono, Reproductor, remuestrear
 from cubo_usb import abrir_cubo
 from visual import Animador
-from voz import Frases, Voz
+from voz import Frases, Voz, limpiar
 
-VERSION = "4.1"
+VERSION = "5.0"
+# v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
+# personalidad.md, y SABER busca en los documentos.
+INSTRUCCIONES = None
+SABER = None
 SR_WHISPER = 16000
 
 
@@ -109,9 +118,13 @@ def preguntar(historial, extra=""):
     # extra: lo que se agrega a las instrucciones (la lista de animaciones)
     cuerpo = {
         "model": config.MODELO,
-        "messages": [{"role": "system", "content": config.INSTRUCCIONES + extra}] + historial,
+        "messages": [{"role": "system", "content": (INSTRUCCIONES or config.INSTRUCCIONES) + extra}]
+                    + historial,
         "stream": True,
         "keep_alive": "30m",        # deja el modelo cargado entre preguntas
+        # Ollama corta sin avisar lo que no cabe en la ventana, empezando por las
+        # instrucciones: con los documentos se fija en 8192 tokens
+        "options": {"num_ctx": getattr(config, "NUM_CTX", 8192)},
     }
     pedido = urllib.request.Request(config.OLLAMA_URL + "/api/chat",
                                     data=json.dumps(cuerpo).encode(),
@@ -188,13 +201,32 @@ def responder(texto, historial, motor, locutor, anim):
         locutor.frases.put(accion.respuesta)
         return accion.respuesta + " " + accion.etiqueta()
 
+    mensaje = texto
+    if SABER is not None:
+        try:
+            exacta = SABER.pregunta_exacta(texto)
+            if exacta is not None:
+                respuesta, forma, puntaje = exacta
+                print("Cubo: %s  (pregunta frecuente: '%s' %.2f)" % (respuesta, forma, puntaje))
+                locutor.frases.put(limpiar(respuesta))
+                return respuesta
+            contexto, fuentes = SABER.contexto(texto)
+        except Exception as e:          # Ollama ocupado o caido: se responde sin documentos
+            print("[conocimiento] %s" % e)
+            contexto, fuentes = "", []
+        print("      [docs] %s" % (", ".join(fuentes) or "nada que sirva"))
+        if contexto:
+            # Los documentos van con la pregunta y no en las instrucciones: asi las
+            # instrucciones no cambian y Ollama reusa lo que ya leyo de ellas
+            mensaje = "Información que puede servir:\n%s\n\nPregunta: %s" % (contexto, texto)
+
     t = time.monotonic()
     frases = Frases()
     respuesta = ""
     primera = None
     extra = comandos.instrucciones_cubo(motor.actual, motor.mensaje, anim.brillo)
     try:
-        for pedazo in preguntar(historial + [{"role": "user", "content": texto}], extra):
+        for pedazo in preguntar(historial + [{"role": "user", "content": mensaje}], extra):
             respuesta += pedazo
             for frase in frases.agregar(pedazo):
                 primera = primera or time.monotonic()
@@ -237,6 +269,22 @@ def principal():
                              inference_framework="onnx")
     voz = Voz(config.VOZ_PIPER)
     motor = MotorAnimaciones()
+
+    global INSTRUCCIONES, SABER
+    carpeta = conocimiento.carpeta_conocimiento(getattr(config, "CARPETA_CONOCIMIENTO", None))
+    if getattr(config, "USAR_CONOCIMIENTO", True) and carpeta:
+        INSTRUCCIONES = (conocimiento.cargar_personalidad(carpeta) or config.INSTRUCCIONES) \
+            + conocimiento.REGLAS
+        SABER = conocimiento.Conocimiento(
+            carpeta, config.OLLAMA_URL, getattr(config, "MODELO_EMBEDDINGS", "bge-m3"),
+            getattr(config, "FRAGMENTOS", 3), getattr(config, "UMBRAL_FRAGMENTO", 0.35),
+            getattr(config, "UMBRAL_PREGUNTA_EXACTA", 0.88))
+        print("Conocimiento: %s, %d secciones, %d preguntas frecuentes%s" % (
+            os.path.relpath(carpeta, conocimiento.AQUI), len(SABER.fragmentos),
+            len(SABER.preguntas), ", %d parrafos sin completar" % SABER.pendientes
+            if SABER.pendientes else ""))
+        if SABER.aviso:
+            print("AVISO: " + SABER.aviso)
 
     if args.sin_cubo:
         cubo = abrir_cubo("silencio" if args.escribir else "consola")
@@ -281,6 +329,7 @@ def principal():
     con_frase = config.ACTIVACION == "frase"
     frase = getattr(config, "FRASE_ACTIVACION", "hola cubo")
     guia = frase.title() + "."                      # "Hola Cubo."
+    pista = getattr(config, "PISTA_WHISPER", None)  # v5: palabras del negocio para Whisper
     vigilia = Vigilia(getattr(config, "VENTANA_CONVERSACION_S", 20))
     aviso = getattr(config, "RESPUESTA_ACTIVACION", "¿Sí?")
     audio_aviso = voz.sintetizar(aviso) if con_frase and aviso else None
@@ -315,7 +364,7 @@ def principal():
                 atento = not con_frase or vigilia.atento(inicio)
                 if atento:
                     anim.estado = "pensando"
-                texto, segundos = entender(whisper, audio, None if atento else guia)
+                texto, segundos = entender(whisper, audio, pista if atento else guia)
             if len(texto) < 2:
                 continue
 
