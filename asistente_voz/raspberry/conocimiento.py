@@ -141,8 +141,17 @@ def cargar_personalidad(carpeta):
     return None
 
 
+def _raiz(p):
+    # Plural a singular, para que "material" encuentre "materiales"
+    if len(p) > 5 and p.endswith("es"):
+        return p[:-2]
+    if len(p) > 4 and p.endswith("s"):
+        return p[:-1]
+    return p
+
+
 def _palabras(texto):
-    return [p for p in normalizar(texto).split() if p not in _PALABRAS_VACIAS and len(p) > 1]
+    return [_raiz(p) for p in normalizar(texto).split() if p not in _PALABRAS_VACIAS and len(p) > 1]
 
 
 class _Palabras:

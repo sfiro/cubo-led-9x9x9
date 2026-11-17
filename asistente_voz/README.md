@@ -8,7 +8,7 @@ pedir con la voz las 34 animaciones del cubo ("pon la lluvia", "¿qué hora es?"
 Desde la v3 el cubo tiene 16 niveles de brillo: bordes suaves, estela en las animaciones y
 brillo por voz ("baja el brillo"). Desde la v4 duerme hasta que le dices **"hola cubo"**.
 
-**Versión actual: 5.1**: el cubo de la tienda, con los precios reales de la base de productos ([v5.1](versiones/v5.1.md)). Responde sobre la tienda de artesanías y sobre Cali con documentos que tú escribes (ver [versiones/v5.md](versiones/v5.md)). Lo que trae cada versión y cómo volver a una anterior está en
+**Versión actual: 5.2**: el cubo de Cali Abstracto, con su base de conocimiento en el repo y los precios reales de la base de productos ([v5.2](versiones/v5.2.md)). Responde sobre la tienda de artesanías y sobre Cali con documentos que tú escribes (ver [versiones/v5.md](versiones/v5.md)). Lo que trae cada versión y cómo volver a una anterior está en
 [versiones/](versiones/README.md).
 
 ```
@@ -72,7 +72,8 @@ Raspberry Pi 5 ──USB──► Pico ──GP2/GP3/GP4 + GND──► conector
 | `raspberry/activacion.py` | Reconoce "hola cubo" y lleva la cuenta de si está atento o dormido (v4) |
 | `raspberry/productos.py` | Importa la base de productos (`productos.xlsx`) sin datos internos, y busca los productos que nombra un cliente (v5.1) |
 | `raspberry/conocimiento.py` | Busca en los documentos lo que sirve para cada pregunta, y responde las preguntas frecuentes (v5) |
-| `conocimiento_ejemplo/` | Plantillas de lo que sabe el cubo: la tienda, la guía de Cali, las preguntas frecuentes y la personalidad (v5). La copia que usa la Pi, `conocimiento/`, no se sube al repo |
+| `conocimiento/` | Lo que sabe el cubo de **Cali Abstracto**: la tienda, la guía de Cali, las preguntas frecuentes y la personalidad (v5.2). La base de productos no se sube |
+| `conocimiento_ejemplo/` | Las mismas plantillas, vacías, para otra tienda (v5) |
 | `raspberry/reproducir.py` | Fase 1: el cubo sigue un archivo WAV |
 | `raspberry/decir.py` | Fase 2: el cubo dice con voz lo que escribas |
 | `raspberry/prueba_usb.py` | Prueba la conexión: piso por piso y velocidad |

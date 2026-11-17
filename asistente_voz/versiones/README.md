@@ -6,6 +6,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 
 | Versión | Etiqueta | Fecha | Qué trae |
 |---|---|---|---|
+| [5.2](v5.2.md) | `asistente-v5.2` | 2026-11-16 | La base de conocimiento de Cali Abstracto en el repo, para bajarla con `git pull` |
 | [5.1](v5.1.md) | `asistente-v5.1` | 2026-11-16 | La base de productos: precios reales de cada producto, sin costos ni datos internos |
 | [5.0](v5.md) | `asistente-v5.0` | 2026-11-16 | El cubo de la tienda: responde sobre la tienda y sobre Cali con documentos (RAG) y preguntas frecuentes |
 | [4.1](v4.1.md) | `asistente-v4.1` | 2026-11-16 | El modo demo dice el nombre de cada animación antes de mostrarla |
@@ -14,7 +15,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 | [2.0](v2.md) | `asistente-v2.0` | 2026-11-02 | Controlar las animaciones del cubo con la voz, sin dejar de conversar |
 | [1.0](v1.md) | `asistente-v1.0` | 2026-11-02 | Asistente de voz local; el cubo se ilumina al ritmo de la voz |
 
-El programa dice su versión al arrancar (`Asistente de voz v5.1`), y el diagnóstico también.
+El programa dice su versión al arrancar (`Asistente de voz v5.2`), y el diagnóstico también.
 
 ## Volver a una versión anterior
 

@@ -1,9 +1,10 @@
 # Lo que sabe el cubo
 
-Esta carpeta es la **plantilla**. La que usa el asistente es `asistente_voz/conocimiento/`:
-`instalar.sh` la crea copiando esta la primera vez. Si `conocimiento/` no existe, el asistente usa
-esta. `conocimiento/` no se sube a GitHub, igual que `config.py`. Así los datos de tu tienda
-quedan solo en la Pi. Guarda una copia aparte.
+Esta carpeta es la **plantilla**. La que usa el asistente es `asistente_voz/conocimiento/`.
+Desde la v5.2, `conocimiento/` está en GitHub con los documentos de Cali Abstracto, y la Pi la
+recibe con `git pull`. Si no existe, `instalar.sh` la crea copiando esta plantilla, y si tampoco
+existe, el asistente usa esta. **La base de productos (`productos.xlsx`) nunca se sube**, porque
+tiene costos internos; tampoco `productos.json` ni `catalogo.md`, que se generan desde ella.
 
 | Archivo | Qué es |
 |---|---|
