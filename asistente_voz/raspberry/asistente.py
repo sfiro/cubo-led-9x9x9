@@ -15,6 +15,10 @@
 # preguntas frecuentes. Ver ../versiones/v5.md.
 # v5.1: busca en la base de productos (productos.xlsx) los que nombra el cliente,
 # con su precio real. Ver ../versiones/v5.1.md.
+# v5.4: mas rapido. Instrucciones fijas y cortas (Ollama reusa lo ya leido), la
+# hora y el estado del cubo van con la pregunta, productos solo como resumen por
+# categoria, menos texto de los documentos, y tiempos de cada etapa en el log.
+# Ver ../versiones/v5.4.md.
 #
 # Un turno a la vez: mientras el cubo habla, el microfono se ignora para que
 # no se escuche a si mismo. Ctrl-C para salir.
@@ -48,7 +52,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.3"
+VERSION = "5.4"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
@@ -128,7 +132,9 @@ def preguntar(historial, extra=""):
         "keep_alive": "30m",        # deja el modelo cargado entre preguntas
         # Ollama corta sin avisar lo que no cabe en la ventana, empezando por las
         # instrucciones: con los documentos se fija en 8192 tokens
-        "options": {"num_ctx": getattr(config, "NUM_CTX", 8192)},
+        # num_predict: corta respuestas largas, que en la Pi tardan en generarse
+        "options": {"num_ctx": getattr(config, "NUM_CTX", 4096),
+                    "num_predict": getattr(config, "MAX_PALABRAS_RESPUESTA", 160)},
     }
     pedido = urllib.request.Request(config.OLLAMA_URL + "/api/chat",
                                     data=json.dumps(cuerpo).encode(),
@@ -160,7 +166,10 @@ class Locutor(threading.Thread):
         while True:
             frase = self.frases.get()
             try:
-                self.reproductor.agregar(self.voz.sintetizar(frase), self.voz.sr)
+                t = time.monotonic()
+                audio = self.voz.sintetizar(frase)
+                self.reproductor.agregar(audio, self.voz.sr)
+                print("      [voz] %.1f s para %.1f s de audio" % (time.monotonic() - t, len(audio) / self.voz.sr))
             except Exception as e:
                 print("[voz] %s" % e)
             finally:
@@ -205,7 +214,8 @@ def responder(texto, historial, motor, locutor, anim):
         locutor.frases.put(accion.respuesta)
         return accion.respuesta + " " + accion.etiqueta()
 
-    mensaje = texto
+    t_busqueda = time.monotonic()
+    contexto = ""
     if SABER is not None:
         try:
             exacta = SABER.pregunta_exacta(texto)
@@ -224,16 +234,20 @@ def responder(texto, historial, motor, locutor, anim):
             if encontrados:
                 print("      [productos] %s" % resumen)
                 contexto = (encontrados + "\n" + contexto).strip()
-        if contexto:
-            # Los documentos van con la pregunta y no en las instrucciones: asi las
-            # instrucciones no cambian y Ollama reusa lo que ya leyo de ellas
-            mensaje = "Información que puede servir:\n%s\n\nPregunta: %s" % (contexto, texto)
+    t_busqueda = time.monotonic() - t_busqueda
+    # Lo que cambia en cada pregunta (la hora, el estado del cubo, los documentos)
+    # va en el mensaje y no en las instrucciones: asi las instrucciones y la
+    # conversacion anterior no cambian, y Ollama reusa lo que ya leyo de ellas.
+    mensaje = "(%s)\n" % comandos.estado_cubo(motor.actual, motor.mensaje, anim.brillo)
+    if contexto:
+        mensaje += "Información que puede servir:\n%s\n" % contexto
+    mensaje += "Pregunta: %s" % texto
 
     t = time.monotonic()
     frases = Frases()
     respuesta = ""
     primera = None
-    extra = comandos.instrucciones_cubo(motor.actual, motor.mensaje, anim.brillo)
+    extra = comandos.instrucciones_cubo()
     try:
         for pedazo in preguntar(historial + [{"role": "user", "content": mensaje}], extra):
             respuesta += pedazo
@@ -248,7 +262,9 @@ def responder(texto, historial, motor, locutor, anim):
     for frase in frases.terminar():
         primera = primera or time.monotonic()
         locutor.frases.put(frase)
-    print("Cubo: %s  (1a frase en %.1f s)" % (respuesta.strip(), (primera or time.monotonic()) - t))
+    print("Cubo: %s" % respuesta.strip())
+    print("      [tiempos] busqueda %.1f s | modelo hasta la 1a frase %.1f s | pregunta de %d caracteres"
+          % (t_busqueda, (primera or time.monotonic()) - t, len(mensaje)))
     for tipo, valor in frases.etiquetas:
         accion = comandos.de_etiqueta(tipo, valor)
         if accion is not None:
@@ -288,16 +304,19 @@ def principal():
             mensaje = productos.preparar(carpeta)
             if mensaje:
                 print(mensaje)
-            if os.path.exists(os.path.join(carpeta, "productos.json")):
+            # v5.4: por defecto solo el resumen por categoria (catalogo.md), que es mas
+            # rapido. BUSCAR_PRODUCTOS = True vuelve a buscar cada producto con su precio
+            if getattr(config, "BUSCAR_PRODUCTOS", False) and \
+                    os.path.exists(os.path.join(carpeta, "productos.json")):
                 CATALOGO = productos.Catalogo(carpeta)
-                print("Productos: %d en la base" % len(CATALOGO.productos))
+                print("Productos: %d en la base (busqueda de cada producto)" % len(CATALOGO.productos))
         except Exception as e:
             print("AVISO: no pude leer la base de productos: %s" % e)
         INSTRUCCIONES = (conocimiento.cargar_personalidad(carpeta) or config.INSTRUCCIONES) \
             + conocimiento.REGLAS
         SABER = conocimiento.Conocimiento(
             carpeta, config.OLLAMA_URL, getattr(config, "MODELO_EMBEDDINGS", "bge-m3"),
-            getattr(config, "FRAGMENTOS", 3), getattr(config, "UMBRAL_FRAGMENTO", 0.35),
+            getattr(config, "FRAGMENTOS", 2), getattr(config, "UMBRAL_FRAGMENTO", 0.35),
             getattr(config, "UMBRAL_PREGUNTA_EXACTA", 0.88))
         print("Conocimiento: %s, %d secciones, %d preguntas frecuentes%s" % (
             os.path.relpath(carpeta, conocimiento.AQUI), len(SABER.fragmentos),
@@ -337,9 +356,11 @@ def principal():
     anim.start()
     locutor.start()
 
-    anim.estado = "pensando"            # precargar el modelo para que la 1a respuesta no tarde
+    # Precargar el modelo con las mismas instrucciones de siempre: asi la 1a
+    # respuesta no tarda y Ollama ya tiene leidas las instrucciones
+    anim.estado = "pensando"
     try:
-        for _ in preguntar([{"role": "user", "content": "Hola"}]):
+        for _ in preguntar([{"role": "user", "content": "Hola"}], comandos.instrucciones_cubo()):
             pass
     except Exception as e:
         print("No pude hablar con Ollama en %s: %s" % (config.OLLAMA_URL, e))

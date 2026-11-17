@@ -213,7 +213,7 @@ def saber():
         raise RuntimeError("no esta la carpeta ../conocimiento ni ../conocimiento_ejemplo")
     s = conocimiento.Conocimiento(carpeta, config.OLLAMA_URL,
                                   getattr(config, "MODELO_EMBEDDINGS", "bge-m3"),
-                                  getattr(config, "FRAGMENTOS", 3),
+                                  getattr(config, "FRAGMENTOS", 2),
                                   getattr(config, "UMBRAL_FRAGMENTO", 0.35),
                                   getattr(config, "UMBRAL_PREGUNTA_EXACTA", 0.88))
     print("  Carpeta: %s\n  %d secciones, %d preguntas frecuentes, %d parrafos sin completar"

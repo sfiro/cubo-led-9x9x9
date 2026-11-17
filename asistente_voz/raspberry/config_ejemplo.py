@@ -38,7 +38,7 @@ RESPUESTA_ACTIVACION = "¿Sí?"   # lo que dice si solo le dices "hola cubo" (""
 PALABRA_ACTIVACION = "hey_jarvis"   # modelos que trae openWakeWord (en ingles)
 UMBRAL_VOZ = 0.02           # volumen (RMS) desde el que se considera que alguien habla.
                             # Medirlo con: python medir_microfono.py
-SILENCIO_FIN_S = 0.9        # silencio que marca el fin de la pregunta
+SILENCIO_FIN_S = 0.7        # silencio que marca el fin de la pregunta
 MAX_PREGUNTA_S = 15
 
 # ---- Voz a texto (faster-whisper) ------------------------------------------
@@ -53,17 +53,21 @@ INSTRUCCIONES = (
     "Responde siempre en español, en una a tres frases cortas y naturales, "
     "como en una conversación. No uses listas, emojis, asteriscos ni formato."
 )
-MAX_HISTORIAL = 6           # mensajes anteriores que el modelo recuerda
+MAX_HISTORIAL = 4           # mensajes anteriores que el modelo recuerda (menos = mas rapido)
 
 # ---- Lo que sabe el cubo (v5) ----------------------------------------------
 # Documentos en ../conocimiento/ (la tienda, Cali, preguntas frecuentes). Si esa
 # carpeta no existe se usa ../conocimiento_ejemplo/. Ver ../conocimiento_ejemplo/LEEME.md
 USAR_CONOCIMIENTO = True
 MODELO_EMBEDDINGS = "bge-m3"    # para buscar en los documentos (entiende espanol)
-FRAGMENTOS = 3                  # secciones que se le pasan al modelo en cada pregunta
+FRAGMENTOS = 2                  # secciones que se le pasan al modelo en cada pregunta
 UMBRAL_FRAGMENTO = 0.35         # parecido minimo para pasarle una seccion
 UMBRAL_PREGUNTA_EXACTA = 0.88   # parecido para contestar tal cual una pregunta frecuente
-NUM_CTX = 8192                  # ventana de contexto del modelo, en tokens
+NUM_CTX = 4096                  # ventana de contexto del modelo, en tokens
+# v5.4, para responder mas rapido:
+BUSCAR_PRODUCTOS = False        # True = busca cada producto con su precio (mas lento);
+                                # False = solo el resumen por categoria
+MAX_PALABRAS_RESPUESTA = 160    # tokens maximos de cada respuesta del modelo
 # Palabras que Whisper debe escribir bien cuando esta atento (nombres de productos y lugares)
 PISTA_WHISPER = ("Conversación en una tienda de artesanías en Cali: mochila wayúu, sombrero "
                  "vueltiao, champús, lulada, Cristo Rey, San Antonio, Petronio Álvarez.")

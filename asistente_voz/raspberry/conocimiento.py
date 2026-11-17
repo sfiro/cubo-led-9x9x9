@@ -33,13 +33,11 @@ _PALABRAS_VACIAS = set(
     "uno unos unas y ya yo hola cubo puedo puedes quiero sabes dime me tienen tiene hay".split())
 
 REGLAS = (
-    "\n\nPara datos de la tienda (horarios, precios, productos, dirección, pagos, envíos) y de "
-    "Cali (lugares, eventos, comida, transporte) usa SOLO la información que viene con la "
-    "pregunta. Si la respuesta no está ahí, di con naturalidad que no tienes ese dato y sugiere "
-    "preguntar en caja. Nunca inventes precios, horarios, direcciones ni fechas. "
-    "Para los productos usa solo los de la lista \"Productos de la tienda\", con su precio "
-    "exacto; si son muchos, menciona dos o tres y el rango de precios. No sabes si quedan "
-    "unidades: para eso, que pregunten en caja. No des precios al por mayor.")
+    "\n\nPara datos de la tienda y de Cali usa SOLO la información que viene con la pregunta. "
+    "Si no está, di que no tienes ese dato y sugiere preguntar en caja. Nunca inventes precios, "
+    "horarios ni direcciones. De los productos da solo los rangos de precio que te pasan. No "
+    "sabes si quedan unidades, ni das precios al por mayor.")
+MAX_FRAGMENTO_MODELO = 450      # caracteres de cada seccion que se le pasan al modelo (v5.4)
 
 
 def carpeta_conocimiento(ruta=None):
@@ -65,7 +63,12 @@ class Fragmento:
         return "%s > %s" % (self.archivo, self.titulo) if self.titulo else self.archivo
 
     def para_modelo(self):
-        return "(%s) %s" % (self.nombre(), self.texto)
+        # v5.4: recortado en un final de frase, para no alargar la pregunta
+        texto = self.texto
+        if len(texto) > MAX_FRAGMENTO_MODELO:
+            corte = texto.rfind(". ", 0, MAX_FRAGMENTO_MODELO)
+            texto = texto[:corte + 1] if corte > 100 else texto[:MAX_FRAGMENTO_MODELO]
+        return "(%s) %s" % (self.titulo or self.archivo, texto)
 
 
 def leer_fragmentos(carpeta):
@@ -176,7 +179,7 @@ class _Palabras:
 
 
 class Conocimiento:
-    def __init__(self, carpeta, url="http://localhost:11434", modelo="bge-m3", fragmentos=3,
+    def __init__(self, carpeta, url="http://localhost:11434", modelo="bge-m3", fragmentos=2,
                  umbral=0.35, umbral_exacta=0.88):
         self.carpeta = carpeta
         self.url = url
@@ -190,10 +193,12 @@ class Conocimiento:
         textos = [f.nombre() + ". " + f.texto for f in self.fragmentos]
         self._bm25 = _Palabras(textos)
         self._vectores = self._vectores_formas = None
+        self._ultimo = None
         self.aviso = None
         try:
             self._vectores = self._embeber(textos, "documento")
             self._vectores_formas = self._embeber([f for f, _ in self._formas], "pregunta")
+            self._vector("hola", "pregunta")        # deja el modelo cargado desde el arranque
         except Exception as e:
             self.aviso = ("sin el modelo de embeddings %s (%s): busco solo por palabras. "
                           "Instalalo con: ollama pull %s" % (modelo, e, modelo))
@@ -209,7 +214,8 @@ class Conocimiento:
 
     def _pedir(self, textos):
         pedido = urllib.request.Request(self.url + "/api/embed",
-                                        data=json.dumps({"model": self.modelo, "input": textos}).encode(),
+                                        data=json.dumps({"model": self.modelo, "input": textos,
+                                                         "keep_alive": "60m"}).encode(),
                                         headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(pedido, timeout=300) as r:
             return json.loads(r.read())["embeddings"]
@@ -240,8 +246,14 @@ class Conocimiento:
         return m / np.maximum(np.linalg.norm(m, axis=1, keepdims=True), 1e-9)
 
     def _vector(self, texto, tipo):
+        # v5.4: la misma pregunta se usa dos veces seguidas (preguntas frecuentes y
+        # documentos): se calcula una sola vez
+        if self._ultimo and self._ultimo[0] == (texto, tipo):
+            return self._ultimo[1]
         v = np.array(self._pedir([self._prefijo(tipo) + texto])[0], np.float32)
-        return v / max(float(np.linalg.norm(v)), 1e-9)
+        v = v / max(float(np.linalg.norm(v)), 1e-9)
+        self._ultimo = ((texto, tipo), v)
+        return v
 
     # ---- consultas ----------------------------------------------------------
 

@@ -236,31 +236,35 @@ def de_etiqueta(tipo, valor):
     return None
 
 
-def instrucciones_cubo(actual=None, mensaje=None, brillo=None):
-    # Lo que se agrega a las instrucciones del modelo en cada pregunta
-    lista = "\n".join("- %s: %s" % (n, d) for n, (_, d, _) in CATALOGO.items())
-    if actual is None:
-        estado = "Ahora no hay ninguna animación."
-    elif mensaje:
-        estado = "Ahora el cubo muestra el texto %s." % mensaje.strip()
-    else:
-        estado = "Ahora el cubo muestra la animación %s." % actual
-    if brillo is not None:
-        estado += " El brillo está al %d por ciento." % porcentaje(brillo)
+def instrucciones_cubo():
+    # Lo que se agrega a las instrucciones del modelo. v5.4: es SIEMPRE el mismo
+    # texto, y corto (solo los nombres de las animaciones). Asi Ollama reusa lo que
+    # ya leyo de las instrucciones y de la conversacion, en vez de releerlo todo en
+    # cada pregunta. Lo que cambia (la hora, la animacion actual) va en estado_cubo().
+    nombres = ", ".join(n for n in CATALOGO if n != "demo")
+    return (
+        "\n\nPuedes cambiar lo que muestra el cubo, solo si te lo piden o si encaja con lo que "
+        "piden (por ejemplo, algo relajante). Escribe al final de tu respuesta UNA etiqueta: "
+        "[ANIMACION: nombre], [TEXTO: palabras], [PARAR] o [BRILLO: 0 a 100]. Si solo están "
+        "conversando, no escribas etiquetas, y nunca las leas en voz alta. "
+        "Animaciones: %s." % nombres)
+
+
+def estado_cubo(actual=None, mensaje=None, brillo=None):
+    # Una linea con la fecha, la hora y lo que muestra el cubo. Va junto a la
+    # pregunta, no en las instrucciones (ver instrucciones_cubo).
     ahora = time.localtime()
     dias = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
     meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
              "septiembre", "octubre", "noviembre", "diciembre"]
-    fecha = "Hoy es %s %d de %s de %d, y son las %02d:%02d." % (
-        dias[ahora.tm_wday], ahora.tm_mday, meses[ahora.tm_mon - 1], ahora.tm_year,
-        ahora.tm_hour, ahora.tm_min)
-    return (
-        "\n\nAdemás de conversar, puedes cambiar lo que muestra el cubo. Solo si la persona "
-        "lo pide, o si pide algo que encaje con una animación (por ejemplo, algo relajante "
-        "o algo de Navidad), responde con una frase corta y escribe al final UNA etiqueta:\n"
-        "[ANIMACION: nombre] para poner una animación de la lista,\n"
-        "[TEXTO: palabras] para escribir un texto corto en el cubo,\n"
-        "[PARAR] para apagar la animación,\n"
-        "[BRILLO: número de 0 a 100] para cambiar el brillo del cubo.\n"
-        "Si solo están conversando, no escribas ninguna etiqueta. Nunca leas ni expliques "
-        "las etiquetas. Animaciones disponibles:\n%s\n%s %s" % (lista, estado, fecha))
+    texto = "Hoy es %s %d de %s, son las %d:%02d." % (
+        dias[ahora.tm_wday], ahora.tm_mday, meses[ahora.tm_mon - 1], ahora.tm_hour, ahora.tm_min)
+    if actual is None:
+        texto += " El cubo no tiene animación."
+    elif mensaje:
+        texto += " El cubo muestra el texto %s." % mensaje.strip()
+    else:
+        texto += " El cubo muestra la animación %s." % actual
+    if brillo is not None and brillo < 0.999:
+        texto += " Brillo al %d por ciento." % porcentaje(brillo)
+    return texto

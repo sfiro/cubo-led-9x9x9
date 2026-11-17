@@ -185,28 +185,32 @@ def _lista(cosas):
     return cosas[0] if len(cosas) == 1 else ", ".join(cosas[:-1]) + " y " + cosas[-1]
 
 
+MINIMO_SECCION = 5          # categorias con menos productos van juntas en "Más productos"
+
+
 def _catalogo(productos):
-    # Un resumen por categoria, de la que tiene mas disenos a la que tiene menos
+    # Un resumen corto por categoria, de la que tiene mas disenos a la que tiene
+    # menos (v5.4: sin materiales, 4 disenos de ejemplo, y las categorias chicas juntas)
     grupos = {}
     for p in productos:
         grupos.setdefault(p["categoria"], []).append(p)
     partes = ["# Catálogo de productos\n",
               "<!-- Generado por productos.py desde la base de productos. No lo edites a mano: "
               "se sobrescribe cada vez que se importa la base. -->\n"]
+    otros = []
     for categoria, lista in sorted(grupos.items(), key=lambda g: -len(g[1])):
         p0 = lista[0]
-        disenos = [d for d, _ in Counter(p["diseno"] for p in lista if p["diseno"]).most_common(8)]
-        materiales = [m for m, _ in Counter(p["material"] for p in lista if p["material"]).most_common(4)]
-        origenes = sorted({p["origen"] for p in lista if p["origen"]})
-        texto = "En la tienda hay %d %s de %s, %s." % (
-            len(lista), "diseño" if len(lista) == 1 else "diseños", p0["plural"], _rango([p["precio"] for p in lista]))
-        if materiales:
-            texto += " Materiales: %s." % _lista(materiales)
+        rango = _rango([p["precio"] for p in lista])
+        if len(lista) < MINIMO_SECCION:
+            otros.append("%s %s" % (p0["plural"], rango))
+            continue
+        disenos = [d for d, _ in Counter(p["diseno"] for p in lista if p["diseno"]).most_common(4)]
+        texto = "Hay %d diseños de %s, %s." % (len(lista), p0["plural"], rango)
         if disenos:
-            texto += " Algunos diseños: %s." % _lista(disenos)
-        if origenes:
-            texto += " Algunos vienen de %s." % _lista(origenes)
+            texto += " Por ejemplo: %s." % _lista(disenos)
         partes.append("## %s\n%s\n" % (p0["plural"].capitalize(), texto))
+    if otros:
+        partes.append("## Más productos\nTambién hay %s.\n" % _lista(otros))
     return "\n".join(partes)
 
 

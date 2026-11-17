@@ -6,6 +6,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 
 | Versión | Etiqueta | Fecha | Qué trae |
 |---|---|---|---|
+| [5.4](v5.4.md) | `asistente-v5.4` | 2026-11-16 | Respuestas más rápidas: instrucciones fijas y cortas, productos resumidos por categoría y tiempos en el log |
 | [5.3](v5.3.md) | `asistente-v5.3` | 2026-11-16 | La lista pública de productos en el repo (sin costos ni proveedores): la Pi ya no necesita el Excel |
 | [5.2](v5.2.md) | `asistente-v5.2` | 2026-11-16 | La base de conocimiento de Cali Abstracto en el repo, para bajarla con `git pull` |
 | [5.1](v5.1.md) | `asistente-v5.1` | 2026-11-16 | La base de productos: precios reales de cada producto, sin costos ni datos internos |
@@ -16,7 +17,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 | [2.0](v2.md) | `asistente-v2.0` | 2026-11-02 | Controlar las animaciones del cubo con la voz, sin dejar de conversar |
 | [1.0](v1.md) | `asistente-v1.0` | 2026-11-02 | Asistente de voz local; el cubo se ilumina al ritmo de la voz |
 
-El programa dice su versión al arrancar (`Asistente de voz v5.3`), y el diagnóstico también.
+El programa dice su versión al arrancar (`Asistente de voz v5.4`), y el diagnóstico también.
 
 ## Volver a una versión anterior
 
