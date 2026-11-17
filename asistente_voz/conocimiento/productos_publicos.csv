@@ -1,0 +1,1336 @@
+Producto,Diseño,Material,Ciudad,Precio,Activo
+Abanico,amarillo,Tela,,30000,1
+Abanico,Colombia,Tela,,30000,1
+Abanico,rojo,Tela,,30000,1
+Abanico,vueltiao,Tela,,30000,1
+Agenda,Abejas,Duna,,45000,1
+Agenda,America,Duna,,45000,1
+Agenda,Anime,Duna,,45000,1
+Agenda,Arbol,Duna,,45000,1
+Agenda,Atrapasuenos,Duna,,45000,1
+Agenda,Azucar,Niebla,,45000,1
+Agenda,baby batman,Duna,,45000,1
+Agenda,Baby yoda,Duna,,45000,1
+Agenda,BanKai,Duna,,45000,1
+Agenda,Barcelona,Duna,,45000,1
+Agenda,Batman,Duna,,45000,1
+Agenda,Batman,Triplex,,45000,1
+Agenda,Bob,Niebla,,45000,1
+Agenda,Bon jovi,Duna,,45000,1
+Agenda,Buho,Duna,,45000,1
+Agenda,Caballo,Duna,,45000,1
+Agenda,Calavera,Niebla,,45000,1
+Agenda,Calavera 2,Duna,,45000,1
+Agenda,Cali,Duna,,45000,1
+Agenda,Capitan,Duna,,45000,1
+Agenda,Chontaduro,Duna,,45000,1
+Agenda,Colombia,Duna,,45000,1
+Agenda,Colombia,Niebla,,45000,1
+Agenda,Corazones,Duna,,45000,1
+Agenda,Dark Vader,Duna,,45000,1
+Agenda,Darth,Duna,,45000,1
+Agenda,Deadpool,Duna,,45000,1
+Agenda,Depor,Duna,,45000,1
+Agenda,dios esta contigo,Blanco,,45000,1
+Agenda,Elefante,Duna,,45000,1
+Agenda,Flash,Duna,,45000,1
+Agenda,Flores,Duna,,45000,1
+Agenda,Frida,Duna,,45000,1
+Agenda,Gatos,Duna,,45000,1
+Agenda,Groot,Duna,,45000,1
+Agenda,Guns,Duna,,45000,1
+Agenda,Hogwarts,Duna,,45000,1
+Agenda,Homero,Duna,,45000,1
+Agenda,hulk,Duna,,45000,1
+Agenda,Iron,Duna,,45000,1
+Agenda,iron 2,Duna,,45000,1
+Agenda,Iron maiden,Duna,,45000,1
+Agenda,Jirafa,Duna,,45000,1
+Agenda,Joker,Duna,,45000,1
+Agenda,Justice,Niebla,,45000,1
+Agenda,Justice2,Niebla,,45000,1
+Agenda,Kraken,Duna,,45000,1
+Agenda,Lobo,Duna,,45000,1
+Agenda,Looney tunes,Niebla,,45000,1
+Agenda,Mafalda,Duna,,45000,1
+Agenda,Mandala,Duna,,45000,1
+Agenda,Mano,Duna,,45000,1
+Agenda,Mario,Duna,,45000,1
+Agenda,Minie,Duna,,45000,1
+Agenda,Monster,Duna,,45000,1
+Agenda,Montañas,Niebla,,45000,1
+Agenda,mujer maravilla,Duna,,45000,1
+Agenda,mujer maravilla 2,Duna,,45000,1
+Agenda,Mulan,Duna,,45000,1
+Agenda,Nacional,Duna,,45000,1
+Agenda,Naruto,Duna,,45000,1
+Agenda,Never,Niebla,,45000,1
+Agenda,Pajaros,Niebla,,45000,1
+Agenda,Perro,Duna,,45000,1
+Agenda,Perros,Niebla,,45000,1
+Agenda,Plantas,Duna,,45000,1
+Agenda,Pucca,Niebla,,45000,1
+Agenda,Quijote,Duna,,45000,1
+Agenda,Real,Duna,,45000,1
+Agenda,sirenita,Duna,,45000,1
+Agenda,Slipknot,Duna,,45000,1
+Agenda,sonic,Duna,,45000,1
+Agenda,Spiderman,Duna,,45000,1
+Agenda,Spiderman 2,Duna,,45000,1
+Agenda,Star Wars,Duna,,45000,1
+Agenda,Superman,Duna,,45000,1
+Agenda,Thor,Niebla,,45000,1
+Agenda,Tierra,Duna,,45000,1
+Agenda,Tortuga,Duna,,45000,1
+Agenda,Up,Niebla,,45000,1
+Agenda,Winnie,Niebla,,45000,1
+Agenda,Zorro,Duna,,45000,1
+Alimento,agua,Comida,,5000,1
+Alimento,Arequipe con coco 50g,Comida,,6000,1
+Alimento,Arequipe con galleta de coco,Comida,,20000,1
+Alimento,Arequipe de cafe 250g,Comida,,20000,1
+Alimento,arequipe de cafe 50g,Comida,,6000,1
+Alimento,Arequipe de chontaduro 130g,Comida,,12000,1
+Alimento,Bourbon rosado 500g,Comida,,65000,1
+Alimento,brisa 600 ml,Comida,,4000,1
+Alimento,Cafe 400g,Comida,,40000,1
+Alimento,cafe aromatica,Comida,,35000,1
+Alimento,cafe blend tradicion 250g molido,Comida,,45000,1
+Alimento,cafe casa encanto 250g molido,Comida,,55000,1
+Alimento,Cafe cos esp Mol choco 250g,Comida,,45000,1
+Alimento,cafe cos esp mol honey 250g,Comida,,45000,1
+Alimento,cafe cos esp mol vainilla 250g,Comida,,45000,1
+Alimento,cafe gourm espresso inten 340g molido,Comida,,55000,1
+Alimento,cafe gourmet 250g molido,Comida,,45000,1
+Alimento,cafe grano 250g,Comida,,35000,1
+Alimento,cafe molido 125g,Comida,,20000,1
+Alimento,cafe molido 250g,Comida,,25000,1
+Alimento,cafe molido 250g,Comida,,35000,1
+Alimento,cafecitas 35g,Comida,,5000,1
+Alimento,"Caja galleta con coco, café y chocolate 120g",Comida,,25000,1
+Alimento,caja hit,Comida,,2500,1
+Alimento,caja manjar 18u,Comida,,50000,1
+Alimento,caja manjar mini,Comida,,18000,1
+Alimento,Caramelo achocolatado con cafe 75g,Comida,,15000,1
+Alimento,Caramelo bolsa 100g,Comida,,20000,1
+Alimento,Caramelo bolsa 288g,Comida,,35000,1
+Alimento,Caramelo cafe pequeño,Comida,,7000,1
+Alimento,Chocolate 100% Cacao,Comida,,15000,1
+Alimento,Chocolate 70% con piña,Comida,,15000,1
+Alimento,Chocolate 70% con Sal himalaya,Comida,,15000,1
+Alimento,Chocolate 70% nibs de cacao,Comida,,15000,1
+Alimento,Chocolate 91% cacao,Comida,,15000,1
+Alimento,Chocolate al 50% Cacao con cafe,Comida,,15000,1
+Alimento,Chocolate al 50% con arandanos,Comida,,15000,1
+Alimento,Chocolate al 60% con mango,Comida,,15000,1
+Alimento,Chocolate semi amargo 60%,Comida,,15000,1
+Alimento,Chocolatina 70% con coco,Comida,,15000,1
+Alimento,Chocolatina 80% cacao,Comida,,15000,1
+Alimento,coca cola,Comida,,4000,1
+Alimento,coca cola 600ml,Comida,,6000,1
+Alimento,cocada,Comida,,10000,1
+Alimento,cocada con arequipe 20g,Comida,,2000,1
+Alimento,cocada x 18u,Comida,,30000,1
+Alimento,cocada x 8u 180g,Comida,,15000,1
+Alimento,Colombia 500g,Comida,,60000,1
+Alimento,Display,Comida,,8000,1
+Alimento,DrinkA 600 ml D1,Comida,,4000,1
+Alimento,Dulce cortado 125g,Comida,,10000,1
+Alimento,Dulce cortado 250g,Comida,,16000,1
+Alimento,Dulce cortado 40g,Comida,,5000,1
+Alimento,estuche 150g,Comida,,18000,1
+Alimento,estuche manjar blanco x 6u,Comida,,25000,1
+Alimento,estuche tipico x 315g,Comida,,35000,1
+Alimento,FrutaSeca,Comida,,8000,1
+Alimento,fuze tea durazno 400ml,Comida,,6000,1
+Alimento,fuze tea limon 400ml,Comida,,6000,1
+Alimento,galetas cafecitas 100g sin azucar,Comida,,15000,1
+Alimento,Galleta coco y cafe 32g,Comida,,7000,1
+Alimento,Galleta coco y cafe 80g,Comida,,15000,1
+Alimento,galletas cafecitas 100g,Comida,,15000,1
+Alimento,galletas con cafe 170g,Comida,,15000,1
+Alimento,Gatorade,Comida,,6000,1
+Alimento,grageas cacao pequeño,Comida,,7000,1
+Alimento,grageas cafe pequeño,Comida,,5000,1
+Alimento,grageas uchuvas,Comida,,5000,1
+Alimento,grageas uvas,Comida,,5000,1
+Alimento,Grajeas Pereira,Comida,,15000,1
+Alimento,Honey,Comida,,50000,1
+Alimento,Lavado 250g,Comida,,35000,1
+Alimento,Lavado 500g,Comida,,45000,1
+Alimento,limon chonta chips 45g,Comida,,7000,1
+Alimento,mangar con lulo 125g,Comida,,12000,1
+Alimento,Manjar blanco 125g,Comida,,10000,1
+Alimento,Manjar blanco 250g,Comida,,16000,1
+Alimento,Manjar blanco 40g,Comida,,5000,1
+Alimento,manjar con cafe 125g,Comida,,12000,1
+Alimento,manjar con maracuya 125g,Comida,,12000,1
+Alimento,Maxti pequeño,Comida,,7000,1
+Alimento,maxticafe 160g,Comida,,40000,1
+Alimento,Maxticafe 32g,Comida,,12000,1
+Alimento,Maxticafe 80g,Comida,,20000,1
+Alimento,merenguitos 15g,Comida,,5000,1
+Alimento,Minisellos de manjar blanco 180g,Comida,,15000,1
+Alimento,Naranja del valle 400ml,Comida,,4000,1
+Alimento,Natural 340g,Comida,,50000,1
+Alimento,Omi 1000ml D1,Comida,,4000,1
+Alimento,OMI 300ml D1,Comida,,2000,1
+Alimento,OMI 600 ml con gas D1,Comida,,4000,1
+Alimento,pack chontaduros al vacio,Comida,,25000,1
+Alimento,Paleta,Comida,,8000,1
+Alimento,paleta chontaduro,Comida,,8000,1
+Alimento,panderos con cafe 130g,Comida,,20000,1
+Alimento,panderos con cafe 50g,Comida,,7000,1
+Alimento,sal chonta chips 45g,Comida,,7000,1
+Alimento,SL28 500g,Comida,,65000,1
+Alimento,suspiros con cafe 30g,Comida,,15000,1
+Alimento,Tarrina trocitos dulces,Comida,,8000,1
+Alimento,Totumito con arequipe con coco,Comida,,6000,1
+Alimento,Totumito con arequipe de cafe,Comida,,6000,1
+Alimento,Totumo arequipe 125g,Comida,,15000,1
+Aretes,Aretes Mapa Colombia Pequeño No 999,Metal,,35000,1
+Aretes,aro colombia mostacilla,Hilo,,20000,1
+Aretes,Colibri,Hilo,,30000,1
+Aretes,colibri gris topo alambre,Hilo,,70000,1
+Aretes,coral colombia,Hilo,,70000,1
+Aretes,corazon colombia,Hilo,,25000,1
+Aretes,estrella beige,Hilo,,35000,1
+Aretes,estrella blanca,Hilo,,35000,1
+Aretes,estrella colombia,Hilo,,35000,1
+Aretes,estrella gris,Hilo,,35000,1
+Aretes,estrella negra,Hilo,,35000,1
+Aretes,estrella verde,Hilo,,35000,1
+Aretes,estrella verde tornasol,Hilo,,35000,1
+Aretes,flor colombia,Hilo,,25000,1
+Aretes,flor mediana colombia,Hilo,,35000,1
+Aretes,flor mini verde metalizado,Tela,,35000,1
+Aretes,flor pequeña colombia,Hilo,,20000,1
+Aretes,lirio azul,Hilo,,60000,1
+Aretes,Lirio Lila,Hilo,,60000,1
+Aretes,Mapa Colombia mediano REF 848,Metal,,50000,1
+Aretes,Mapa Colombia mediano textura REF 850,Metal,,50000,1
+Aretes,mini azul,Hilo,,20000,1
+Aretes,mini colores,Hilo,,20000,1
+Aretes,Mini mariposa negra-naranja,Hilo,,20000,1
+Aretes,mini mostacilla azul,Hilo,,20000,1
+Aretes,Mini mostacilla café-beige,Hilo,,20000,1
+Aretes,mini mostacilla rojo,Hilo,,20000,1
+Aretes,mini mostacilla rosada,Hilo,,20000,1
+Aretes,Mini verde,Hilo,,20000,1
+Aretes,Ovalo grande iraca matizado rosado,Tela,,70000,1
+Aretes,Rombo acero,Metal,,35000,1
+Aretes,Rombo grande colombia,Tela,,70000,1
+Aretes,rombo grande dorado,Tela,,70000,1
+Aretes,Rombo grande fucsia,Tela,,70000,1
+Aretes,Rombo grande matizado,Tela,,70000,1
+Aretes,rombo grande palo de rosa,Tela,,70000,1
+Aretes,Rombo iraca fucsia,Tela,,60000,1
+Aretes,Rombo iraca matizado fucsia,Tela,,70000,1
+Aretes,Rombo iraca metalizado dorado,Tela,,60000,1
+Aretes,Rombo iraca palo de rosa,Tela,,60000,1
+Aretes,Rombo matizado mini,Tela,,60000,1
+Aretes,rombo zircon,Tela,,60000,1
+balaca,aros colombia,Hilo,,50000,1
+balaca,matizado,Hilo,,50000,1
+Bambas,Chontaduro,Tela,,12000,1
+Bambas,gato tejada,Tela,,12000,1
+Calendario,Abejas,Triplex,,25000,1
+Calendario,America,Triplex,,25000,1
+Calendario,Arbol,Blanco,,25000,1
+Calendario,Atrapasuenos,Duna,,25000,1
+Calendario,Calavera,Duna,,25000,1
+Calendario,Cali,Triplex,,25000,1
+Calendario,Chontaduro,Blanco,,25000,1
+Calendario,Colombia,Blanco,,25000,1
+Calendario,corazon,Duna,,25000,1
+Calendario,Cristo,Triplex,,25000,1
+Calendario,Elefante,Duna,,25000,1
+Calendario,fogata,Duna,,25000,1
+Calendario,Frida,Duna,,25000,1
+Calendario,Gatas cali,Triplex,,25000,1
+Calendario,Gato,Triplex,,25000,1
+Calendario,Homero,Triplex,,25000,1
+Calendario,Luna,Duna,,25000,1
+Calendario,Mandala,Triplex,,25000,1
+Calendario,Mapa,Triplex,,25000,1
+Calendario,Mariposa,Blanco,,25000,1
+Calendario,ovni,Duna,,25000,1
+Calendario,Quijote,Blanco,,25000,1
+Calendario,Real,Blanco,,25000,1
+Calendario,sombrero,Triplex,,25000,1
+Calendario,Vacas,Triplex,,25000,1
+Calendario,wonder,Triplex,,25000,1
+Calendario,Yin,Duna,,25000,1
+Campana,grande colombia,Metal,,85000,1
+Campana,mediana colombia,Metal,,70000,1
+Campana,mediana cromada,Metal,,80000,1
+Campana,mediana roja,Metal,,70000,1
+Campana,pequeña colombia,Metal,,50000,1
+Campana,pequeña negra,Metal,,50000,1
+carimañola,Mapa cali,Metal,,35000,1
+Cartuchera,Cali es cali,Tela,,25000,1
+Cartuchera,cali iconos,Tela,,25000,1
+Cartuchera,cholao chontaduro empanada,Tela,,25000,1
+Cartuchera,chontaduro con miel,Tela,,25000,1
+Cartuchera,gatas del rio,Tela,,25000,1
+Cartuchera,raspao,Tela,,25000,1
+cofre,cali tipico,Triplex,,12000,1
+cofre,Cofre de dulces,Triplex,,12000,1
+collar,Colibri,Hilo,,45000,1
+collar,Collar Mapa Colombia Mediano REF 888,Metal,,60000,1
+collar,Mapa Colombia pequeño REF 987,Metal,,50000,1
+copa,bandera,vidrio,,15000,1
+copa,gato tejada,vidrio,,15000,1
+destapador,tapa aguila,Metal,,15000,1
+destapador,tapa corona,Metal,,15000,1
+destapador,tapa poker,Metal,,15000,1
+Escultura,Cristo grande,Metal,,95000,1
+Escultura,Cristo mediano,Metal,,40000,1
+Escultura,Cristo pequeño,Metal,,20000,1
+Escultura,Gato Tejada grande,Metal,,60000,1
+Escultura,Gato Tejada mediano,Metal,,35000,1
+Escultura,Gato Tejada pequeño,Metal,,20000,1
+Espejo,Cali,Triplex,,15000,1
+Espejo,Cali es cali,vidrio,,20000,1
+Espejo,cali la sucursal,vidrio,,20000,1
+Espejo,capital salsa,vidrio,,20000,1
+Espejo,gato tejada,vidrio,,20000,1
+Gorra,cali es cali lo demas es loma,Tela,,40000,1
+Gorra,Cali Est 1536,Tela,,40000,1
+Gorra,cali la sucursal del cielo,Tela,,40000,1
+Gorra,oiga mire vea,Tela,,40000,1
+Gorra,Salsa de cali pal mundo,Tela,,40000,1
+Iman,3D cali completo,Triplex,,10000,1
+Iman,3d colombia chiva,Triplex,,10000,1
+Iman,3d colombia palenquera,Triplex,,10000,1
+Iman,3d comida cali,Triplex,,10000,1
+Iman,3d cuadrado,Triplex,,10000,1
+Iman,3d pajaros,Triplex,,10000,1
+Iman,3d palenquera,Triplex,,10000,1
+Iman,3d redondo,Triplex,,10000,1
+Iman,3d tipico colombia,Triplex,,10000,1
+Iman,3d tucanes,Triplex,,10000,1
+Iman,America,Triplex,,7000,1
+Iman,America,PLA,,10000,1
+Iman,Anabella,ceramica,,15000,1
+Iman,aves de colombia,Caucho,,15000,1
+Iman,Bailares Piano,Caucho,,15000,1
+Iman,Bailarines cali,Triplex,,10000,1
+Iman,balcon,Triplex,,15000,1
+Iman,Barcelona,Triplex,,7000,1
+Iman,Bicicleta,Metal,,20000,1
+Iman,Calavera,Duna,,7000,1
+Iman,Cali,Blanco,,7000,1
+Iman,Cali,PLA,,10000,1
+Iman,Cali,Triplex,,10000,1
+Iman,cali cholao,Triplex,,20000,1
+Iman,cali colombia,Caucho,,15000,1
+Iman,Cali completo,Triplex,,15000,1
+Iman,Cali completo,Caucho,,15000,1
+Iman,Cali es cali,PLA,,10000,1
+Iman,Cali es cali,Triplex,,15000,1
+Iman,Cali es cali,PLA,,20000,1
+Iman,cali es cali completo,Triplex,,20000,1
+Iman,Cali gato colombia,Triplex,,15000,1
+Iman,cali madera,PLA,,10000,1
+Iman,Cali oiga mire vea,PLA,,20000,1
+Iman,Cali ois,PLA,,20000,1
+Iman,cali pachangero,PLA,,10000,1
+Iman,Cali si huele a caña,PLA,,20000,1
+Iman,Cali vojabes,PLA,,20000,1
+Iman,camisa,PLA,,10000,1
+Iman,caucho,Caucho,,15000,1
+Iman,Chiva,Triplex,,10000,1
+Iman,Chontaduro,Blanco,,7000,1
+Iman,Chontaduro,PLA,,10000,1
+Iman,Chontaduro,Triplex,,10000,1
+Iman,chontaduro con miel,Triplex,,10000,1
+Iman,Colibri,Triplex,,10000,1
+Iman,colibri y flor,Triplex,,10000,1
+Iman,Colombia,Triplex,,7000,1
+Iman,Coloreta,ceramica,,15000,1
+Iman,corazon,Metal,,20000,1
+Iman,Cristo,Triplex,,7000,1
+Iman,Cristo,Triplex,,10000,1
+Iman,Cristo rey,Triplex,,10000,1
+Iman,Cuero,Cuero,,7000,1
+Iman,Depor,Triplex,,7000,1
+Iman,Destapador cali tipico,Madera,,20000,1
+Iman,destapador tipico guitarra,PLA,,20000,1
+Iman,DIM,Blanco,,7000,1
+Iman,DTF chontaduro,PLA,,7000,1
+Iman,DTF cristo mira ve,PLA,,10000,1
+Iman,DTF cristo rey,PLA,,7000,1
+Iman,DTF fiesta en cali,PLA,,15000,1
+Iman,DTF gato oiga mire vea,PLA,,10000,1
+Iman,DTF gato tejada,PLA,,10000,1
+Iman,DTF mapa,PLA,,10000,1
+Iman,Ermita,Triplex,,7000,1
+Iman,Ermita,PLA,,10000,1
+Iman,Ermita,Triplex,,10000,1
+Iman,Ermita,Triplex,,15000,1
+Iman,Ermita Cali mio,Triplex,,15000,1
+Iman,esqueleto,PLA,,10000,1
+Iman,fauna de colombia,Caucho,,15000,1
+Iman,fiesta rumba,PLA,,10000,1
+Iman,flora de colombia,Caucho,,15000,1
+Iman,frutas de colombia,Caucho,,15000,1
+Iman,Gachuza,ceramica,,15000,1
+Iman,gata en cintas,ceramica,,15000,1
+Iman,Gatas cali,Triplex,,7000,1
+Iman,Gatas cali,Triplex,,10000,1
+Iman,Gato,Blanco,,7000,1
+Iman,gato tejada,Triplex,,10000,1
+Iman,gato tejada,Metal,,15000,1
+Iman,Gato Tejada grande,Triplex,,10000,1
+Iman,Gato Tejada pequeño,PLA,,10000,1
+Iman,Gato Tejada pequeño,Triplex,,10000,1
+Iman,grano de cafe,Semilla,,10000,1
+Iman,Guitarra,Triplex,,10000,1
+Iman,Guitarra,Madera,,10000,1
+Iman,Guitarra,Caucho,,10000,1
+Iman,guitarra campesino,Triplex,,10000,1
+Iman,guitarra carriel,Triplex,,10000,1
+Iman,guitarra chiva,Triplex,,10000,1
+Iman,guitarra colibri,Triplex,,10000,1
+Iman,Guitarra yipao,Triplex,,10000,1
+Iman,iglesia san antonio,Tela,,10000,1
+Iman,Impresion 3D,PLA,,7000,1
+Iman,impresion cristo,PLA,,10000,1
+Iman,impresion gato,PLA,,10000,1
+Iman,impresion jeep,Blanco,,10000,1
+Iman,Junior,Triplex,,7000,1
+Iman,la ermita cali,Triplex,,10000,1
+Iman,Letrero cali,Triplex,,15000,1
+Iman,Letrero colombia,Triplex,,15000,1
+Iman,Loro,PLA,,10000,1
+Iman,Loro,Triplex,,10000,1
+Iman,Mapa,PLA,,10000,1
+Iman,Mapa,Triplex,,10000,1
+Iman,Mapa,Triplex,,15000,1
+Iman,mapa 4d colombia cali,Triplex,,15000,1
+Iman,Mapa chiva,Triplex,,15000,1
+Iman,Mapa colobri,Triplex,,15000,1
+Iman,mapa coordilleras,PLA,,20000,1
+Iman,Mapa jeep,Triplex,,15000,1
+Iman,mapa tipico cali,Madera,,10000,1
+Iman,MDF guitarra cali bailarines,Triplex,,10000,1
+Iman,Melosa,ceramica,,15000,1
+Iman,Millos,Triplex,,7000,1
+Iman,mira ve Salsa,Caucho,,15000,1
+Iman,mujer musica,Triplex,,10000,1
+Iman,Nacimiento mediano,Triplex,,15000,1
+Iman,Nacimiento mini,Triplex,,10000,1
+Iman,Nacimientos 2d,Triplex,,10000,1
+Iman,Nacional,Triplex,,7000,1
+Iman,Notas,Triplex,,15000,1
+Iman,Notas cali completo,Triplex,,15000,1
+Iman,oiga mire,PLA,,10000,1
+Iman,Once,Blanco,,7000,1
+Iman,Once,Triplex,,7000,1
+Iman,orquideas de colombia,Caucho,,15000,1
+Iman,Pajaros,Triplex,,10000,1
+Iman,palenquera,Triplex,,10000,1
+Iman,palenquera 3d tipico,Triplex,,10000,1
+Iman,Pesebre,Triplex,,15000,1
+Iman,Pestaña,Triplex,,15000,1
+Iman,Placa,Triplex,,10000,1
+Iman,placa colombia,Metal,,15000,1
+Iman,placa parce,Metal,,15000,1
+Iman,placa tipica,Metal,,20000,1
+Iman,plazas de colombia,Caucho,,15000,1
+Iman,Presa,ceramica,,15000,1
+Iman,Real,Blanco,,7000,1
+Iman,Redondo,Triplex,,10000,1
+Iman,redondo cali completo,Triplex,,10000,1
+Iman,redondo cinta cristo rey,Triplex,,10000,1
+Iman,redondo cinta gatas del rio cali,Triplex,,10000,1
+Iman,redondo cinta gato de tejada,Triplex,,10000,1
+Iman,redondo cristo,Triplex,,10000,1
+Iman,redondo ermita,Triplex,,10000,1
+Iman,redondo gato,Triplex,,10000,1
+Iman,redondo san antonio,Triplex,,10000,1
+Iman,Salsa,Triplex,,7000,1
+Iman,Salsa,Triplex,,10000,1
+Iman,SantaFe,Triplex,,7000,1
+Iman,Señalizacion cali,Triplex,,15000,1
+Iman,Siete vidas,ceramica,,15000,1
+Iman,sombrero,Tela,,10000,1
+Iman,superheroes,Triplex,,7000,1
+Iman,tejada y cafe,Semilla,,10000,1
+Iman,Todo cali,Triplex,,10000,1
+Iman,Trompeta de niche,Triplex,,15000,1
+Iman,V2 Cali es cali,PLA,,10000,1
+Iman,V2 Cali vojabes vojabes,PLA,,10000,1
+Iman,V2 oiga mire vea,PLA,,10000,1
+Iman,V2 y fiesta y rumba,PLA,,10000,1
+Iman,Vojabes,PLA,,10000,1
+Iman,Yipao,Triplex,,10000,1
+Iman,yo amo cali,Triplex,,10000,1
+Lapiceros,Cali,Blanco,,12000,1
+Lapiceros,cali tipico,Triplex,,12000,1
+Letrero,Cali es cali,PLA,,25000,1
+Letrero,Cali oiga mire vea,PLA,,25000,1
+Letrero,Cali ois,PLA,,25000,1
+Letrero,Cali si huele a caña,PLA,,25000,1
+Letrero,Cali vojabes,PLA,,25000,1
+Letrero,Ermita,Triplex,,25000,1
+Libreta,America,Duna,,25000,1
+Libreta,Arbol,Duna,,25000,1
+Libreta,Atrapasuenos,Duna,,25000,1
+Libreta,Batman,Niebla,,25000,1
+Libreta,Bucaramanga,Duna,,25000,1
+Libreta,Calavera,Duna,,25000,1
+Libreta,Calavera 2,Duna,,25000,1
+Libreta,Cali,Duna,,25000,1
+Libreta,cali iconos,Tela,,50000,1
+Libreta,caliwood,Tela,,50000,1
+Libreta,Cerebro,Niebla,,25000,1
+Libreta,cholao,Tela,,50000,1
+Libreta,Chontaduro,Duna,,25000,1
+Libreta,Chontaduro,Tela,,50000,1
+Libreta,Colombia,Niebla,,25000,1
+Libreta,Corazones,Duna,,25000,1
+Libreta,Cristo rey,Tela,,50000,1
+Libreta,Deadpool,Niebla,,25000,1
+Libreta,Depor,Duna,,25000,1
+Libreta,Dinosaurio,Duna,,25000,1
+Libreta,Elefante,Niebla,,25000,1
+Libreta,Encanto,Niebla,,25000,1
+Libreta,fauna de colombia,Blanco,,30000,1
+Libreta,flora de colombia,Blanco,,30000,1
+Libreta,Frida,Duna,,25000,1
+Libreta,galeria alameda,Tela,,50000,1
+Libreta,Gameboy,Duna,,25000,1
+Libreta,Garfield,Niebla,,25000,1
+Libreta,Gatas cali,Duna,,25000,1
+Libreta,Gato,Duna,,25000,1
+Libreta,Gato 2,Duna,,25000,1
+Libreta,Gatos,Duna,,25000,1
+Libreta,Goku,Duna,,25000,1
+Libreta,Groot,Duna,,25000,1
+Libreta,guayacanes,Tela,,50000,1
+Libreta,Joker,Duna,,25000,1
+Libreta,Junior,Duna,,25000,1
+Libreta,Loro,Duna,,25000,1
+Libreta,Mafalda,Duna,,25000,1
+Libreta,Mandala,Duna,,25000,1
+Libreta,Manos,Duna,,25000,1
+Libreta,Marge,Duna,,25000,1
+Libreta,Mario,Duna,,25000,1
+Libreta,Millos,Duna,,25000,1
+Libreta,Nacional,Duna,,25000,1
+Libreta,Naruto,Niebla,,25000,1
+Libreta,naruto 2,Duna,,25000,1
+Libreta,Nintendo,Duna,,25000,1
+Libreta,Once,Duna,,25000,1
+Libreta,orquideas de colombia,Blanco,,30000,1
+Libreta,pandebono,Tela,,50000,1
+Libreta,Perro,Duna,,25000,1
+Libreta,Plantas,Duna,,25000,1
+Libreta,Poporo,Duna,,25000,1
+Libreta,Real,Duna,,25000,1
+Libreta,Spiderman,Duna,,25000,1
+Libreta,Star Wars,Niebla,,25000,1
+Libreta,star wars 2,Duna,,25000,1
+Libreta,sucursal,Tela,,50000,1
+Libreta,Superman,Duna,,25000,1
+Libreta,Tetris,Duna,,25000,1
+Libreta,Vacas,Duna,,25000,1
+Libreta AA,America,Duna,,15000,1
+Libreta AA,anon,Blanco,,25000,1
+Libreta AA,Atrapasuenos,Duna,,15000,1
+Libreta AA,Barcelona,Duna,,15000,1
+Libreta AA,Batman,Niebla,,15000,1
+Libreta AA,Caballo,Duna,,15000,1
+Libreta AA,cacao,Blanco,,25000,1
+Libreta AA,Calavera,Duna,,15000,1
+Libreta AA,Cali,Duna,,15000,1
+Libreta AA,Cerebro,Duna,,15000,1
+Libreta AA,Chontaduro,Duna,,15000,1
+Libreta AA,Chontaduro,Blanco,,25000,1
+Libreta AA,Colombia,Niebla,,15000,1
+Libreta AA,corazon,Duna,,15000,1
+Libreta AA,Corazones,Duna,,15000,1
+Libreta AA,Cristo,Duna,,15000,1
+Libreta AA,Deadpool,Duna,,15000,1
+Libreta AA,Depor,Duna,,15000,1
+Libreta AA,Dinosaurio,Duna,,15000,1
+Libreta AA,Elefante,Duna,,15000,1
+Libreta AA,Encanto,Duna,,15000,1
+Libreta AA,Ermita,Duna,,15000,1
+Libreta AA,Frida,Duna,,15000,1
+Libreta AA,Garfield,Duna,,15000,1
+Libreta AA,gatas del rio,Duna,,15000,1
+Libreta AA,Gato,Duna,,15000,1
+Libreta AA,Gato,Triplex,,15000,1
+Libreta AA,Gatos,Duna,,15000,1
+Libreta AA,granadilla,Blanco,,25000,1
+Libreta AA,Groot,Duna,,15000,1
+Libreta AA,guanabana,Blanco,,25000,1
+Libreta AA,iglesia san antonio,Duna,,15000,1
+Libreta AA,limon,Blanco,,25000,1
+Libreta AA,Loro,Duna,,15000,1
+Libreta AA,lulo,Blanco,,25000,1
+Libreta AA,Mafalda,Duna,,15000,1
+Libreta AA,Mandala,Niebla,,15000,1
+Libreta AA,mangostino,Blanco,,25000,1
+Libreta AA,Mano,Duna,,15000,1
+Libreta AA,maracuya,Blanco,,25000,1
+Libreta AA,Mario,Niebla,,15000,1
+Libreta AA,Mariposa,Duna,,15000,1
+Libreta AA,Millos,Duna,,15000,1
+Libreta AA,Monster,Duna,,15000,1
+Libreta AA,Nacional,Duna,,15000,1
+Libreta AA,Once,Duna,,15000,1
+Libreta AA,papaya,Blanco,,25000,1
+Libreta AA,Perro,Duna,,15000,1
+Libreta AA,Perros,Duna,,15000,1
+Libreta AA,Piolin,Duna,,15000,1
+Libreta AA,pitaya,Blanco,,25000,1
+Libreta AA,Pucca,Niebla,,15000,1
+Libreta AA,Real,Duna,,15000,1
+Libreta AA,Salsa,Duna,,15000,1
+Libreta AA,Star Wars,Duna,,15000,1
+Libreta grande,Carrito ambulante,Blanco,,35000,1
+Libreta grande,mercado de flores,Blanco,,35000,1
+Libreta grande,plaza de mercado,Blanco,,35000,1
+Llaveros,3d palenquera,Triplex,,10000,1
+Llaveros,3d tucanes,Triplex,,10000,1
+Llaveros,Abejas,PLA,,15000,1
+Llaveros,aguacate,Blanco,,7000,1
+Llaveros,aguacate,PLA,,10000,1
+Llaveros,America,Blanco,,7000,1
+Llaveros,America,Metal,,12000,1
+Llaveros,Arbol,Blanco,,7000,1
+Llaveros,Arsenal,Triplex,,7000,1
+Llaveros,Bailarines cali,Madera,,10000,1
+Llaveros,baile salsa,Metal,,12000,1
+Llaveros,Barcelona,Triplex,,7000,1
+Llaveros,Barranquero,Triplex,,10000,1
+Llaveros,Batman,Triplex,,7000,1
+Llaveros,Boca,Triplex,,7000,1
+Llaveros,bombon,PLA,,10000,1
+Llaveros,Boo,Blanco,,7000,1
+Llaveros,Bucaramanga,Triplex,,7000,1
+Llaveros,Caballo,Triplex,,7000,1
+Llaveros,cafetera,PLA,,15000,1
+Llaveros,caja mario,PLA,,15000,1
+Llaveros,Calavera,Blanco,,7000,1
+Llaveros,Calavera cerebro,PLA,,15000,1
+Llaveros,Calavera cerebro clicker,PLA,,15000,1
+Llaveros,Calavera cuadrada clicker,PLA,,15000,1
+Llaveros,Cali,Blanco,,7000,1
+Llaveros,Cali,Metal,,12000,1
+Llaveros,cali donde estan,Metal,,12000,1
+Llaveros,cali gato,Metal,,12000,1
+Llaveros,cali gato tejada,Metal,,12000,1
+Llaveros,Camaleon flexible,PLA,,15000,1
+Llaveros,campana cali,PLA,,15000,1
+Llaveros,campesina colombia,Metal,,12000,1
+Llaveros,campesino colombia,Metal,,12000,1
+Llaveros,caparazon,PLA,,10000,1
+Llaveros,Capitan,Triplex,,7000,1
+Llaveros,capuchino,PLA,,15000,1
+Llaveros,Carriel,Triplex,,7000,1
+Llaveros,Cerebro,Blanco,,7000,1
+Llaveros,Chimuelo,PLA,,10000,1
+Llaveros,chimuelo v2,PLA,,15000,1
+Llaveros,Chiva,Triplex,,10000,1
+Llaveros,chococono,PLA,,15000,1
+Llaveros,chocolatina,PLA,,15000,1
+Llaveros,chocoramo,PLA,,15000,1
+Llaveros,Chontaduro,Blanco,,7000,1
+Llaveros,Chontaduro,PLA,,10000,1
+Llaveros,Chontaduro completo,PLA,,15000,1
+Llaveros,Colibri,Triplex,,10000,1
+Llaveros,Colombia,Blanco,,7000,1
+Llaveros,Colombia,Triplex,,10000,1
+Llaveros,control,PLA,,15000,1
+Llaveros,corazon,Triplex,,7000,1
+Llaveros,Corazones,Triplex,,7000,1
+Llaveros,Corazón flexible,PLA,,10000,1
+Llaveros,Cristo,Triplex,,7000,1
+Llaveros,Croissant,PLA,,15000,1
+Llaveros,Cuero,Cuero,,7000,1
+Llaveros,Deadpool,Triplex,,7000,1
+Llaveros,Depor,Blanco,,7000,1
+Llaveros,destapador gato,Metal,,12000,1
+Llaveros,DIM,Blanco,,7000,1
+Llaveros,Elefante,Triplex,,7000,1
+Llaveros,empanada,PLA,,15000,1
+Llaveros,Encanto,Triplex,,7000,1
+Llaveros,Ermita,Triplex,,7000,1
+Llaveros,espiner corazon,PLA,,10000,1
+Llaveros,esqueleto,PLA,,10000,1
+Llaveros,estrella,PLA,,15000,1
+Llaveros,estuve en cali,Metal,,12000,1
+Llaveros,Felix,Blanco,,7000,1
+Llaveros,Flash,Triplex,,7000,1
+Llaveros,flor y guacamaya,Triplex,,10000,1
+Llaveros,Frida,Triplex,,7000,1
+Llaveros,frutas palenqueras,Triplex,,10000,1
+Llaveros,Garfield,Blanco,,7000,1
+Llaveros,Gatas cali,Triplex,,7000,1
+Llaveros,Gato,Triplex,,7000,1
+Llaveros,gato flexible,PLA,,10000,1
+Llaveros,gato tejada,Metal,,12000,1
+Llaveros,gato v2,PLA,,15000,1
+Llaveros,Girasol,Triplex,,7000,1
+Llaveros,Goku,Blanco,,7000,1
+Llaveros,Gota,Blanco,,7000,1
+Llaveros,Guacamaya,Triplex,,10000,1
+Llaveros,Hamster,PLA,,15000,1
+Llaveros,Homero,Blanco,,7000,1
+Llaveros,Hongo,PLA,,10000,1
+Llaveros,Impresion 3D,PLA,,7000,1
+Llaveros,Iron,Triplex,,7000,1
+Llaveros,jabon rey,PLA,,15000,1
+Llaveros,Jack,Blanco,,7000,1
+Llaveros,Jirafa,PLA,,15000,1
+Llaveros,Junior,Blanco,,7000,1
+Llaveros,Juventus,Blanco,,7000,1
+Llaveros,libelula,Triplex,,7000,1
+Llaveros,Loro,PLA,,15000,1
+Llaveros,Luna,Blanco,,7000,1
+Llaveros,Mafalda,Triplex,,7000,1
+Llaveros,Mandala,Blanco,,7000,1
+Llaveros,Mano,Triplex,,7000,1
+Llaveros,mapa cafe,Triplex,,10000,1
+Llaveros,mapache flexible,PLA,,15000,1
+Llaveros,Mariposa,Triplex,,7000,1
+Llaveros,Matera clicker,PLA,,15000,1
+Llaveros,Metal,Metal,,7000,1
+Llaveros,Miami,Triplex,,7000,1
+Llaveros,Millos,Blanco,,7000,1
+Llaveros,Mira ve,Metal,,12000,1
+Llaveros,Mochila,Blanco,,7000,1
+Llaveros,Mochila,Tela,,10000,1
+Llaveros,musico acordeon,Triplex,,10000,1
+Llaveros,Nacional,Triplex,,7000,1
+Llaveros,Naranja,PLA,,15000,1
+Llaveros,Naruto,Blanco,,7000,1
+Llaveros,No usar,Blanco,,7000,1
+Llaveros,Once,Blanco,,7000,1
+Llaveros,palenquera,Triplex,,10000,1
+Llaveros,Panda,PLA,,15000,1
+Llaveros,Paris,Triplex,,7000,1
+Llaveros,Perro,Blanco,,7000,1
+Llaveros,pokebola,PLA,,15000,1
+Llaveros,pokemon clic,PLA,,15000,1
+Llaveros,Psicologo,Blanco,,7000,1
+Llaveros,Pucca,Triplex,,7000,1
+Llaveros,pulpo flexible,PLA,,10000,1
+Llaveros,rana,Triplex,,10000,1
+Llaveros,Real,Blanco,,7000,1
+Llaveros,Reno,PLA,,15000,1
+Llaveros,Salsa,Triplex,,7000,1
+Llaveros,Salsa,Metal,,12000,1
+Llaveros,SantaFe,Blanco,,7000,1
+Llaveros,sombrero,Tela,,10000,1
+Llaveros,sombrero volteado,Triplex,,10000,1
+Llaveros,sombrero y acordeon,Triplex,,10000,1
+Llaveros,sonic,Blanco,,7000,1
+Llaveros,Spiderman,Triplex,,7000,1
+Llaveros,super mama,Triplex,,7000,1
+Llaveros,Superman,Triplex,,7000,1
+Llaveros,taza cafe,Metal,,12000,1
+Llaveros,taza cafe,PLA,,15000,1
+Llaveros,taza de cafe colombiano,Metal,,12000,1
+Llaveros,tecla cali,PLA,,10000,1
+Llaveros,termo,PLA,,25000,1
+Llaveros,tiburon flexible,PLA,,10000,1
+Llaveros,tiburon martillo flexible,PLA,,10000,1
+Llaveros,TNT clicker,PLA,,15000,1
+Llaveros,Tolima,Blanco,,7000,1
+Llaveros,Tortuga,Triplex,,7000,1
+Llaveros,Tortuga,PLA,,15000,1
+Llaveros,tuberia,PLA,,10000,1
+Llaveros,Up,Blanco,,7000,1
+Llaveros,V2 guacamaya,Triplex,,10000,1
+Llaveros,Vaca,PLA,,15000,1
+Llaveros,Vacas,Blanco,,7000,1
+Llaveros,wonder,Blanco,,7000,1
+Llaveros,Yipao,Metal,,12000,1
+Llaveros,zanahoria,PLA,,15000,1
+Llaveros,zorro 9 colas,PLA,,15000,1
+Llaveros,zorro flexible,PLA,,10000,1
+Malla,Aguila,Duna,,35000,1
+Malla,Aguila 2,Duna,,35000,1
+Malla,armadura,Duna,,35000,1
+Malla,Atrapasuenos,Duna,,35000,1
+Malla,Canguro,Duna,,35000,1
+Malla,Captus,Duna,,35000,1
+Malla,Casas,Duna,,35000,1
+Malla,colibri grande,Duna,,35000,1
+Malla,colibri pequeño,Duna,,10000,1
+Malla,corazon,PLA,,35000,1
+Malla,Dragon,Duna,,35000,1
+Malla,Einstein,Duna,,35000,1
+Malla,Einstein 2,Duna,,35000,1
+Malla,Elefante,Duna,,35000,1
+Malla,Elefante 2,Duna,,35000,1
+Malla,Elefante caminado,Duna,,35000,1
+Malla,Gato,Duna,,35000,1
+Malla,Gato 2,Duna,,35000,1
+Malla,gato luna,Duna,,35000,1
+Malla,gato3,Duna,,35000,1
+Malla,Gatos,Duna,,35000,1
+Malla,Jirafa,Duna,,35000,1
+Malla,Leon,Duna,,35000,1
+Malla,Lobo,Duna,,35000,1
+Malla,Lobo 2,Duna,,35000,1
+Malla,Mariposa,Duna,,35000,1
+Malla,Mono,Duna,,35000,1
+Malla,Mujer,Duna,,35000,1
+Malla,Mujer 2,Duna,,35000,1
+Malla,mujer 3,Duna,,35000,1
+Malla,mujer 4,Duna,,35000,1
+Malla,No Bad,Duna,,35000,1
+Malla,No usar,Triplex,,10000,1
+Malla,No usar,Duna,,35000,1
+Malla,Palmera,Duna,,35000,1
+Malla,Perro,Duna,,35000,1
+Malla,Pulpo,Duna,,35000,1
+Malla,Reno,Duna,,35000,1
+Malla,Rinoceronte,Triplex,,35000,1
+Malla,Serpiente,Duna,,35000,1
+Malla,sweet,Duna,,35000,1
+Malla,Zorro,Duna,,35000,1
+Mini Libreta,Ballena,Triplex,,10000,1
+Mini Libreta,Condor,Triplex,,10000,1
+Mini Libreta,Guacamaya,Triplex,,10000,1
+Mini Libreta,Jaguar,Triplex,,10000,1
+Mini Libreta,Oso,Triplex,,10000,1
+Mochila,aguita para curar el alma,Tela,,120000,1
+Mochila,cali iconos,Tela,,120000,1
+Mochila,Cali oiga mire vea,Tela,,25000,1
+Mochila,cali salsa,Tela,,120000,1
+Mochila,caribe,Tela,,120000,1
+Mochila,Colombia,Tela,,120000,1
+Mochila,guarito,Tela,,120000,1
+Mochila,I love cali,Tela,,25000,1
+Mochila,mi cali bella,Tela,,25000,1
+Mochila,vitamina mar,Tela,,120000,1
+monedero,Barranquero,Tela,,15000,1
+monedero,bichofue,Tela,,15000,1
+monedero,cafe de colombia,Tela,,15000,1
+monedero,cali colombia,Tela,,15000,1
+monedero,Cali es cali,Tela,,15000,1
+monedero,Chontaduro,Tela,,15000,1
+monedero,chontaduro con miel,Tela,,15000,1
+monedero,Colombia,Tela,,50000,1
+monedero,colombia simbolos,Tela,,15000,1
+monedero,cuero tejido,Cuero,,35000,1
+monedero,gatas del rio,Tela,,15000,1
+monedero,matizado,Tela,,50000,1
+monedero,raspao,Tela,,15000,1
+monedero,rojo,Tela,,50000,1
+PadMouse,Cali completo,Caucho,,25000,1
+PadMouse,cali la sucursal,Caucho,,25000,1
+PadMouse,Dichos,Caucho,,25000,1
+PadMouse,fundacion,Caucho,,25000,1
+pañoleta,cali grande,Tela,,50000,1
+pañoleta,cali pequeña,Tela,,30000,1
+pañoleta,colombia grande,Tela,,50000,1
+pañoleta,colombia pequeña,Tela,,30000,1
+pañoleta,colombia si si grande,Tela,,50000,1
+pañoleta,colombia si si pequeña,Tela,,30000,1
+pañoleta,Grande pacifico,Tela,,50000,1
+pañoleta,Pequeña pacifico,Tela,,30000,1
+Pines,acordeon,Metal,,12000,1
+Pines,America,Metal,,12000,1
+Pines,Bailarines cali,Metal,,12000,1
+Pines,bandera,Metal,,12000,1
+Pines,Bandera colombia ref2,Metal,,12000,1
+Pines,Barcelona,Metal,,12000,1
+Pines,Bucaramanga,Metal,,12000,1
+Pines,cafe con pan,Metal,,12000,1
+Pines,cafe de colombia,Metal,,12000,1
+Pines,Cali,Metal,,12000,1
+Pines,cali es cali lo demas es loma,Metal,,12000,1
+Pines,cali pachanguero,Metal,,12000,1
+Pines,Cali pachanguero ref2,Metal,,12000,1
+Pines,cali sucursal del cielo,Metal,,12000,1
+Pines,Calle del sabor,Metal,,12000,1
+Pines,camisa,Metal,,12000,1
+Pines,Casa de encanto,Metal,,12000,1
+Pines,champus,Metal,,12000,1
+Pines,Chiva,Metal,,12000,1
+Pines,chiva colombia,Metal,,12000,1
+Pines,Chiva Colombiana cargada,Metal,,12000,1
+Pines,chiva tropical,Metal,,12000,1
+Pines,chocoramo,Metal,,12000,1
+Pines,cholao,Metal,,12000,1
+Pines,Chontaduro,Metal,,12000,1
+Pines,colibri colombia,Metal,,12000,1
+Pines,Collage cali,Metal,,12000,1
+Pines,Colombia,Metal,,12000,1
+Pines,colombia cafetera,Metal,,12000,1
+Pines,corazon,Metal,,12000,1
+Pines,costal de cafe,Metal,,12000,1
+Pines,Costal de cafe colombiano,Metal,,12000,1
+Pines,cristo cali,Metal,,12000,1
+Pines,Cristo rey,Metal,,12000,1
+Pines,Cristo rey cali,Metal,,12000,1
+Pines,cucuta,Metal,,12000,1
+Pines,edificios cali,Metal,,12000,1
+Pines,eje cafetero ref2,Metal,,12000,1
+Pines,eje cafetero ref3,Metal,,12000,1
+Pines,Escudo de colombia,Metal,,12000,1
+Pines,Gallito de las rocas,Metal,,12000,1
+Pines,gato tejada cali,Metal,,12000,1
+Pines,gato tejada paloma,Metal,,12000,1
+Pines,Guacamaya colombiana ref2,Metal,,12000,1
+Pines,I love cali,Metal,,12000,1
+Pines,I love sancocho,Metal,,12000,1
+Pines,iglesia san antonio,Metal,,12000,1
+Pines,independiente medellin,Metal,,12000,1
+Pines,instrumentos cali,Metal,,12000,1
+Pines,Junior,Metal,,12000,1
+Pines,la ermita cali,Metal,,12000,1
+Pines,La sucursal del cielo,Metal,,12000,1
+Pines,Mapa,Metal,,12000,1
+Pines,mi colombia linda,Metal,,12000,1
+Pines,millonarios,Metal,,12000,1
+Pines,Mira ve,Metal,,12000,1
+Pines,Nacional,Metal,,12000,1
+Pines,Once,Metal,,12000,1
+Pines,palenquera,Metal,,12000,1
+Pines,real madrid,Metal,,12000,1
+Pines,SantaFe,Metal,,12000,1
+Pines,sombrero volteado,Metal,,12000,1
+Pines,taza cafe,Metal,,12000,1
+Pines,taza de cafe colombiano,Metal,,12000,1
+Pines,tipico colombia,Metal,,12000,1
+Pines,tipicos colombianos ref2,Metal,,12000,1
+Pines,Tipicos de colombia,Metal,,12000,1
+Pines,Tolima,Metal,,12000,1
+Pines,Valle del cocora,Metal,,12000,1
+Pines,Willy's Colombia,Metal,,12000,1
+Pines,willys,Metal,,12000,1
+Pines,yo amo colombia,Metal,,12000,1
+Pocillo,Cali completo,vidrio,,35000,1
+Pocillo,Copas tipica,ceramica,,45000,1
+Pocillo,Grande típico cali,ceramica,,25000,1
+Pocillo,Juego típico cali,vidrio,,50000,1
+Pocillo,Pequeño típico cali,ceramica,,20000,1
+Porta candela,Chontaduro,Blanco,,10000,1
+Porta candela,Depor,Triplex,,10000,1
+Porta candela,Gato,Triplex,,10000,1
+Porta celular,America,Blanco,,25000,1
+Porta celular,Arbol,Triplex,,25000,1
+Porta celular,Atrapasuenos,Triplex,,25000,1
+Porta celular,Batman,Triplex,,25000,1
+Porta celular,Bicicleta,Triplex,,25000,1
+Porta celular,Boo,Triplex,,25000,1
+Porta celular,Calavera,Triplex,,25000,1
+Porta celular,Cali,Blanco,,25000,1
+Porta celular,Cerebro,Duna,,25000,1
+Porta celular,chelsea,Blanco,,25000,1
+Porta celular,Chontaduro,Blanco,,25000,1
+Porta celular,Colombia,Triplex,,25000,1
+Porta celular,Copa,Triplex,,25000,1
+Porta celular,Cristo,Triplex,,25000,1
+Porta celular,Dark Vader,Triplex,,25000,1
+Porta celular,Deadpool,Blanco,,25000,1
+Porta celular,Elefante,Triplex,,25000,1
+Porta celular,Ermita,Triplex,,25000,1
+Porta celular,escudo pereira,Blanco,,25000,1
+Porta celular,Frida,Triplex,,25000,1
+Porta celular,Gameboy,Duna,,25000,1
+Porta celular,Garfield,Triplex,,25000,1
+Porta celular,Gatas cali,Triplex,,25000,1
+Porta celular,Gato,Triplex,,25000,1
+Porta celular,Gato Tejada pequeño,Triplex,,20000,1
+Porta celular,Gatos,Triplex,,25000,1
+Porta celular,Girasol,Duna,,25000,1
+Porta celular,Groot,Triplex,,25000,1
+Porta celular,Guitarra,Blanco,,25000,1
+Porta celular,Hogwarts,Triplex,,25000,1
+Porta celular,iglesia san antonio,Triplex,,25000,1
+Porta celular,Jirafa,Blanco,,25000,1
+Porta celular,Joker,Triplex,,25000,1
+Porta celular,juanchaco ladrilleros,Triplex,,25000,1
+Porta celular,Mafalda,Triplex,,25000,1
+Porta celular,Mandala,Triplex,,25000,1
+Porta celular,Mano,Duna,,25000,1
+Porta celular,Manos,Triplex,,25000,1
+Porta celular,Mario,Triplex,,25000,1
+Porta celular,Mariposa,Triplex,,25000,1
+Porta celular,Mujer,Triplex,,25000,1
+Porta celular,mujer maravilla,Triplex,,25000,1
+Porta celular,Nintendo,Blanco,,25000,1
+Porta celular,Once,Triplex,,25000,1
+Porta celular,Pajaros,Triplex,,25000,1
+Porta celular,Panda,Triplex,,25000,1
+Porta celular,Perro,Triplex,,25000,1
+Porta celular,Piolin,Duna,,25000,1
+Porta celular,Pucca,Triplex,,25000,1
+Porta celular,Quijote,Triplex,,25000,1
+Porta celular,Salsa,Triplex,,25000,1
+Porta celular,SantaFe,Triplex,,25000,1
+Porta celular,simpson,Triplex,,25000,1
+Porta celular,snoopy,Blanco,,25000,1
+Porta celular,Star Wars,Triplex,,25000,1
+Porta celular,Tiger,Triplex,,25000,1
+Porta celular,Tortuga,Triplex,,25000,1
+Porta celular,Up,Blanco,,25000,1
+Porta celular,Vacas,Triplex,,25000,1
+porta Llaves,Casas,Triplex,,25000,1
+porta Llaves,Chontaduro,Blanco,,15000,1
+porta Llaves,Colombia,Triplex,,15000,1
+porta Llaves,Colombia,Triplex,,30000,1
+porta Llaves,colombia chiva,Triplex,,25000,1
+porta Llaves,Ermita,Triplex,,25000,1
+porta Llaves,Gatas cali,Triplex,,25000,1
+porta Llaves,Gato,Triplex,,15000,1
+porta Llaves,Guitarra,Triplex,,25000,1
+porta Llaves,Letrero cali,Triplex,,25000,1
+porta Llaves,palenquera,Triplex,,25000,1
+porta Llaves,Placa,Triplex,,25000,1
+Porta retrato,retrato,Triplex,,30000,1
+Portapasaporte,animales,Tela,,60000,1
+Portapasaporte,aves colombianas,Tela,,60000,1
+Portapasaporte,bahia solano,Tela,,60000,1
+Portapasaporte,cafe de colombia,Tela,,60000,1
+Portapasaporte,cali iconos,Tela,,60000,1
+Portapasaporte,caliwood,Tela,,60000,1
+Portapasaporte,Chontaduro,Tela,,60000,1
+Portapasaporte,Colombia maravilla,Tela,,60000,1
+Portapasaporte,gato tejada,Tela,,60000,1
+Portapasaporte,guayacanes,Tela,,60000,1
+Portapasaporte,orquideas de colombia,Tela,,60000,1
+Portapasaporte,pandebono,Tela,,60000,1
+Portapasaporte,wonderfull colombia,Tela,,60000,1
+Portavasos,capital salsa,Caucho,,7000,1
+Portavasos,Colombia,Caucho,,7000,1
+Portavasos,Gatas cali,Triplex,,25000,1
+Portavasos,Gato,Triplex,,25000,1
+Portavasos,loma de la cruz,Caucho,,7000,1
+Portavasos,sucursal del cielo,Caucho,,7000,1
+postal,bandeja paisa,Blanco,,7000,1
+postal,casa paisa,Blanco,,7000,1
+postal,Chiva,Blanco,,7000,1
+postal,colombianadas,Blanco,,7000,1
+postal,echele salsita,Blanco,,7000,1
+postal,el eje cafetero,Blanco,,7000,1
+postal,el gato y sus quince novias,Blanco,,7000,1
+postal,el mecato de cali,Blanco,,7000,1
+postal,frutas exoticas de colombia,Blanco,,7000,1
+postal,frutas tipicas de colombia,Blanco,,7000,1
+postal,lechona,Blanco,,7000,1
+postal,mapa de colombia,Blanco,,7000,1
+postal,Pajaros,Blanco,,7000,1
+postal,paramo,Blanco,,7000,1
+postal,pescao frito,Blanco,,7000,1
+postal,sancocho,Blanco,,7000,1
+postal,santiago de cali,Blanco,,7000,1
+postal,simbolos nacionales de colombia,Blanco,,7000,1
+postal,tamal,Blanco,,7000,1
+postal,trapiche de caña,Blanco,,7000,1
+pulsera,Colombia,Cuero,,15000,1
+pulsera,Colombia,Hilo,,25000,1
+pulsera,colores tierra,Cuero,,15000,1
+pulsera,cristal checo con aros dorados colombia,Tela,,15000,1
+pulsera,escudo america,Cuero,,15000,1
+pulsera,escudo cali,Cuero,,15000,1
+pulsera,escudo millonarios,Cuero,,15000,1
+pulsera,escudo nacional,Cuero,,15000,1
+pulsera,escudo pereira,Cuero,,15000,1
+pulsera,Manilla delgada,Semilla,,25000,1
+pulsera,Manilla gruesa,Semilla,,35000,1
+pulsera,nudo plano doble tejido corazon colombia,Tela,,15000,1
+pulsera,nudo plano doble tejido mapa colombia,Tela,,15000,1
+pulsera,pepas,Hilo,,15000,1
+pulsera,Tejida,Hilo,,10000,1
+pulsera,Tejido plano triple bandera corazon,Tela,,15000,1
+pulsera,Tejido plano triple mapa de colombia,Tela,,15000,1
+Reloj,Batman,Niebla,,45000,1
+Reloj,Batman ciudad,Niebla,,45000,1
+Reloj,Bicicleta,Niebla,,45000,1
+Reloj,black panter,Duna,,45000,1
+Reloj,Buho,Duna,,45000,1
+Reloj,Caballo,Duna,,45000,1
+Reloj,Capitan,Duna,,45000,1
+Reloj,Deadpool,Duna,,45000,1
+Reloj,deadpool2,Duna,,45000,1
+Reloj,Gatos,Niebla,,45000,1
+Reloj,Goku,Duna,,45000,1
+Reloj,goku 2,Duna,,45000,1
+Reloj,Guns,Niebla,,45000,1
+Reloj,guns2,Niebla,,45000,1
+Reloj,harry potter,Duna,,45000,1
+Reloj,harry potter 2,Duna,,45000,1
+Reloj,hulk,Duna,,45000,1
+Reloj,Iron,Duna,,45000,1
+Reloj,Jack,Niebla,,45000,1
+Reloj,Joker,Duna,,45000,1
+Reloj,Logan,Duna,,45000,1
+Reloj,Mandala,Niebla,,45000,1
+Reloj,Mario,Duna,,45000,1
+Reloj,mario luigi,Duna,,45000,1
+Reloj,Mariposa,Duna,,45000,1
+Reloj,Mono,Duna,,45000,1
+Reloj,musica,Duna,,45000,1
+Reloj,musica 2,Duna,,45000,1
+Reloj,Naruto,Duna,,45000,1
+Reloj,naruto 2,Duna,,45000,1
+Reloj,One,Duna,,45000,1
+Reloj,Perros,Duna,,45000,1
+Reloj,Pink,Niebla,,45000,1
+Reloj,Regae,Niebla,,45000,1
+Reloj,regue dont worry,Duna,,45000,1
+Reloj,sailor,Duna,,45000,1
+Reloj,sakura,Duna,,45000,1
+Reloj,Soda,Niebla,,45000,1
+Reloj,Spiderman,Duna,,45000,1
+Reloj,Star Wars,Duna,,45000,1
+Reloj,star wars 2,Duna,,45000,1
+Reloj,stranger,Duna,,45000,1
+Reloj,Superman,Niebla,,45000,1
+Reloj,thanos,Duna,,45000,1
+Reloj,vengadores,Duna,,45000,1
+Reloj,vengadores 2,Duna,,45000,1
+Reloj,Zeppelin,Niebla,,45000,1
+Rompecabezas,Aguila,Triplex,,40000,1
+Rompecabezas,Alce,Triplex,,40000,1
+Rompecabezas,Caballo,Triplex,,40000,1
+Rompecabezas,Cerdo,Triplex,,40000,1
+Rompecabezas,Delfin,Triplex,,40000,1
+Rompecabezas,Dragon,Triplex,,40000,1
+Rompecabezas,Gato,Triplex,,40000,1
+Rompecabezas,Jabali,Triplex,,40000,1
+Rompecabezas,Jirafa,Triplex,,40000,1
+Rompecabezas,Mapa,Triplex,,40000,1
+Rompecabezas,Mickey,Triplex,,40000,1
+Rompecabezas,Paloma,Triplex,,40000,1
+Rompecabezas,Perro,Triplex,,40000,1
+Rompecabezas,Pez,Triplex,,40000,1
+Rompecabezas,Pinguino,Triplex,,40000,1
+Rompecabezas,Puma,Triplex,,40000,1
+Rompecabezas,Reno,Triplex,,40000,1
+Rompecabezas,Rino,Triplex,,40000,1
+Rompecabezas,Trex,Triplex,,40000,1
+Rompecabezas,Triceratop,Triplex,,40000,1
+Rompecabezas,Vaca,Triplex,,40000,1
+Rompecabezas,Velociraptor,Triplex,,40000,1
+Separador,animales mitad,PLA,,15000,1
+Separador,Arbol,PLA,,15000,1
+Separador,arbol nieve paisaje,PLA,,15000,1
+Separador,astronauta,PLA,,15000,1
+Separador,Barranquero,PLA,,15000,1
+Separador,Barranquero v2,PLA,,15000,1
+Separador,bichofue,PLA,,15000,1
+Separador,Cafetal,PLA,,15000,1
+Separador,calaveras,PLA,,15000,1
+Separador,calaveras y rosas,PLA,,15000,1
+Separador,cara pintada,PLA,,15000,1
+Separador,Chiva,PLA,,15000,1
+Separador,Colibri,PLA,,15000,1
+Separador,colibri v2,PLA,,15000,1
+Separador,colombia cafetera,PLA,,15000,1
+Separador,Dragon,PLA,,15000,1
+Separador,dragon y samurai,PLA,,15000,1
+Separador,Dragon y samurai 2,PLA,,15000,1
+Separador,dragones,PLA,,15000,1
+Separador,faraon,PLA,,15000,1
+Separador,faro papel,PLA,,15000,1
+Separador,Flores,PLA,,15000,1
+Separador,flores 2,PLA,,15000,1
+Separador,flores camelias,PLA,,15000,1
+Separador,gallito de roca,PLA,,15000,1
+Separador,gato cara,PLA,,15000,1
+Separador,gato curioso,PLA,,15000,1
+Separador,gato de perfil,PLA,,15000,1
+Separador,gato noir,PLA,,15000,1
+Separador,gato papel,PLA,,15000,1
+Separador,gato tejada,PLA,,15000,1
+Separador,gato tomando cafe,PLA,,15000,1
+Separador,Goku,PLA,,15000,1
+Separador,Guacamaya,PLA,,15000,1
+Separador,Guacamaya v2,PLA,,15000,1
+Separador,niña y bosque,PLA,,15000,1
+Separador,pez japones,PLA,,15000,1
+Separador,rana y flor,PLA,,15000,1
+Separador,samurai y arbol rojo,PLA,,15000,1
+Separador,tanjiro,PLA,,15000,1
+Separador,tipico colombia,PLA,,15000,1
+Separador,titiribi,PLA,,15000,1
+Separador,Todo cali,PLA,,15000,1
+Separador,Vaca,PLA,,15000,1
+Separador,Zorro,PLA,,15000,1
+Seriado,Batman Grande,Triplex,,65000,1
+Seriado,Batman pequeño,Duna,,45000,1
+Seriado,Buda,Duna,,60000,1
+Seriado,Buda incienso,Duna,,85000,1
+Seriado,Calavera Grande,Duna,,45000,1
+Seriado,Calavera pequeña,Duna,,30000,1
+Seriado,Calavera portaobjetos,Duna,,60000,1
+Seriado,Einstein,Duna,,80000,1
+Seriado,Elefante,Triplex,,60000,1
+Seriado,Gato,Triplex,,60000,1
+Seriado,Gato 2,Triplex,,60000,1
+Seriado,gato3,Triplex,,50000,1
+Seriado,Goku,Duna,,90000,1
+Seriado,Groot,Duna,,55000,1
+Seriado,Groot2,Triplex,,60000,1
+Seriado,Jesus,Triplex,,95000,1
+Seriado,Mario,Duna,,80000,1
+Seriado,Minion,Triplex,,35000,1
+Seriado,Minotauro,Triplex,,150000,1
+Seriado,Perro,Triplex,,60000,1
+Seriado,Puma,Triplex,,60000,1
+Seriado,Storm trooper,Duna,,80000,1
+Servilletero,Gato,Blanco,,25000,1
+sticker,Cali es cali,Blanco,,2000,1
+sticker,Cali oiga mire vea,Blanco,,2000,1
+sticker,Mira ve,Blanco,,2000,1
+sticker,Vojabes,Blanco,,2000,1
+Taza,Ballena,vidrio,,35000,1
+Taza,cafe con chontaduro,Metal,,50000,1
+Taza,cafe de colombia,vidrio,,35000,1
+Taza,cafe de colombia,Metal,,50000,1
+Taza,Cali completo,Metal,,50000,1
+Taza,cali es salsa,Metal,,50000,1
+Taza,cali iconos,Metal,,50000,1
+Taza,cali tipico sticker,Metal,,50000,1
+Taza,Chiva,Metal,,50000,1
+Taza,Chontaduro,Metal,,50000,1
+Taza,colombia cafetera,Metal,,50000,1
+Taza,Cristo,Metal,,50000,1
+Taza,Ermita,Metal,,50000,1
+Taza,fauna de colombia,Metal,,50000,1
+Taza,gato oiga mire vea,Metal,,50000,1
+Taza,gato tejada,Metal,,50000,1
+Taza,guayacanes,Metal,,50000,1
+Taza,los guayacanes blanco,Metal,,50000,1
+Taza,mapa de colombia,Metal,,50000,1
+Taza,Pequeña Santiago de cali,Metal,,45000,1
+Taza,Pequeña todo cali,Metal,,45000,1
+Taza,que chimba colombia,Metal,,50000,1
+Taza,rana,Metal,,50000,1
+Taza,sucursal,Metal,,50000,1
+Taza,tipico colombia,Metal,,50000,1
+Taza,yo amo cali,PLA,,50000,1
+Termo,animales,Metal,,55000,1
+Termo,cafe de colombia,Metal,,55000,1
+Termo,Cali completo,Metal,,45000,1
+Termo,cali iconos,Metal,,55000,1
+Termo,caliwood,Metal,,55000,1
+Termo,cholao,Metal,,55000,1
+Termo,Chontaduro,Metal,,55000,1
+Termo,Colombia,Metal,,55000,1
+Termo,Cristo rey,Metal,,55000,1
+Termo,Ermita,Metal,,55000,1
+Termo,galeria alameda,Metal,,55000,1
+Termo,La sucursal del cielo,Metal,,55000,1
+Termo,Mapa cali,Metal,,45000,1
+Termo,Pajaros,Metal,,55000,1
+Termo,pandebono,Metal,,55000,1
+Termo,sucursal,Metal,,55000,1
+Toalla,cali iconos,Tela,,90000,1
+Toalla,caribe,Tela,,90000,1
+Toalla,Colombia,Tela,,90000,1
+Toalla,Salsa,Tela,,90000,1
+Toalla,Tiburones,Tela,,90000,1
+totebags,aves de colombia,Tela,,55000,1
+totebags,Barranquero,Tela,,35000,1
+totebags,bichofue,Tela,,35000,1
+totebags,Cali,Tela,,55000,1
+totebags,cali calles,Tela,,35000,1
+totebags,Cali es cali,Tela,,35000,1
+totebags,cali tipico,Tela,,35000,1
+totebags,cali tirso,Tela,,35000,1
+totebags,campana cali,Tela,,35000,1
+totebags,caras el gato y sus gatas,Tela,,35000,1
+totebags,cholao,Tela,,35000,1
+totebags,cholao chontaduro empanada,Tela,,35000,1
+totebags,Chontaduro,Tela,,35000,1
+totebags,Chontaduro,Tela,,55000,1
+totebags,Colombia,Tela,,55000,1
+totebags,colombia simbolos,Tela,,35000,1
+totebags,el gato y sus gatas,Tela,,35000,1
+totebags,estampadas CALI,Tela,,55000,1
+totebags,Gata 7 vidas,Tela,,35000,1
+totebags,gata bandida,Tela,,35000,1
+totebags,gata del rio gachuza,Tela,,35000,1
+totebags,gata super estrella,Tela,,35000,1
+totebags,Gatas amontonadas,Tela,,35000,1
+totebags,gatas caritas,Tela,,35000,1
+totebags,gatas del rio,Tela,,35000,1
+totebags,gatas del rio,Tela,,55000,1
+totebags,gato tejada,Tela,,35000,1
+totebags,gato y pajaro,Tela,,35000,1
+totebags,la maceta,Tela,,55000,1
+totebags,las caleñas son como,Tela,,55000,1
+totebags,maceta,Tela,,55000,1
+totebags,manga poma,Tela,,35000,1
+totebags,pamdebono,Tela,,35000,1
+totebags,Salsa,Tela,,55000,1
+Varios,Amplificador,Triplex,,30000,1
+Varios,Arbol,Triplex,,80000,1
+Varios,Arbol Letrero Pequeño,Triplex,,40000,1
+Varios,Arbol Navidad Pequeño,Triplex,,25000,1
+Varios,Bicicleta grande,Triplex,,70000,1
+Varios,Bicicleta pequeña,Triplex,,55000,1
+Varios,Buda,Blanco,,50000,1
+Varios,Buho,PLA,,40000,1
+Varios,Calavera,PLA,,25000,1
+Varios,Camaleon flexible,PLA,,30000,1
+Varios,camisa,Tela,,35000,1
+Varios,Chiva grande,Blanco,,20000,1
+Varios,chiva mediana,Blanco,,15000,1
+Varios,chiva pequeña,Blanco,,10000,1
+Varios,corazon engranaje,PLA,,60000,1
+Varios,Corazon flexible,PLA,,15000,1
+Varios,Corazón flexible gigante,PLA,,350000,1
+Varios,Cristo grande,PLA,,25000,1
+Varios,Cristo pequeño,PLA,,15000,1
+Varios,Despulpadora,Triplex,,25000,1
+Varios,Elefante,Blanco,,25000,1
+Varios,Elefante grande,PLA,,30000,1
+Varios,Elefante pequeño,PLA,,20000,1
+Varios,Gata estirada,PLA,,20000,1
+Varios,Gata grande,PLA,,30000,1
+Varios,Gato acostado,PLA,,15000,1
+Varios,gato alzando pata,PLA,,120000,1
+Varios,gato cuello largo,PLA,,60000,1
+Varios,Gato de Schrodinger,PLA,,200000,1
+Varios,gato escultura sentada,PLA,,60000,1
+Varios,gato geometrico barbas,PLA,,60000,1
+Varios,Gato pareja,PLA,,20000,1
+Varios,Gato saludando pequeño,PLA,,20000,1
+Varios,Gato sentado geometrico,PLA,,500000,1
+Varios,Gato Tejada gigante,PLA,,120000,1
+Varios,Gato Tejada grande,PLA,,25000,1
+Varios,Gato Tejada mediano,PLA,,20000,1
+Varios,Gato Tejada pequeño,PLA,,15000,1
+Varios,gorra,Tela,,25000,1
+Varios,Hojas,Duna,,5000,1
+Varios,Incienso,Triplex,,2000,1
+Varios,Juego Collar Mapa Colombia pequeño + Aretes pequeño,Metal,,70000,1
+Varios,lector,PLA,,60000,1
+Varios,Lobo,PLA,,20000,1
+Varios,Loro articulado,PLA,,20000,1
+Varios,maquina de coser,Triplex,,25000,1
+Varios,Matera,PLA,,20000,1
+Varios,Monedero grande,Tela,,25000,1
+Varios,Monedero mediano,Cuero,,20000,1
+Varios,Monedero pequeño,Tela,,15000,1
+Varios,mujer corazon,PLA,,50000,1
+Varios,mujer pensando,PLA,,50000,1
+Varios,mujer sosteniendo,PLA,,50000,1
+Varios,Objeto resinado,PLA,,25000,1
+Varios,Oso grande,PLA,,30000,1
+Varios,pareja,PLA,,45000,1
+Varios,pata gato,PLA,,30000,1
+Varios,peluche,Niebla,,15000,1
+Varios,Placa,Metal,,35000,1
+Varios,Pulsera,Cuero,,10000,1
+Varios,pulsera pepas,Cuero,,10000,1
+Varios,Sapo,Triplex,,25000,1
+Varios,Torre eiffel,Triplex,,50000,1
+Varios,Yipao,Triplex,,35000,1
+Varios,Zorro,PLA,,20000,1
+wisquera,Bailarines cali,Metal,,30000,1

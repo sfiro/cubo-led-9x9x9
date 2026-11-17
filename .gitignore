@@ -20,6 +20,8 @@ asistente_voz/conocimiento/*.xls
 asistente_voz/conocimiento/*.csv
 asistente_voz/conocimiento/productos.json
 asistente_voz/conocimiento/catalogo.md
+# ...salvo la lista publica de productos (v5.3): sin costos, proveedores ni codigos
+!asistente_voz/conocimiento/productos_publicos.csv
 asistente_voz/raspberry/.cache_conocimiento.json
 
 # Fotos del armado (~210 MB). Se dejan fuera del repo para no inflar el historial.

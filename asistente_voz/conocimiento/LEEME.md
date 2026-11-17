@@ -4,8 +4,11 @@ Esta es la base de conocimiento de **Cali Abstracto**, la que usa el asistente. 
 para que la Pi la reciba con `git pull`: se edita aquí (en el Mac), se sube, y en la Pi se baja.
 La plantilla vacía está en `../conocimiento_ejemplo/`.
 
-**La base de productos (`productos.xlsx`) nunca se sube**, porque tiene costos internos: se copia
-a la Pi a mano. Tampoco se suben `productos.json` ni `catalogo.md`, que se generan desde ella.
+**La base de productos (`productos.xlsx`) nunca se sube**, porque tiene costos internos. En su
+lugar se sube `productos_publicos.csv` (desde la v5.3): solo los productos activos con su precio
+de venta, sin costo, precio al por mayor, proveedor ni códigos. Se genera en el Mac con
+`python productos.py --publico ~/Downloads/Users.xlsx`. No se suben `productos.json` ni
+`catalogo.md`, que la Pi genera al arrancar.
 Este repositorio es público: no pongas aquí nada que no quieras que se vea.
 
 | Archivo | Qué es |

@@ -2,8 +2,9 @@
 # .csv en ../conocimiento/) y busca los productos que nombra un cliente, con su
 # precio real.
 #
-#   python productos.py                      importa ../conocimiento/productos.xlsx
+#   python productos.py                      importa la base de ../conocimiento/
 #   python productos.py ruta/a/la/base.xlsx  importa ese archivo
+#   python productos.py --publico base.xlsx  crea ../conocimiento/productos_publicos.csv (v5.3)
 #
 # El importador deja en la carpeta de conocimiento:
 #   - productos.json: solo lo que el cubo puede decir (categoria, diseno,
@@ -11,6 +12,11 @@
 #     el proveedor, el QR y la imagen NO salen de aqui.
 #   - catalogo.md: un resumen por categoria, que entra en la busqueda de la v5.
 # El asistente lo corre solo al arrancar si la base es mas nueva que productos.json.
+#
+# productos_publicos.csv (v5.3) es la lista que va en GitHub: solo productos
+# activos, con su precio de venta y la ciudad de origen cuando es una ciudad. Sin
+# costo, precio al por mayor, proveedor, codigos ni imagenes. Se importa igual
+# que la base completa.
 
 import csv
 import difflib
@@ -22,7 +28,8 @@ from collections import Counter
 
 from comandos import normalizar
 
-BASES = ("productos.xlsx", "productos.csv")
+BASES = ("productos.xlsx", "productos.csv", "productos_publicos.csv")
+PUBLICA = "productos_publicos.csv"
 # Columnas que se leen. Las demas (Costo, Precio_B2B, User_id, QR, Imagen...) se ignoran.
 _COLUMNAS = ("Producto", "Diseño", "Material", "Ciudad", "Precio", "Activo")
 _GENERICAS = set(
@@ -204,18 +211,48 @@ def _catalogo(productos):
 
 
 def preparar(carpeta):
-    # Importa la base si es mas nueva que productos.json. Devuelve un mensaje o None.
+    # Importa la base mas reciente (la completa o la publica) si es mas nueva que
+    # productos.json. Devuelve un mensaje o None.
     salida = os.path.join(carpeta, "productos.json")
-    for nombre in BASES:
-        base = os.path.join(carpeta, nombre)
-        if os.path.exists(base):
-            nombres = os.path.join(carpeta, "nombres_productos.md")
-            ultima = max(os.path.getmtime(base),
-                         os.path.getmtime(nombres) if os.path.exists(nombres) else 0)
-            if not os.path.exists(salida) or os.path.getmtime(salida) < ultima:
-                return "Base de productos importada: " + importar(base, carpeta)
-            return None
+    bases = [os.path.join(carpeta, n) for n in BASES if os.path.exists(os.path.join(carpeta, n))]
+    if not bases:
+        return None
+    base = max(bases, key=os.path.getmtime)
+    nombres = os.path.join(carpeta, "nombres_productos.md")
+    ultima = max(os.path.getmtime(base),
+                 os.path.getmtime(nombres) if os.path.exists(nombres) else 0)
+    if not os.path.exists(salida) or os.path.getmtime(salida) < ultima:
+        return "Base de productos importada desde %s: %s" % (os.path.basename(base),
+                                                              importar(base, carpeta))
     return None
+
+
+def exportar_publico(ruta, carpeta):
+    # Crea productos_publicos.csv: la lista que se puede publicar en GitHub
+    _, _, ciudades = leer_nombres(carpeta)
+    filas, vistos = [], set()
+    for fila in _filas(ruta):
+        categoria = str(fila.get("Producto") or "").strip()
+        precio = _numero(fila.get("Precio"))
+        material = str(fila.get("Material") or "").strip()
+        if not categoria or not _activo(fila.get("Activo")) or not precio \
+                or material.lower() == "servicio":
+            continue
+        diseno = str(fila.get("Diseño") or "").strip()
+        ciudad = str(fila.get("Ciudad") or "").strip()
+        ciudad = ciudad if ciudad.lower() in ciudades else ""      # el proveedor no se publica
+        clave = (categoria.lower(), diseno.lower(), material.lower(), ciudad.lower(), int(round(precio)))
+        if clave in vistos:
+            continue
+        vistos.add(clave)
+        filas.append([categoria, diseno, material, ciudad, int(round(precio)), 1])
+    filas.sort(key=lambda f: (f[0].lower(), f[1].lower(), f[4]))
+    destino = os.path.join(carpeta, PUBLICA)
+    with open(destino, "w", encoding="utf-8", newline="") as f:
+        escritor = csv.writer(f)
+        escritor.writerow(["Producto", "Diseño", "Material", "Ciudad", "Precio", "Activo"])
+        escritor.writerows(filas)
+    return "%d productos en %s" % (len(filas), destino)
 
 
 # ---- buscar -----------------------------------------------------------------
@@ -321,8 +358,10 @@ class Catalogo:
 if __name__ == "__main__":
     import conocimiento
     carpeta = conocimiento.carpeta_conocimiento()
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 2 and sys.argv[1] == "--publico":
+        print(exportar_publico(sys.argv[2], carpeta))
+    elif len(sys.argv) > 1:
         print(importar(sys.argv[1], carpeta))
     else:
-        print(preparar(carpeta) or "productos.json ya esta al dia (o no hay productos.xlsx ni .csv)")
+        print(preparar(carpeta) or "productos.json ya esta al dia (o no hay ninguna base)")
     print("Escrito en", carpeta)
