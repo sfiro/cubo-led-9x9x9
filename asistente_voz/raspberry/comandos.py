@@ -199,6 +199,8 @@ def interpretar(texto):
     brillo = _pedido_brillo(t)
     if brillo is not None:
         return brillo
+    # Whisper a veces escribe "por la lluvia" en vez de "pon la lluvia" (v5.5)
+    t = re.sub(r"^por (?=(?:el|la|los|las) )", "pon ", t)
     sin_articulo = re.sub(r"^(?:el|la|los|las|un|una|modo) ", "", t)
     if _VERBO.search(t) or sin_articulo in dict(_ALIAS):     # "pon la lluvia" o solo "lluvia"
         nombre = buscar_animacion(t)

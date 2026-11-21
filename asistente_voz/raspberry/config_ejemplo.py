@@ -67,7 +67,11 @@ NUM_CTX = 4096                  # ventana de contexto del modelo, en tokens
 # v5.4, para responder mas rapido:
 BUSCAR_PRODUCTOS = False        # True = busca cada producto con su precio (mas lento);
                                 # False = solo el resumen por categoria
-MAX_PALABRAS_RESPUESTA = 160    # tokens maximos de cada respuesta del modelo
+MAX_PALABRAS_RESPUESTA = 100    # tokens maximos de cada respuesta del modelo
+TEMPERATURA = 0.5               # mas baja = respuestas mas seguras, inventa menos (v5.5)
+# Lo que dice mientras el modelo piensa, para que no haya un silencio largo (v5.5).
+# [] = no decir nada
+FRASES_ESPERA = ["Déjame ver.", "Mmm, a ver.", "Un momento.", "Buena pregunta."]
 # Palabras que Whisper debe escribir bien cuando esta atento (nombres de productos y lugares)
 PISTA_WHISPER = ("Conversación en una tienda de artesanías en Cali: mochila wayúu, sombrero "
                  "vueltiao, champús, lulada, Cristo Rey, San Antonio, Petronio Álvarez.")

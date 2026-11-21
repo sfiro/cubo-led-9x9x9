@@ -36,7 +36,8 @@ REGLAS = (
     "\n\nPara datos de la tienda y de Cali usa SOLO la información que viene con la pregunta. "
     "Si no está, di que no tienes ese dato y sugiere preguntar en caja. Nunca inventes precios, "
     "horarios ni direcciones. De los productos da solo los rangos de precio que te pasan. No "
-    "sabes si quedan unidades, ni das precios al por mayor.")
+    "sabes si quedan unidades, ni das precios al por mayor. Responde en una o dos frases "
+    "cortas: si no sabes algo, dilo en vez de adivinar.")
 MAX_FRAGMENTO_MODELO = 450      # caracteres de cada seccion que se le pasan al modelo (v5.4)
 
 

@@ -19,6 +19,9 @@
 # hora y el estado del cubo van con la pregunta, productos solo como resumen por
 # categoria, menos texto de los documentos, y tiempos de cada etapa en el log.
 # Ver ../versiones/v5.4.md.
+# v5.5: mientras el modelo piensa dice una frase corta de espera ("Déjame ver"),
+# empieza a hablar en la primera coma, respuestas mas cortas, y el log muestra
+# cuanto tardo Ollama en leer y en escribir. Ver ../versiones/v5.5.md.
 #
 # Un turno a la vez: mientras el cubo habla, el microfono se ignora para que
 # no se escuche a si mismo. Ctrl-C para salir.
@@ -52,12 +55,14 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.4"
+VERSION = "5.5"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
 SABER = None
 CATALOGO = None             # v5.1: productos.Catalogo
+ESPERAS = []                # v5.5: audios de las frases de espera, ya sintetizados
+ESTADISTICAS = {}           # v5.5: lo que informa Ollama al terminar cada respuesta
 SR_WHISPER = 16000
 
 
@@ -133,8 +138,10 @@ def preguntar(historial, extra=""):
         # Ollama corta sin avisar lo que no cabe en la ventana, empezando por las
         # instrucciones: con los documentos se fija en 8192 tokens
         # num_predict: corta respuestas largas, que en la Pi tardan en generarse
+        # temperature: mas baja = inventa menos
         "options": {"num_ctx": getattr(config, "NUM_CTX", 4096),
-                    "num_predict": getattr(config, "MAX_PALABRAS_RESPUESTA", 160)},
+                    "num_predict": getattr(config, "MAX_PALABRAS_RESPUESTA", 100),
+                    "temperature": getattr(config, "TEMPERATURA", 0.5)},
     }
     pedido = urllib.request.Request(config.OLLAMA_URL + "/api/chat",
                                     data=json.dumps(cuerpo).encode(),
@@ -148,7 +155,22 @@ def preguntar(historial, extra=""):
                 raise RuntimeError(dato["error"])
             yield dato.get("message", {}).get("content", "")
             if dato.get("done"):
+                ESTADISTICAS.clear()
+                ESTADISTICAS.update(dato)
                 return
+
+
+def resumen_ollama():
+    # "leyo 312 tokens en 4.1 s, escribio 45 en 4.0 s": muestra si lo lento es
+    # leer la pregunta (prompt) o escribir la respuesta
+    e = ESTADISTICAS
+    if not e.get("eval_count"):
+        return ""
+    leidos, t_leer = e.get("prompt_eval_count", 0), e.get("prompt_eval_duration", 0) / 1e9
+    escritos, t_escribir = e["eval_count"], e.get("eval_duration", 0) / 1e9
+    return "leyo %d tokens en %.1f s (%.0f/s), escribio %d en %.1f s (%.0f/s)" % (
+        leidos, t_leer, leidos / t_leer if t_leer else 0,
+        escritos, t_escribir, escritos / t_escribir if t_escribir else 0)
 
 
 # ---- hablar -----------------------------------------------------------------
@@ -243,6 +265,10 @@ def responder(texto, historial, motor, locutor, anim):
         mensaje += "Información que puede servir:\n%s\n" % contexto
     mensaje += "Pregunta: %s" % texto
 
+    if ESPERAS:                         # "Déjame ver" mientras el modelo piensa
+        audio, sr = random.choice(ESPERAS)
+        locutor.reproductor.agregar(audio, sr)
+
     t = time.monotonic()
     frases = Frases()
     respuesta = ""
@@ -265,6 +291,8 @@ def responder(texto, historial, motor, locutor, anim):
     print("Cubo: %s" % respuesta.strip())
     print("      [tiempos] busqueda %.1f s | modelo hasta la 1a frase %.1f s | pregunta de %d caracteres"
           % (t_busqueda, (primera or time.monotonic()) - t, len(mensaje)))
+    if resumen_ollama():
+        print("      [ollama] %s" % resumen_ollama())
     for tipo, valor in frases.etiquetas:
         accion = comandos.de_etiqueta(tipo, valor)
         if accion is not None:
@@ -374,6 +402,9 @@ def principal():
     vigilia = Vigilia(getattr(config, "VENTANA_CONVERSACION_S", 20))
     aviso = getattr(config, "RESPUESTA_ACTIVACION", "¿Sí?")
     audio_aviso = voz.sintetizar(aviso) if con_frase and aviso else None
+    global ESPERAS
+    ESPERAS = [(voz.sintetizar(f), voz.sr) for f in getattr(
+        config, "FRASES_ESPERA", ["Déjame ver.", "Mmm, a ver.", "Un momento.", "Buena pregunta."])]
 
     historial = []
     if con_frase:

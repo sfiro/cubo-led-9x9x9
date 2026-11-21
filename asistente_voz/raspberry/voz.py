@@ -48,10 +48,14 @@ class Frases:
     # Las etiquetas para el cubo no se dicen: se guardan en .etiquetas como
     # pares (tipo, valor).
     MINIMO = 12             # no cortar en frases demasiado cortas ("Si.")
+    # v5.5: la primera frase tambien se corta en una coma, si ya va larga, para
+    # empezar a hablar antes ("Claro, los imanes van de 7000 a 20000 pesos," ...)
+    PRIMERA_COMA = 30
 
     def __init__(self):
         self._texto = ""
         self.etiquetas = []
+        self._dichas = 0
 
     def _quitar_etiquetas(self, texto):
         def guardar(m):
@@ -76,6 +80,12 @@ class Frases:
             if m.end() - inicio >= self.MINIMO:
                 frases.append(listo[inicio:m.end()])
                 inicio = m.end()
+        if not frases and not self._dichas:
+            coma = listo.find(", ", self.PRIMERA_COMA)
+            if coma > 0:
+                frases.append(listo[:coma + 2])
+                inicio = coma + 2
+        self._dichas += len(frases)
         self._texto = listo[inicio:] + pendiente
         return [f for f in map(limpiar, frases) if f]
 

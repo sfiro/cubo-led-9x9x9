@@ -8,7 +8,7 @@ pedir con la voz las 34 animaciones del cubo ("pon la lluvia", "¿qué hora es?"
 Desde la v3 el cubo tiene 16 niveles de brillo: bordes suaves, estela en las animaciones y
 brillo por voz ("baja el brillo"). Desde la v4 duerme hasta que le dices **"hola cubo"**.
 
-**Versión actual: 5.4**: el cubo de Cali Abstracto, más rápido para responder ([v5.4](versiones/v5.4.md)). Responde sobre la tienda de artesanías y sobre Cali con documentos que tú escribes (ver [versiones/v5.md](versiones/v5.md)). Lo que trae cada versión y cómo volver a una anterior está en
+**Versión actual: 5.5**: el cubo de Cali Abstracto. Dice una frase de espera mientras piensa, responde más corto, y trae un comparador de modelos ([v5.5](versiones/v5.5.md)). Responde sobre la tienda de artesanías y sobre Cali con documentos que tú escribes (ver [versiones/v5.md](versiones/v5.md)). Lo que trae cada versión y cómo volver a una anterior está en
 [versiones/](versiones/README.md).
 
 ```
