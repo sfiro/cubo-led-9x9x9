@@ -55,7 +55,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.9"
+VERSION = "5.10"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
@@ -245,13 +245,18 @@ def responder(texto, historial, motor, locutor, anim, anterior=None):
     previa = None                       # v5.9: la pregunta anterior, si esta la sigue
     if SABER is not None:
         try:
-            # v5.9: "¿y de que material son?" habla de lo anterior (los llaveros): no se
-            # contesta con la pregunta frecuente general (0.91), va al modelo con los
-            # documentos. "¿Y a que hora cierran?" se parece mucho mas (0.95 o mas) y si.
+            # v5.10: en una pregunta que sigue el tema ("¿y ...?") primero se busca en los
+            # documentos junto con la pregunta anterior. Si eso lleva a un producto del
+            # catalogo, la pregunta es sobre ese producto ("¿tienen llaveros?" -> "¿y de que
+            # material son?") y va al modelo con su seccion. Si no ("¿y a que hora
+            # cierran?"), se compara sin la "y" con las preguntas frecuentes.
             seguimiento = anterior is not None and conocimiento.sigue_el_tema(texto)
-            exacta = SABER.pregunta_exacta(texto)
-            if exacta is not None and seguimiento and exacta[2] < conocimiento.UMBRAL_EXACTA_SEGUIMIENTO:
-                exacta = None
+            if seguimiento:
+                contexto, fuentes = SABER.contexto(texto, anterior)
+                de_producto = SABER.junto is not None and SABER.junto.archivo == "catalogo.md"
+                exacta = None if de_producto else SABER.pregunta_exacta(conocimiento.sin_conector(texto))
+            else:
+                exacta = SABER.pregunta_exacta(texto)
             if exacta is not None:
                 respuesta, forma, puntaje = exacta
                 print("Cubo: %s  (pregunta frecuente: '%s' %.2f)" % (respuesta, forma, puntaje))
@@ -260,8 +265,9 @@ def responder(texto, historial, motor, locutor, anim, anterior=None):
                 for frase in partes.agregar(respuesta + " ") + partes.terminar():
                     locutor.frases.put(frase)
                 return None
-            contexto, fuentes = SABER.contexto(texto, anterior)
-            if seguimiento or getattr(SABER, "junto", False):
+            if not seguimiento:
+                contexto, fuentes = SABER.contexto(texto, anterior)
+            if seguimiento or SABER.junto is not None:
                 previa = anterior
         except Exception as e:          # Ollama ocupado o caido: se responde sin documentos
             print("[conocimiento] %s" % e)

@@ -6,6 +6,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 
 | Versión | Etiqueta | Fecha | Qué trae |
 |---|---|---|---|
+| [5.10](v5.10.md) | `asistente-v5.10` | 2026-11-21 | Preguntas de seguimiento: "¿y de qué material son?" va al producto, "¿y a qué hora cierran?" responde al instante |
 | [5.9](v5.9.md) | `asistente-v5.9` | 2026-11-21 | Ya no copia respuestas anteriores: sigue el tema con la pregunta anterior, y "¿y de qué material son?" va al producto |
 | [5.8](v5.8.md) | `asistente-v5.8` | 2026-11-21 | Entiende preguntas que siguen el tema, como "¿y cuánto valen?" |
 | [5.7](v5.7.md) | `asistente-v5.7` | 2026-11-21 | Una conversación por cliente: historial corto que se borra al despertar, y preguntas frecuentes frase por frase |
@@ -22,7 +23,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 | [2.0](v2.md) | `asistente-v2.0` | 2026-11-02 | Controlar las animaciones del cubo con la voz, sin dejar de conversar |
 | [1.0](v1.md) | `asistente-v1.0` | 2026-11-02 | Asistente de voz local; el cubo se ilumina al ritmo de la voz |
 
-El programa dice su versión al arrancar (`Asistente de voz v5.9`), y el diagnóstico también.
+El programa dice su versión al arrancar (`Asistente de voz v5.10`), y el diagnóstico también.
 
 ## Volver a una versión anterior
 

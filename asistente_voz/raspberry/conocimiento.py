@@ -44,15 +44,19 @@ MAX_FRAGMENTO_MODELO = 450      # caracteres de cada seccion que se le pasan al 
 MARGEN_FRAGMENTO = 0.15
 # v5.8: si la pregunta empieza con "y" y puntua menos que esto, se busca tambien junto con la
 # anterior; otras preguntas, solo si puntuan 0.1 menos
-UMBRAL_SEGUIMIENTO = 0.6
-# v5.9: una pregunta que sigue el tema solo se contesta con una pregunta frecuente si se parece
-# casi igual ("¿y a qué hora cierran?"), no si es general ("¿y de qué material son?", 0.91)
-UMBRAL_EXACTA_SEGUIMIENTO = 0.95
+# v5.10: una pregunta que empieza con "y" siempre se busca tambien junto con la anterior; otra
+# pregunta, solo si sola puntua menos que esto
+UMBRAL_SEGUIMIENTO = 0.5
 
 
 def sigue_el_tema(pregunta):
     # "¿Y cuanto valen?", "e igual...", "entonces...", "pero...": sigue la pregunta anterior
     return re.match(r"\W*(y|e|entonces|pero)\b", pregunta.lower()) is not None
+
+
+def sin_conector(pregunta):
+    # "¿Y a que hora cierran?" -> "¿a que hora cierran?", para compararla con las frecuentes
+    return re.sub(r"^(\W*)(y|e|entonces|pero)\b[\s,]*", r"\1", pregunta, flags=re.I)
 
 
 def carpeta_conocimiento(ruta=None):
@@ -320,11 +324,15 @@ class Conocimiento:
         mejor = encontrados[0][0] if encontrados else 0.0
         # "¿Y ...?" casi siempre sigue el tema; otra pregunta solo si no encontro casi nada
         sigue = sigue_el_tema(pregunta)
-        self.junto = False
-        if anterior and mejor < (UMBRAL_SEGUIMIENTO if sigue else UMBRAL_SEGUIMIENTO - 0.1):
+        self.junto = None
+        if anterior and (sigue or mejor < UMBRAL_SEGUIMIENTO):
             juntos = self.buscar("%s %s" % (anterior, pregunta))
             if juntos and juntos[0][0] > mejor:
-                encontrados, self.junto = juntos, True
+                # junto: la seccion a la que llevo la pregunta anterior, si es OTRA que la de
+                # la pregunta sola ("¿y de que material son?" -> Llaveros, no "Como hacemos")
+                if not encontrados or juntos[0][1] is not encontrados[0][1]:
+                    self.junto = juntos[0][1]
+                encontrados = juntos
         if not encontrados:
             return "", []
         mejor = encontrados[0][0]
