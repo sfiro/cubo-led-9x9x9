@@ -45,6 +45,14 @@ MARGEN_FRAGMENTO = 0.15
 # v5.8: si la pregunta empieza con "y" y puntua menos que esto, se busca tambien junto con la
 # anterior; otras preguntas, solo si puntuan 0.1 menos
 UMBRAL_SEGUIMIENTO = 0.6
+# v5.9: una pregunta que sigue el tema solo se contesta con una pregunta frecuente si se parece
+# casi igual ("¿y a qué hora cierran?"), no si es general ("¿y de qué material son?", 0.91)
+UMBRAL_EXACTA_SEGUIMIENTO = 0.95
+
+
+def sigue_el_tema(pregunta):
+    # "¿Y cuanto valen?", "e igual...", "entonces...", "pero...": sigue la pregunta anterior
+    return re.match(r"\W*(y|e|entonces|pero)\b", pregunta.lower()) is not None
 
 
 def carpeta_conocimiento(ruta=None):
@@ -311,11 +319,12 @@ class Conocimiento:
         encontrados = self.buscar(pregunta)
         mejor = encontrados[0][0] if encontrados else 0.0
         # "¿Y ...?" casi siempre sigue el tema; otra pregunta solo si no encontro casi nada
-        sigue = re.match(r"\W*(y|e|entonces|pero)\b", pregunta.lower())
+        sigue = sigue_el_tema(pregunta)
+        self.junto = False
         if anterior and mejor < (UMBRAL_SEGUIMIENTO if sigue else UMBRAL_SEGUIMIENTO - 0.1):
             juntos = self.buscar("%s %s" % (anterior, pregunta))
             if juntos and juntos[0][0] > mejor:
-                encontrados = juntos
+                encontrados, self.junto = juntos, True
         if not encontrados:
             return "", []
         mejor = encontrados[0][0]

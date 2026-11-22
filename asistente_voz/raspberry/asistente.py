@@ -55,7 +55,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.8"
+VERSION = "5.9"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
@@ -226,11 +226,13 @@ def entender(whisper, audio, guia=None):
     return " ".join(s.text.strip() for s in segmentos).strip(), time.monotonic() - t
 
 
-def responder(texto, historial, motor, locutor, anim):
+def responder(texto, historial, motor, locutor, anim, anterior=None):
     # Comando directo o pregunta al modelo. Devuelve la respuesta del modelo, con
     # sus etiquetas, para guardarla en el historial. v5.7: los comandos y las
     # preguntas frecuentes devuelven None y no van al historial: el modelo tendria
     # que volver a leerlas en cada pregunta (unos 1.5 s por cada 100 tokens).
+    # anterior: la pregunta anterior de esta conversacion (v5.9), para entender
+    # "¿y cuanto valen?".
     accion = comandos.interpretar(texto) if getattr(config, "COMANDOS_DIRECTOS", True) else None
     if accion is not None:
         print("Cubo: %s  (comando directo)" % accion.respuesta)
@@ -240,9 +242,16 @@ def responder(texto, historial, motor, locutor, anim):
 
     t_busqueda = time.monotonic()
     contexto = ""
+    previa = None                       # v5.9: la pregunta anterior, si esta la sigue
     if SABER is not None:
         try:
+            # v5.9: "¿y de que material son?" habla de lo anterior (los llaveros): no se
+            # contesta con la pregunta frecuente general (0.91), va al modelo con los
+            # documentos. "¿Y a que hora cierran?" se parece mucho mas (0.95 o mas) y si.
+            seguimiento = anterior is not None and conocimiento.sigue_el_tema(texto)
             exacta = SABER.pregunta_exacta(texto)
+            if exacta is not None and seguimiento and exacta[2] < conocimiento.UMBRAL_EXACTA_SEGUIMIENTO:
+                exacta = None
             if exacta is not None:
                 respuesta, forma, puntaje = exacta
                 print("Cubo: %s  (pregunta frecuente: '%s' %.2f)" % (respuesta, forma, puntaje))
@@ -251,8 +260,9 @@ def responder(texto, historial, motor, locutor, anim):
                 for frase in partes.agregar(respuesta + " ") + partes.terminar():
                     locutor.frases.put(frase)
                 return None
-            anterior = next((m["content"] for m in reversed(historial) if m["role"] == "user"), None)
             contexto, fuentes = SABER.contexto(texto, anterior)
+            if seguimiento or getattr(SABER, "junto", False):
+                previa = anterior
         except Exception as e:          # Ollama ocupado o caido: se responde sin documentos
             print("[conocimiento] %s" % e)
             contexto, fuentes = "", []
@@ -269,6 +279,8 @@ def responder(texto, historial, motor, locutor, anim):
     mensaje = "(%s)\n" % comandos.estado_cubo(motor.actual, motor.mensaje, anim.brillo)
     if contexto:
         mensaje += "Información que puede servir:\n%s\n" % contexto
+    if previa:
+        mensaje += "Pregunta anterior: %s\n" % previa
     mensaje += "Pregunta: %s" % texto
 
     if ESPERAS:                         # "Déjame ver" mientras el modelo piensa
@@ -415,6 +427,7 @@ def principal():
         config, "FRASES_ESPERA", ["Déjame ver.", "Mmm, a ver.", "Un momento.", "Buena pregunta."])]
 
     historial = []
+    anterior = None
     if con_frase:
         print('Listo. Di "%s" para despertarlo%s.' % (frase, " (o escríbelo)" if args.escribir else ""))
     elif args.escribir:
@@ -456,6 +469,7 @@ def principal():
                 vigilia.despertar()
                 anim.atento = True
                 historial = []                  # v5.7: otra persona, otra conversacion
+                anterior = None
                 if not args.escribir:
                     print("\nTu:   %s  (%.1f s)" % (texto, segundos))
                 print("      [cubo] despierto: te escucho %d s" % vigilia.ventana_s)
@@ -484,14 +498,18 @@ def principal():
 
             anim.estado = "pensando"
             with turno:
-                respuesta = responder(texto, historial, motor, locutor, anim)
+                respuesta = responder(texto, historial, motor, locutor, anim, anterior)
                 locutor.frases.join()   # espera a que todas las frases tengan audio
                 rep.esperar()
-            if respuesta is not None:
+            anterior = texto
+            # v5.9: por defecto no se le pasan las respuestas anteriores al modelo: el modelo
+            # pequeno las copiaba ("¿tienen llaveros?" -> la respuesta de las tazas). Para
+            # seguir el tema basta la pregunta anterior, que va con la pregunta nueva.
+            recordar = getattr(config, "MAX_HISTORIAL", 0)
+            if respuesta is not None and recordar > 0:
                 historial += [{"role": "user", "content": texto},
                               {"role": "assistant", "content": respuesta}]
-                recordar = getattr(config, "MAX_HISTORIAL", 2)
-                historial = historial[-recordar:] if recordar > 0 else []
+                historial = historial[-recordar:]
 
             if mic is not None:
                 time.sleep(0.3)         # deja apagar el eco de la sala
