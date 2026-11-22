@@ -53,7 +53,8 @@ INSTRUCCIONES = (
     "Responde siempre en español, en una a tres frases cortas y naturales, "
     "como en una conversación. No uses listas, emojis, asteriscos ni formato."
 )
-MAX_HISTORIAL = 4           # mensajes anteriores que el modelo recuerda (menos = mas rapido)
+MAX_HISTORIAL = 2           # mensajes anteriores que el modelo recuerda: 2 = la ultima pregunta
+                            # y su respuesta (v5.7; antes 4). Cada 100 tokens son ~1.5 s en la Pi
 
 # ---- Lo que sabe el cubo (v5) ----------------------------------------------
 # Documentos en ../conocimiento/ (la tienda, Cali, preguntas frecuentes). Si esa

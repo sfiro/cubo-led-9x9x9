@@ -55,7 +55,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.6"
+VERSION = "5.7"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
@@ -227,14 +227,16 @@ def entender(whisper, audio, guia=None):
 
 
 def responder(texto, historial, motor, locutor, anim):
-    # Comando directo o pregunta al modelo. Devuelve la respuesta, con sus
-    # etiquetas, para guardarla en el historial.
+    # Comando directo o pregunta al modelo. Devuelve la respuesta del modelo, con
+    # sus etiquetas, para guardarla en el historial. v5.7: los comandos y las
+    # preguntas frecuentes devuelven None y no van al historial: el modelo tendria
+    # que volver a leerlas en cada pregunta (unos 1.5 s por cada 100 tokens).
     accion = comandos.interpretar(texto) if getattr(config, "COMANDOS_DIRECTOS", True) else None
     if accion is not None:
         print("Cubo: %s  (comando directo)" % accion.respuesta)
         ejecutar(accion, motor, anim)
         locutor.frases.put(accion.respuesta)
-        return accion.respuesta + " " + accion.etiqueta()
+        return None
 
     t_busqueda = time.monotonic()
     contexto = ""
@@ -244,8 +246,11 @@ def responder(texto, historial, motor, locutor, anim):
             if exacta is not None:
                 respuesta, forma, puntaje = exacta
                 print("Cubo: %s  (pregunta frecuente: '%s' %.2f)" % (respuesta, forma, puntaje))
-                locutor.frases.put(limpiar(respuesta))
-                return respuesta
+                # v5.7: frase por frase, para que la primera suene sin esperar el resto
+                partes = Frases()
+                for frase in partes.agregar(respuesta + " ") + partes.terminar():
+                    locutor.frases.put(frase)
+                return None
             contexto, fuentes = SABER.contexto(texto)
         except Exception as e:          # Ollama ocupado o caido: se responde sin documentos
             print("[conocimiento] %s" % e)
@@ -448,6 +453,7 @@ def principal():
                     continue
                 vigilia.despertar()
                 anim.atento = True
+                historial = []                  # v5.7: otra persona, otra conversacion
                 if not args.escribir:
                     print("\nTu:   %s  (%.1f s)" % (texto, segundos))
                 print("      [cubo] despierto: te escucho %d s" % vigilia.ventana_s)
@@ -479,9 +485,11 @@ def principal():
                 respuesta = responder(texto, historial, motor, locutor, anim)
                 locutor.frases.join()   # espera a que todas las frases tengan audio
                 rep.esperar()
-            historial += [{"role": "user", "content": texto},
-                          {"role": "assistant", "content": respuesta}]
-            historial = historial[-config.MAX_HISTORIAL:]
+            if respuesta is not None:
+                historial += [{"role": "user", "content": texto},
+                              {"role": "assistant", "content": respuesta}]
+                recordar = getattr(config, "MAX_HISTORIAL", 2)
+                historial = historial[-recordar:] if recordar > 0 else []
 
             if mic is not None:
                 time.sleep(0.3)         # deja apagar el eco de la sala

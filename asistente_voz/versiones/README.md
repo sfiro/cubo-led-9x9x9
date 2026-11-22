@@ -6,6 +6,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 
 | Versión | Etiqueta | Fecha | Qué trae |
 |---|---|---|---|
+| [5.7](v5.7.md) | `asistente-v5.7` | 2026-11-21 | Una conversación por cliente: historial corto que se borra al despertar, y preguntas frecuentes frase por frase |
 | [5.6](v5.6.md) | `asistente-v5.6` | 2026-11-21 | Menos texto para el modelo en cada pregunta, y respuestas al instante para lugares y restaurantes de Cali |
 | [5.5](v5.5.md) | `asistente-v5.5` | 2026-11-21 | Frase de espera mientras piensa, respuestas más cortas, estadísticas de Ollama y comparador de modelos |
 | [5.4](v5.4.md) | `asistente-v5.4` | 2026-11-16 | Respuestas más rápidas: instrucciones fijas y cortas, productos resumidos por categoría y tiempos en el log |
@@ -19,7 +20,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 | [2.0](v2.md) | `asistente-v2.0` | 2026-11-02 | Controlar las animaciones del cubo con la voz, sin dejar de conversar |
 | [1.0](v1.md) | `asistente-v1.0` | 2026-11-02 | Asistente de voz local; el cubo se ilumina al ritmo de la voz |
 
-El programa dice su versión al arrancar (`Asistente de voz v5.6`), y el diagnóstico también.
+El programa dice su versión al arrancar (`Asistente de voz v5.7`), y el diagnóstico también.
 
 ## Volver a una versión anterior
 
