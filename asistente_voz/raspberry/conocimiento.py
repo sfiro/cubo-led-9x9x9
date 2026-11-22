@@ -39,6 +39,9 @@ REGLAS = (
     "sabes si quedan unidades, ni das precios al por mayor. Responde en una o dos frases "
     "cortas: si no sabes algo, dilo en vez de adivinar.")
 MAX_FRAGMENTO_MODELO = 450      # caracteres de cada seccion que se le pasan al modelo (v5.4)
+# v5.6: las secciones que siguen a la mejor solo se pasan si puntuan casi igual que ella. Cada
+# 100 tokens de mas en la pregunta le cuestan al modelo unos 1.5 s en la Pi.
+MARGEN_FRAGMENTO = 0.15
 
 
 def carpeta_conocimiento(ruta=None):
@@ -302,5 +305,7 @@ class Conocimiento:
         encontrados = self.buscar(pregunta)
         if not encontrados:
             return "", []
+        mejor = encontrados[0][0]
+        encontrados = [(p, f) for p, f in encontrados if p >= mejor - MARGEN_FRAGMENTO]
         texto = "\n".join(f.para_modelo() for _, f in encontrados)
         return texto, ["%s %.2f" % (f.nombre(), p) for p, f in encontrados]

@@ -32,6 +32,7 @@ def preparar():
     carpeta = conocimiento.carpeta_conocimiento(getattr(config, "CARPETA_CONOCIMIENTO", None))
     asistente.INSTRUCCIONES = (conocimiento.cargar_personalidad(carpeta) or config.INSTRUCCIONES) \
         + conocimiento.REGLAS
+    conocimiento.MARGEN_FRAGMENTO = getattr(config, "MARGEN_FRAGMENTO", conocimiento.MARGEN_FRAGMENTO)
     return conocimiento.Conocimiento(
         carpeta, config.OLLAMA_URL, getattr(config, "MODELO_EMBEDDINGS", "bge-m3"),
         getattr(config, "FRAGMENTOS", 2), getattr(config, "UMBRAL_FRAGMENTO", 0.35),

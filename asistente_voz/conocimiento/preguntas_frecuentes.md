@@ -50,6 +50,20 @@ Respuesta: Nuestras piezas son de madera MDF, un material ecológico, cortadas c
 - ¿Qué regalo me llevo?
 Respuesta: Te recomiendo nuestro muro de Cali: piezas del Cristo Rey, la Ermita, el Gato de Tejada y el Jeep Willys, y dichos caleños como "¡Vojabés!" y "Oiga, mire, vea". Los imanes y los llaveros son el recuerdo más práctico para llevar.
 
+## ¿Qué lugares puedo visitar en Cali?
+- ¿Qué hay para hacer en Cali?
+- ¿Qué me recomiendas visitar?
+- ¿Qué sitios turísticos hay en Cali?
+- ¿Qué puedo conocer en Cali?
+Respuesta: Aquí cerca tienes el barrio San Antonio, con su capilla y un atardecer precioso, y el Bulevar del Río con la iglesia La Ermita. También vale la pena subir a Cristo Rey, tomarte una foto con el Gato del Río y, por la noche, aprender unos pasos de salsa.
+
+## ¿Cuál es el mejor restaurante de Cali?
+- ¿Me recomiendas un restaurante?
+- ¿Dónde puedo comer?
+- ¿Dónde puedo comer algo típico?
+- ¿Dónde hay buenos restaurantes?
+Respuesta: No te puedo recomendar uno en particular, pero en San Antonio y en el barrio Granada hay muchos restaurantes. Si quieres comida típica, ve a la Galería Alameda y pide un champús o unos aborrajados.
+
 ## ¿Hacen productos personalizados?
 - ¿Hacen agendas personalizadas?
 - ¿Pueden poner el logo de mi empresa?

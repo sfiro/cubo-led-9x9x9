@@ -55,7 +55,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.5"
+VERSION = "5.6"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
@@ -342,6 +342,7 @@ def principal():
             print("AVISO: no pude leer la base de productos: %s" % e)
         INSTRUCCIONES = (conocimiento.cargar_personalidad(carpeta) or config.INSTRUCCIONES) \
             + conocimiento.REGLAS
+        conocimiento.MARGEN_FRAGMENTO = getattr(config, "MARGEN_FRAGMENTO", conocimiento.MARGEN_FRAGMENTO)
         SABER = conocimiento.Conocimiento(
             carpeta, config.OLLAMA_URL, getattr(config, "MODELO_EMBEDDINGS", "bge-m3"),
             getattr(config, "FRAGMENTOS", 2), getattr(config, "UMBRAL_FRAGMENTO", 0.35),

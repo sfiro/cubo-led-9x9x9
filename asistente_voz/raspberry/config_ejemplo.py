@@ -62,6 +62,7 @@ USAR_CONOCIMIENTO = True
 MODELO_EMBEDDINGS = "bge-m3"    # para buscar en los documentos (entiende espanol)
 FRAGMENTOS = 2                  # secciones que se le pasan al modelo en cada pregunta
 UMBRAL_FRAGMENTO = 0.35         # parecido minimo para pasarle una seccion
+MARGEN_FRAGMENTO = 0.15         # v5.6: la 2a seccion solo si puntua casi igual que la mejor
 UMBRAL_PREGUNTA_EXACTA = 0.88   # parecido para contestar tal cual una pregunta frecuente
 NUM_CTX = 4096                  # ventana de contexto del modelo, en tokens
 # v5.4, para responder mas rapido:
