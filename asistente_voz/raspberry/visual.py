@@ -128,12 +128,14 @@ class Animador(threading.Thread):
         if self.reproductor is not None and self.reproductor.sonando():
             nivel, bandas = self.reproductor.estado_audio()
             return self._hablando(t, nivel, bandas), False
+        # v5.11: una animacion que pidieron sigue en el cubo mientras escucha o piensa;
+        # antes cualquier ruido de la tienda la tapaba con "escuchando"
+        if animacion is not None:
+            return animacion, True
         if self.estado == "escuchando":
             return escuchando(t, nivel_db(self.microfono.rms) if self.microfono else 0.0), False
         if self.estado == "pensando":
             return pensando(t), False
-        if animacion is not None:
-            return animacion, True
         if not self.atento and getattr(self.cubo, "bits", 1) > 1:
             return reposo(t * 0.6) * 0.5, False
         return reposo(t), False

@@ -55,12 +55,19 @@ CATALOGO = {
     "esfera": ("la esfera", "esfera que crece", []),
     "ascensores": ("los ascensores", "columnas que suben y bajan", ["ascensor"]),
     "demo": ("todas las animaciones", "recorre todas, una tras otra",
-             ["modo demo", "todas las animaciones", "todas", "sorprendeme"]),
+             ["modo demo", "todas las animaciones", "las animaciones", "todas"]),
 }
 
-_VERBOS = (r"pon|ponme|ponle|ponga|muestra|muestrame|mostrar|activa|cambia|enciende|prende|"
-           r"haz|hazme|quiero ver|dejame ver|ensename|reproduce|inicia|arranca|lanza|"
-           r"vuelve a|regresa a")
+_VERBOS = (r"pon|ponme|ponle|ponla|ponlo|ponga|pongas|pones|poner|ponerme|ponerle|pondrias|"
+           r"coloca|colocame|colocale|colocar|coloque|coloques|colocas|"
+           r"muestra|muestrame|mostrar|mostrarme|muestres|ensename|ensenar|"
+           r"activa|activame|activar|cambia|cambiala|cambiar|enciende|prende|haz|hazme|"
+           r"reproduce|inicia|empieza|arranca|lanza|quiero ver|dejame ver|"
+           r"vuelve a|regresa a|pasa a|sigue con|sorprendeme")
+# v5.11: "quiero la lluvia", "dame la nieve": solo si lo que sigue es una animacion, para que
+# "quiero un llavero de corazon" no ponga la carita
+_QUIERO = re.compile(r"(?:yo )?(?:quiero|quisiera|queremos|dame|regalame)(?: ver)? "
+                     r"(?:(?:el|la|los|las|un|una) )?(.+?)(?: por favor)?")
 _PARAR = re.compile(
     r"(?:oye cubo )?(?:por favor )?(para|deten|detente|basta|quita|apaga|termina|stop)"
     r"(?: (?:ya|eso|esto|todo|la animacion|las animaciones|las luces|el cubo|la luz))*"
@@ -92,12 +99,51 @@ def normalizar(texto):
     return " ".join(re.sub(r"[^a-z0-9: ]", " ", texto).split())
 
 
-def buscar_animacion(texto):
+def _como_suena(palabra):
+    # v5.11: Whisper escribe "yuvia", "matris", "nieb"... Se comparan las palabras como
+    # suenan en espanol: ll=y, v=b, z/ce/ci=s, qu/ca/co/cu=k, sin h.
+    p = palabra.replace("ll", "y").replace("v", "b").replace("z", "s").replace("h", "")
+    p = re.sub(r"c(?=[ei])", "s", p)
+    p = re.sub(r"qu(?=[ei])", "k", p)
+    p = p.replace("c", "k").replace("x", "ks")
+    return re.sub(r"(.)\1+", r"\1", p)            # letras repetidas: "fuegoss" -> "fuegos"
+
+
+# Para la busqueda aproximada: alias de una sola palabra, largos (no "mar" ni "cara")
+_PALABRAS_ANIMACION = [(_como_suena(alias), nombre) for alias, nombre in _ALIAS
+                       if " " not in alias and len(alias) >= 4]
+
+
+def buscar_animacion(texto, aproximada=False):
     t = " %s " % normalizar(texto)
     for alias, nombre in _ALIAS:
         if " %s " % alias in t:
             return nombre
+    if aproximada:          # solo cuando ya se sabe que piden algo ("pon la yuvia")
+        import difflib
+        mejor, cual = 0.0, None
+        for palabra in t.split():
+            if len(palabra) < 4:
+                continue
+            sonido = _como_suena(palabra)
+            for forma, nombre in _PALABRAS_ANIMACION:
+                parecido = difflib.SequenceMatcher(None, sonido, forma).ratio()
+                if parecido > mejor:
+                    mejor, cual = parecido, nombre
+        if mejor >= 0.8:
+            return cual
     return None
+
+
+# v5.11: "pon una animacion", "pon otra", "cambia la animacion", "sorprendeme con algo"
+_CUALQUIERA = re.compile(r"\b(animacion|animaciones|sorprendeme|cambiala)\b")
+_OTRA = re.compile(r"(?:pon|ponme|coloca|colocame|cambia|muestrame)(?: (?:otra|otro|algo|alguna|"
+                   r"cualquiera|lo que quieras))+(?: cosa)?(?: por favor)?")
+_AL_AZAR = [n for n in CATALOGO if n not in ("demo", "marquesina", "reloj", "flash")]
+
+# v5.11: se agrega a la pista de Whisper, para que reconozca los nombres de las animaciones
+PISTA_ANIMACIONES = ("Pon la lluvia, coloca la nieve, los fuegos artificiales, Matrix, Pac-Man, "
+                     "la hélice, el tornado, las olas, la serpiente, la carita. Para la animación.")
 
 
 def nombre_hablado(nombre):
@@ -202,14 +248,23 @@ def interpretar(texto):
     # Whisper a veces escribe "por la lluvia" en vez de "pon la lluvia" (v5.5)
     t = re.sub(r"^por (?=(?:el|la|los|las) )", "pon ", t)
     sin_articulo = re.sub(r"^(?:el|la|los|las|un|una|modo) ", "", t)
-    if _VERBO.search(t) or sin_articulo in dict(_ALIAS):     # "pon la lluvia" o solo "lluvia"
-        nombre = buscar_animacion(t)
-        if nombre:
-            dicho = CATALOGO[nombre][0]
-            if nombre == "reloj":
-                return Accion("animacion", "reloj", respuesta="Te muestro la hora. %s." % hora_hablada())
-            return Accion("animacion", nombre, respuesta=random.choice(
-                ["Listo, pongo %s.", "Claro, pongo %s.", "Va: %s."]) % dicho)
+    pide = _VERBO.search(t)
+    quiero = _QUIERO.fullmatch(t)
+    nombre = None
+    if pide or sin_articulo in dict(_ALIAS):     # "pon la lluvia" o solo "lluvia"
+        nombre = buscar_animacion(t, aproximada=bool(pide))
+        if nombre is None and pide and (_CUALQUIERA.search(t) or _OTRA.fullmatch(t)):
+            nombre = random.choice(_AL_AZAR)        # "pon una animacion", "pon otra"
+    elif quiero:                                 # "quiero la lluvia", "dame la yuvia"
+        resto = quiero.group(1)
+        nombre = dict(_ALIAS).get(resto) or (buscar_animacion(resto, aproximada=True)
+                                             if " " not in resto else None)
+    if nombre:
+        dicho = CATALOGO[nombre][0]
+        if nombre == "reloj":
+            return Accion("animacion", "reloj", respuesta="Te muestro la hora. %s." % hora_hablada())
+        return Accion("animacion", nombre, respuesta=random.choice(
+            ["Listo, pongo %s.", "Claro, pongo %s.", "Va: %s."]) % dicho)
     return None
 
 

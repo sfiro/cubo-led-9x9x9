@@ -55,7 +55,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.10"
+VERSION = "5.11"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
@@ -425,6 +425,8 @@ def principal():
     frase = getattr(config, "FRASE_ACTIVACION", "hola cubo")
     guia = frase.title() + "."                      # "Hola Cubo."
     pista = getattr(config, "PISTA_WHISPER", None)  # v5: palabras del negocio para Whisper
+    # v5.11: y los nombres de las animaciones, para que Whisper no escriba "yuvia" o "matris"
+    pista = ((pista or "") + " " + comandos.PISTA_ANIMACIONES).strip()
     vigilia = Vigilia(getattr(config, "VENTANA_CONVERSACION_S", 20))
     aviso = getattr(config, "RESPUESTA_ACTIVACION", "¿Sí?")
     audio_aviso = voz.sintetizar(aviso) if con_frase and aviso else None
