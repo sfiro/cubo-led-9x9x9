@@ -55,7 +55,7 @@ from cubo_usb import abrir_cubo
 from visual import Animador
 from voz import Frases, Voz, limpiar
 
-VERSION = "5.7"
+VERSION = "5.8"
 # v5: los fija principal(). INSTRUCCIONES reemplaza a config.INSTRUCCIONES si hay
 # personalidad.md, y SABER busca en los documentos.
 INSTRUCCIONES = None
@@ -251,7 +251,8 @@ def responder(texto, historial, motor, locutor, anim):
                 for frase in partes.agregar(respuesta + " ") + partes.terminar():
                     locutor.frases.put(frase)
                 return None
-            contexto, fuentes = SABER.contexto(texto)
+            anterior = next((m["content"] for m in reversed(historial) if m["role"] == "user"), None)
+            contexto, fuentes = SABER.contexto(texto, anterior)
         except Exception as e:          # Ollama ocupado o caido: se responde sin documentos
             print("[conocimiento] %s" % e)
             contexto, fuentes = "", []
@@ -348,6 +349,7 @@ def principal():
         INSTRUCCIONES = (conocimiento.cargar_personalidad(carpeta) or config.INSTRUCCIONES) \
             + conocimiento.REGLAS
         conocimiento.MARGEN_FRAGMENTO = getattr(config, "MARGEN_FRAGMENTO", conocimiento.MARGEN_FRAGMENTO)
+        conocimiento.UMBRAL_SEGUIMIENTO = getattr(config, "UMBRAL_SEGUIMIENTO", conocimiento.UMBRAL_SEGUIMIENTO)
         SABER = conocimiento.Conocimiento(
             carpeta, config.OLLAMA_URL, getattr(config, "MODELO_EMBEDDINGS", "bge-m3"),
             getattr(config, "FRAGMENTOS", 2), getattr(config, "UMBRAL_FRAGMENTO", 0.35),

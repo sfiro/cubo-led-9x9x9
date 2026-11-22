@@ -8,7 +8,7 @@ pedir con la voz las 34 animaciones del cubo ("pon la lluvia", "¿qué hora es?"
 Desde la v3 el cubo tiene 16 niveles de brillo: bordes suaves, estela en las animaciones y
 brillo por voz ("baja el brillo"). Desde la v4 duerme hasta que le dices **"hola cubo"**.
 
-**Versión actual: 5.7**: el cubo de Cali Abstracto. Empieza una conversación nueva con cada cliente y le pasa al modelo solo lo que necesita, para responder antes ([v5.7](versiones/v5.7.md)). Responde sobre la tienda de artesanías y sobre Cali con documentos que tú escribes (ver [versiones/v5.md](versiones/v5.md)). Lo que trae cada versión y cómo volver a una anterior está en
+**Versión actual: 5.8**: el cubo de Cali Abstracto. Empieza una conversación nueva con cada cliente, le pasa al modelo solo lo que necesita y entiende preguntas como "¿y cuánto valen?" ([v5.8](versiones/v5.8.md)). Responde sobre la tienda de artesanías y sobre Cali con documentos que tú escribes (ver [versiones/v5.md](versiones/v5.md)). Lo que trae cada versión y cómo volver a una anterior está en
 [versiones/](versiones/README.md).
 
 ```

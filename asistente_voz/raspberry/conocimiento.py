@@ -42,6 +42,9 @@ MAX_FRAGMENTO_MODELO = 450      # caracteres de cada seccion que se le pasan al 
 # v5.6: las secciones que siguen a la mejor solo se pasan si puntuan casi igual que ella. Cada
 # 100 tokens de mas en la pregunta le cuestan al modelo unos 1.5 s en la Pi.
 MARGEN_FRAGMENTO = 0.15
+# v5.8: si la pregunta empieza con "y" y puntua menos que esto, se busca tambien junto con la
+# anterior; otras preguntas, solo si puntuan 0.1 menos
+UMBRAL_SEGUIMIENTO = 0.6
 
 
 def carpeta_conocimiento(ruta=None):
@@ -300,9 +303,19 @@ class Conocimiento:
         orden = np.argsort(-puntajes)[:self.k]
         return [(float(puntajes[i]), self.fragmentos[i]) for i in orden if puntajes[i] >= umbral]
 
-    def contexto(self, pregunta):
+    def contexto(self, pregunta, anterior=None):
         # (texto para el modelo, nombres de las fuentes para el log)
+        # v5.8: "¿y cuanto valen?" no dice de que habla. Si la pregunta sola no
+        # encuentra nada claro, se busca tambien junto con la pregunta anterior
+        # ("¿tienen tazas? ¿y cuanto valen?") y se queda la busqueda que sirva mas.
         encontrados = self.buscar(pregunta)
+        mejor = encontrados[0][0] if encontrados else 0.0
+        # "¿Y ...?" casi siempre sigue el tema; otra pregunta solo si no encontro casi nada
+        sigue = re.match(r"\W*(y|e|entonces|pero)\b", pregunta.lower())
+        if anterior and mejor < (UMBRAL_SEGUIMIENTO if sigue else UMBRAL_SEGUIMIENTO - 0.1):
+            juntos = self.buscar("%s %s" % (anterior, pregunta))
+            if juntos and juntos[0][0] > mejor:
+                encontrados = juntos
         if not encontrados:
             return "", []
         mejor = encontrados[0][0]
