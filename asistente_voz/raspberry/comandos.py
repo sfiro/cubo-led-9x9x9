@@ -114,6 +114,31 @@ _PALABRAS_ANIMACION = [(_como_suena(alias), nombre) for alias, nombre in _ALIAS
                        if " " not in alias and len(alias) >= 4]
 
 
+# v5.12: "detener animaciones", "apaga la lluvia", "ya no mas", "quita el demo", "cancela eso".
+# Cuenta solo si TODAS las palabras son de parar: asi "¿cuando termina la feria?" o "¿para
+# que sirve?" no detienen nada.
+_VERBOS_PARAR = {"para", "pare", "parar", "paralo", "parala", "paralas", "detener", "deten",
+                 "detente", "detenga", "detenlo", "detenla", "detenlas", "basta", "apaga", "apagar",
+                 "apagala", "apagalo", "apagalas", "apague", "termina", "terminar", "termine",
+                 "quita", "quitar", "quitala", "quitalo", "quitalas", "quite", "cancela", "cancelar",
+                 "stop", "alto", "frena", "suficiente", "acaba", "acabar", "no mas", "ya no mas"}
+_RELLENO_PARAR = {"oye", "cubo", "ya", "por", "favor", "puedes", "podrias", "me", "le", "la", "las",
+                  "el", "los", "lo", "de", "un", "una", "eso", "esto", "esa", "esta", "todo", "todas",
+                  "ahora", "mejor", "y", "no", "mas", "animacion", "animaciones", "demo", "modo",
+                  "luces", "luz", "show", "ok", "listo", "gracias", "bueno"}
+
+
+def es_parar(t):
+    palabras = t.split()
+    if not palabras or len(palabras) > 8:
+        return False
+    texto = " %s " % t
+    if not any(" %s " % v in texto for v in _VERBOS_PARAR):
+        return False
+    nombres = {p for alias, _ in _ALIAS for p in alias.split()}
+    return all(p in _VERBOS_PARAR or p in _RELLENO_PARAR or p in nombres for p in palabras)
+
+
 def buscar_animacion(texto, aproximada=False):
     t = " %s " % normalizar(texto)
     for alias, nombre in _ALIAS:
@@ -231,7 +256,7 @@ def interpretar(texto):
     # Comandos directos. Devuelve una Accion con su respuesta, o None si hay
     # que preguntarle al modelo.
     t = normalizar(texto)
-    if _PARAR.fullmatch(t):
+    if _PARAR.fullmatch(t) or es_parar(t):
         return Accion("parar", respuesta=random.choice(
             ["Listo, apago la animación.", "Hecho, la detengo.", "Ok, la quito."]))
     m = _ESCRIBIR.match(t)

@@ -6,6 +6,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 
 | Versión | Etiqueta | Fecha | Qué trae |
 |---|---|---|---|
+| [5.12](v5.12.md) | `asistente-v5.12` | 2026-11-22 | Más formas de detener las animaciones: "detener animaciones", "apaga la lluvia", "ya no más" |
 | [5.11](v5.11.md) | `asistente-v5.11` | 2026-11-22 | Las animaciones siempre se pueden poner: muchas más formas de pedirlas, nombres mal escritos y la animación no desaparece con el ruido |
 | [5.10](v5.10.md) | `asistente-v5.10` | 2026-11-21 | Preguntas de seguimiento: "¿y de qué material son?" va al producto, "¿y a qué hora cierran?" responde al instante |
 | [5.9](v5.9.md) | `asistente-v5.9` | 2026-11-21 | Ya no copia respuestas anteriores: sigue el tema con la pregunta anterior, y "¿y de qué material son?" va al producto |
@@ -24,7 +25,7 @@ está en un solo lugar, `asistente_voz/`. La etiqueta es una foto de cómo estab
 | [2.0](v2.md) | `asistente-v2.0` | 2026-11-02 | Controlar las animaciones del cubo con la voz, sin dejar de conversar |
 | [1.0](v1.md) | `asistente-v1.0` | 2026-11-02 | Asistente de voz local; el cubo se ilumina al ritmo de la voz |
 
-El programa dice su versión al arrancar (`Asistente de voz v5.11`), y el diagnóstico también.
+El programa dice su versión al arrancar (`Asistente de voz v5.12`), y el diagnóstico también.
 
 ## Volver a una versión anterior
 

@@ -8,7 +8,7 @@ pedir con la voz las 34 animaciones del cubo ("pon la lluvia", "¿qué hora es?"
 Desde la v3 el cubo tiene 16 niveles de brillo: bordes suaves, estela en las animaciones y
 brillo por voz ("baja el brillo"). Desde la v4 duerme hasta que le dices **"hola cubo"**.
 
-**Versión actual: 5.11**: el cubo de Cali Abstracto. Entiende muchas formas de pedir animaciones ("coloca la lluvia", "¿me pones la nieve?", "pon otra"), aunque Whisper escriba mal el nombre, y sigue el tema en la conversación ([v5.11](versiones/v5.11.md)). Responde sobre la tienda de artesanías y sobre Cali con documentos que tú escribes (ver [versiones/v5.md](versiones/v5.md)). Lo que trae cada versión y cómo volver a una anterior está en
+**Versión actual: 5.12**: el cubo de Cali Abstracto. Entiende muchas formas de pedir y de detener animaciones ("coloca la lluvia", "pon otra", "detener animaciones"), aunque Whisper escriba mal el nombre, y sigue el tema en la conversación ([v5.12](versiones/v5.12.md)). Responde sobre la tienda de artesanías y sobre Cali con documentos que tú escribes (ver [versiones/v5.md](versiones/v5.md)). Lo que trae cada versión y cómo volver a una anterior está en
 [versiones/](versiones/README.md).
 
 ```
