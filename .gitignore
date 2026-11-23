@@ -33,3 +33,4 @@ __pycache__/
 
 # Configuracion local de Claude Code (servidor del simulador)
 .claude/
+cubo10/pico/config.py

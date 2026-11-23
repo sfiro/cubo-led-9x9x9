@@ -11,7 +11,7 @@ firmware es el de <https://micropython.org/download/RPI_PICO/>.
 
 | Archivo | Qué hace |
 |---|---|
-| `cubo.py` | Driver: el PIO y el DMA multiplexan los 9 pisos solos, sin usar el CPU. Incluye doble búfer, así que no se ven cuadros a medias. Opcional: 16 niveles de brillo con `Cubo(bits=4)` (BAM) |
+| `cubo.py` | Driver: el PIO y el DMA multiplexan los 9 pisos solos, sin usar el CPU. Incluye doble búfer, así que no se ven cuadros a medias. Opcional: 16 niveles de brillo con `Cubo(bits=4)` (BAM). También maneja el cubo de 10×10×10 con `Cubo(tam=10)`: ver [cubo10/](../cubo10/README.md) |
 | `animaciones.py` | 34 animaciones: las portadas de `prueba_cubo_funcionLED_4.ino`, efectos clásicos de otros cubos y otras nuevas con física y geometría |
 | `fuente.py` | La fuente de letras 8×8 del sketch original |
 | `web.py` | Página para elegir la animación desde el celular |
