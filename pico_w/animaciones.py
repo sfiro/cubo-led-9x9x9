@@ -1,4 +1,6 @@
 # Animaciones del cubo 9x9x9, portadas de prueba_cubo_funcionLED_4.ino.
+# Desde la v2 del cubo 10x10x10 sirven para los dos tamanos: el modulo arranca
+# en 9x9x9 (como siempre) y configurar(10) lo pasa a 10x10x10.
 #
 # Cada animacion es una corrutina que recibe el cubo, dibuja con c.led(z, y, x, v)
 # y llama a "await _paso(c, ms)" para mostrar el cuadro y esperar.
@@ -14,12 +16,28 @@ import time
 
 from fuente import caracter
 
-N = 9
-M = N - 1
+N = 9               # LEDs por lado
+M = N - 1           # ultimo indice
+H = M // 2          # centro, como indice entero (4 en los dos cubos)
+C = M / 2           # centro exacto: 4.0 en el 9x9x9, 4.5 en el 10x10x10
+S = M / 8           # escala de las figuras: 1.0 en el 9x9x9
+N2 = N * N          # LEDs por piso
+TOPE = M - (N - 8) // 2     # fila de arriba de las letras de 8x8, centradas en altura
+MENSAJE = "CUBO LED 9X9X9   "
 
 
-def _r(n=N):
-    return random.randrange(n)
+def configurar(n):
+    # Cambia el tamano del cubo (9 o 10). Se llama una vez, antes de animar.
+    global N, M, H, C, S, N2, TOPE, MENSAJE, _PERIMETRO
+    N, M = n, n - 1
+    H, C, S, N2 = M // 2, M / 2, M / 8, n * n
+    TOPE = M - (N - 8) // 2
+    MENSAJE = "CUBO LED %dX%dX%d   " % (n, n, n)
+    _PERIMETRO = _perimetro()
+
+
+def _r(n=None):
+    return random.randrange(N if n is None else n)
 
 
 def _durante(ms):
@@ -86,7 +104,7 @@ async def disparos(c, duracion=10000):
         if sigue() and len(balas) < 4 and _r(4) == 0:
             d = random.choice(_DIRECCIONES)
             eje = d.index(1) if 1 in d else d.index(-1)
-            p = [_r(7) + 1, _r(7) + 1, _r(7) + 1]
+            p = [_r(N - 2) + 1, _r(N - 2) + 1, _r(N - 2) + 1]
             p[eje] = 0 if d[eje] > 0 else M
             balas.append([p, d])
 
@@ -115,10 +133,10 @@ async def disparos(c, duracion=10000):
 async def planos(c):
     # 1) Dos planos que se abren desde el centro por cada eje.
     for eje in range(3):
-        for k in list(range(5)) + list(range(3, -1, -1)):
+        for k in list(range(H + 1)) + list(range(H - 1, -1, -1)):
             c.apagar()
-            c.plano(eje, 4 - k, 1)
-            c.plano(eje, 4 + k, 1)
+            c.plano(eje, H - k, 1)
+            c.plano(eje, M - H + k, 1)
             await _paso(c, 60)
 
     # 2) Plano diagonal x + y + z = k que atraviesa el cubo de esquina a esquina.
@@ -142,11 +160,11 @@ async def planos(c):
         nx = math.sin(inclinacion) * math.sin(a)
         c.apagar()
         for z in range(N):
-            pz = (z - 4) * nz
+            pz = (z - C) * nz
             for y in range(N):
-                pzy = pz + (y - 4) * ny
+                pzy = pz + (y - C) * ny
                 for x in range(N):
-                    if abs(pzy + (x - 4) * nx) < 0.5:     # distancia al plano
+                    if abs(pzy + (x - C) * nx) < 0.5:     # distancia al plano
                         c.led(z, y, x, 1)
         await _paso(c, 40)
     c.apagar()
@@ -231,8 +249,8 @@ async def bordes(c):
 async def ascensor(c, eje=0, invertir=False, espera_ms=50, suspendido_ms=1000):
     # effect_axis_updown_randsuspend. Corregido: usaba posiciones[x*8+y] y 7
     # (restos del cubo de 8x8x8), por eso fallaba una parte del cubo.
-    pos = bytearray(81)
-    destino = bytearray(_r() for _ in range(81))
+    pos = bytearray(N2)
+    destino = bytearray(_r() for _ in range(N2))
 
     def dibujar():
         c.apagar()
@@ -250,7 +268,7 @@ async def ascensor(c, eje=0, invertir=False, espera_ms=50, suspendido_ms=1000):
 
     for fase in range(2):
         for _ in range(N):
-            for i in range(81):
+            for i in range(N2):
                 if pos[i] < destino[i]:
                     pos[i] += 1
                 elif pos[i] > destino[i]:
@@ -258,7 +276,7 @@ async def ascensor(c, eje=0, invertir=False, espera_ms=50, suspendido_ms=1000):
             dibujar()
             await _paso(c, espera_ms)
         if fase == 0:
-            destino = bytearray(b"\x08" * 81)
+            destino = bytearray(bytes([M]) * N2)
             await _paso(c, suspendido_ms)
 
 
@@ -272,9 +290,9 @@ async def fuegos(c, cantidad=10, particulas=30):
     # fireworks(): sube un cohete y explota con gravedad
     for _ in range(cantidad):
         c.apagar()
-        ox = _r(4) + 2
-        oy = _r(4) + 2
-        oz = _r(2) + 5
+        ox = _r(N - 5) + 2
+        oy = _r(N - 5) + 2
+        oz = _r(2) + N - 4
         for z in range(oz):
             c.apagar()
             c.led(z, ox, oy, 1)
@@ -303,7 +321,7 @@ async def esfera(c, duracion=6000):
     sigue = _durante(duracion)
     while sigue():
         cz, cy, cx = _r(), _r(), _r()
-        for r in range(1, 13):
+        for r in range(1, N + 4):
             r_ext = (r * 0.5) ** 2
             r_int = (r * 0.4) ** 2
             for z in range(N):
@@ -316,13 +334,13 @@ async def esfera(c, duracion=6000):
 
 async def onda(c, duracion=8000):
     # Superficie senoidal que se mueve desde el centro
-    distancias = [math.sqrt((x - 4) ** 2 + (y - 4) ** 2) for y in range(N) for x in range(N)]
+    distancias = [math.sqrt((x - C) ** 2 + (y - C) ** 2) for y in range(N) for x in range(N)]
     t = 0.0
     sigue = _durante(duracion)
     while sigue():
         c.apagar()
-        for i in range(81):
-            z = int(4.5 + 4 * math.sin(distancias[i] * 0.9 - t))
+        for i in range(N2):
+            z = int(C + 0.5 + C * math.sin(distancias[i] * 0.9 - t))
             c.led(z, i // N, i % N, 1)
         t += 0.3
         await _paso(c, 40)
@@ -337,9 +355,9 @@ def _letra(c, ch, plano, sobre_x):
         for b in range(8):
             v = (fila >> b) & 1
             if sobre_x:
-                c.led(M - i, M - b, plano, v)
+                c.led(TOPE - i, M - b, plano, v)
             else:
-                c.led(M - i, plano, b + 1, v)
+                c.led(TOPE - i, plano, b + 1, v)
 
 
 async def texto(c, mensaje="HOLA", espera_ms=50):
@@ -356,7 +374,7 @@ async def texto(c, mensaje="HOLA", espera_ms=50):
 async def serpiente(c, duracion=10000, largo=14):
     # Culebra que avanza al azar sin salirse del cubo
     c.apagar()
-    cuerpo = [(4, 4, 4)]
+    cuerpo = [(H, H, H)]
     direcciones = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
     d = direcciones[0]
     sigue = _durante(duracion)
@@ -403,14 +421,14 @@ async def cubo_giratorio(c, duracion=10000):
     t = 0.0
     sigue = _durante(duracion)
     while sigue():
-        lado = 1.9 + 0.7 * math.sin(t * 0.8)
+        lado = (1.9 + 0.7 * math.sin(t * 0.8)) * S
         ca, sa = math.cos(t), math.sin(t)
         cb, sb = math.cos(t * 0.6), math.sin(t * 0.6)
         puntos = []
         for z, y, x in vertices:
             y1, x1 = y * ca - x * sa, y * sa + x * ca          # giro sobre el eje vertical
             z2, y2 = z * cb - y1 * sb, z * sb + y1 * cb        # giro sobre el eje x
-            puntos.append((4 + z2 * lado, 4 + y2 * lado, 4 + x1 * lado))
+            puntos.append((C + z2 * lado, C + y2 * lado, C + x1 * lado))
         c.apagar()
         for i, j in aristas:
             _linea(c, puntos[i], puntos[j])
@@ -427,8 +445,8 @@ async def helice(c, duracion=10000):
         c.apagar()
         for z in range(N):
             a = t + z * 0.7
-            ya, xa = 4 + 3.6 * math.cos(a), 4 + 3.6 * math.sin(a)
-            yb, xb = 8 - ya, 8 - xa
+            ya, xa = C + 3.6 * S * math.cos(a), C + 3.6 * S * math.sin(a)
+            yb, xb = M - ya, M - xa
             c.led(z, _i(ya), _i(xa), 1)
             c.led(z, _i(yb), _i(xb), 1)
             if z % 2 == 0:
@@ -446,8 +464,8 @@ async def tornado(c, duracion=10000):
     sigue = _durante(duracion)
     while sigue() or particulas:
         t += 1
-        by = 4 + 1.6 * math.sin(t * 0.05)
-        bx = 4 + 1.6 * math.cos(t * 0.037)
+        by = C + 1.6 * S * math.sin(t * 0.05)
+        bx = C + 1.6 * S * math.cos(t * 0.037)
         if sigue():
             for _ in range(2):
                 particulas.append([0.0, _r(628) / 100, 0.25 + _r(20) / 100])
@@ -459,8 +477,8 @@ async def tornado(c, duracion=10000):
                 particulas.remove(p)
                 continue
             k = p[0] / M                                  # 0 abajo, 1 arriba
-            cy, cx = by + (4 - by) * k, bx + (4 - bx) * k
-            r = 0.5 + 3.4 * k
+            cy, cx = by + (C - by) * k, bx + (C - bx) * k
+            r = 0.5 + 3.4 * S * k
             c.led(_i(p[0]), _i(cy + r * math.cos(p[1])), _i(cx + r * math.sin(p[1])), 1)
         await _paso(c, 40)
     c.apagar()
@@ -470,7 +488,7 @@ async def rebotes(c, duracion=12000):
     # Tres pelotas con gravedad que rebotan en el piso y las paredes
     bolas = []
     for _ in range(3):
-        bolas.append([2.0 + _r(5), 1.0 + _r(7), 1.0 + _r(7),          # z, y, x
+        bolas.append([2.0 + _r(N - 4), 1.0 + _r(N - 2), 1.0 + _r(N - 2),          # z, y, x
                       0.0, (_r(30) + 10) / 100 * random.choice((1, -1)),
                       (_r(30) + 10) / 100 * random.choice((1, -1))])  # vz, vy, vx
     sigue = _durante(duracion)
@@ -505,9 +523,9 @@ async def fuente(c, duracion=10000):
             for _ in range(3):
                 a = _r(628) / 100
                 v = 0.06 + _r(8) / 100
-                gotas.append([0.0, 4.0, 4.0, 0.85 + _r(25) / 100, v * math.cos(a), v * math.sin(a)])
+                gotas.append([0.0, C, C, 0.85 + _r(25) / 100, v * math.cos(a), v * math.sin(a)])
         c.apagar()
-        c.led(0, 4, 4, 1)                                 # boquilla
+        c.led(0, H, H, 1)                                 # boquilla
         for g in gotas[:]:
             g[3] -= 0.07
             g[0] += g[3]
@@ -527,14 +545,14 @@ async def olas(c, duracion=10000):
     t = 0.0
     sigue = _durante(duracion)
     while sigue():
-        f1y, f1x = 4 + 4 * math.cos(t * 0.13), 4 + 4 * math.sin(t * 0.11)
-        f2y, f2x = 4 - 4 * math.cos(t * 0.09), 4 - 4 * math.sin(t * 0.12)
+        f1y, f1x = C + C * math.cos(t * 0.13), C + C * math.sin(t * 0.11)
+        f2y, f2x = C - C * math.cos(t * 0.09), C - C * math.sin(t * 0.12)
         c.apagar()
         for y in range(N):
             for x in range(N):
                 d1 = math.sqrt((y - f1y) ** 2 + (x - f1x) ** 2)
                 d2 = math.sqrt((y - f2y) ** 2 + (x - f2x) ** 2)
-                z = 4 + 2.0 * (math.sin(d1 * 1.1 - t) + math.sin(d2 * 1.1 - t))
+                z = C + 2.0 * S * (math.sin(d1 * 1.1 - t) + math.sin(d2 * 1.1 - t))
                 c.led(_limitar(_i(z)), y, x, 1)
         t += 0.25
         await _paso(c, 45)
@@ -550,11 +568,11 @@ _SOBREVIVE = (4, 5, 6, 7)
 
 def _sembrar():
     vivos = set()
-    for z in range(2, 7):
-        for y in range(2, 7):
-            for x in range(2, 7):
+    for z in range(H - 2, H + 3):
+        for y in range(H - 2, H + 3):
+            for x in range(H - 2, H + 3):
                 if _r(100) < 35:
-                    vivos.add(z * 81 + y * 9 + x)
+                    vivos.add(z * N2 + y * N + x)
     return vivos
 
 
@@ -567,16 +585,16 @@ async def vida(c, generaciones=150):
     for _ in range(generaciones):
         c.apagar()
         for i in vivos:
-            c.led(i // 81, (i // 9) % 9, i % 9, 1)
+            c.led(i // N2, (i // N) % N, i % N, 1)
         await _paso(c, 160)
 
         cuenta = {}
         for i in vivos:
-            z, y, x = i // 81, (i // 9) % 9, i % 9
+            z, y, x = i // N2, (i // N) % N, i % N
             for dz in (-1, 0, 1):
-                zz = ((z + dz) % N) * 81
+                zz = ((z + dz) % N) * N2
                 for dy in (-1, 0, 1):
-                    yy = zz + ((y + dy) % N) * 9
+                    yy = zz + ((y + dy) % N) * N
                     for dx in (-1, 0, 1):
                         j = yy + (x + dx) % N
                         cuenta[j] = cuenta.get(j, 0) + 1
@@ -617,9 +635,13 @@ def _columnas_texto(mensaje):
     return columnas
 
 
-# Recorrido de las 4 caras laterales, en el orden en que se leen desde afuera.
-_PERIMETRO = ([(0, x) for x in range(N)] + [(y, M) for y in range(1, N)] +
-              [(M, x) for x in range(M - 1, -1, -1)] + [(y, 0) for y in range(M - 1, 0, -1)])
+def _perimetro():
+    # Recorrido de las 4 caras laterales, en el orden en que se leen desde afuera.
+    return ([(0, x) for x in range(N)] + [(y, M) for y in range(1, N)] +
+            [(M, x) for x in range(M - 1, -1, -1)] + [(y, 0) for y in range(M - 1, 0, -1)])
+
+
+_PERIMETRO = _perimetro()
 
 
 def _dibujar_perimetro(c, columnas, s):
@@ -629,12 +651,12 @@ def _dibujar_perimetro(c, columnas, s):
         col = columnas[(p + s) % total]
         for i in range(8):
             if (col >> i) & 1:
-                c.led(M - i, y, x, 1)
+                c.led(TOPE - i, y, x, 1)
 
 
-async def marquesina(c, mensaje="CUBO LED 9X9X9   ", espera_ms=70):
+async def marquesina(c, mensaje=None, espera_ms=70):
     # Texto que corre alrededor de las cuatro caras del cubo
-    columnas = _columnas_texto(mensaje)
+    columnas = _columnas_texto(MENSAJE if mensaje is None else mensaje)
     for s in range(len(columnas) + len(_PERIMETRO)):
         c.apagar()
         _dibujar_perimetro(c, columnas, s)
@@ -651,7 +673,7 @@ async def espectro(c, duracion=10000):
     while sigue():
         golpe = _r(8) == 0
         for x in range(N):
-            objetivo = M if golpe and x < 4 else _r(N) * (1.2 - x * 0.08)
+            objetivo = M if golpe and x < H else _r(N) * (1.2 - x * 0.08 * 8 / M)
             niveles[x] += (objetivo - niveles[x]) * 0.5
         historia.pop()
         historia.insert(0, [_limitar(_i(v)) for v in niveles])
@@ -704,9 +726,9 @@ async def cajas(c):
     # 2) Cajas concentricas que nacen en el centro y se expanden como ondas.
     for t in range(36):
         c.apagar()
-        for r in range(5):
+        for r in range(H + 1):
             if (t - r) % 4 == 0:
-                _caja(c, 4 - r, 4 - r, 4 - r, 4 + r, 4 + r, 4 + r)
+                _caja(c, H - r, H - r, H - r, M - H + r, M - H + r, M - H + r)
         await _paso(c, 90)
     c.apagar()
 
@@ -714,22 +736,22 @@ async def cajas(c):
 async def envios(c, duracion=12000):
     # sendvoxels_rand_z: cada columna tiene un LED arriba o abajo y, de a uno,
     # viajan al lado opuesto.
-    lado = bytearray(_r(2) * M for _ in range(81))
+    lado = bytearray(_r(2) * M for _ in range(N2))
     viajes = {}                 # columna -> [z, direccion]
     sigue = _durante(duracion)
     while sigue() or viajes:
         if sigue() and len(viajes) < 4 and _r(2) == 0:
-            col = _r(81)
+            col = _r(N2)
             if col not in viajes:
                 viajes[col] = [lado[col], 1 if lado[col] == 0 else -1]
         c.apagar()
-        for col in range(81):
+        for col in range(N2):
             if col not in viajes:
-                c.led(lado[col], col // 9, col % 9, 1)
+                c.led(lado[col], col // N, col % N, 1)
         for col in list(viajes):
             v = viajes[col]
             v[0] += v[1]
-            c.led(v[0], col // 9, col % 9, 1)
+            c.led(v[0], col // N, col % N, 1)
             if v[0] in (0, M):
                 lado[col] = v[0]
                 del viajes[col]
@@ -748,13 +770,13 @@ _DIBUJOS = (
 async def carita(c, vueltas=2):
     # effect_smileyspin: un dibujo plano que gira alrededor del eje vertical
     for dibujo in _DIBUJOS:
-        pixeles = [(M - i, j - 3.5) for i in range(8) for j in range(8) if (dibujo[i] >> (7 - j)) & 1]
+        pixeles = [(TOPE - i, j - 3.5) for i in range(8) for j in range(8) if (dibujo[i] >> (7 - j)) & 1]
         for paso in range(vueltas * 32 + 1):
             a = paso * math.pi / 16
             ca, sa = math.cos(a), math.sin(a)
             c.apagar()
             for z, u in pixeles:
-                c.led(z, _i(4 + u * sa), _i(4 + u * ca), 1)
+                c.led(z, _i(C + u * sa), _i(C + u * ca), 1)
             await _paso(c, 45)
     c.apagar()
 
@@ -805,8 +827,8 @@ async def cinta(c, duracion=10000):
         c.apagar()
         for z in range(N):
             a = t + z * torsion
-            dy, dx = 4 * math.cos(a), 4 * math.sin(a)
-            _linea(c, (z, 4 - dy, 4 - dx), (z, 4 + dy, 4 + dx))
+            dy, dx = C * math.cos(a), C * math.sin(a)
+            _linea(c, (z, C - dy, C - dx), (z, C + dy, C + dx))
         t += 0.12
         await _paso(c, 40)
     c.apagar()
@@ -817,10 +839,10 @@ async def esfera_movil(c, duracion=10000):
     t = 0.0
     sigue = _durante(duracion)
     while sigue():
-        cz = 4 + 2.2 * math.sin(t * 0.7)
-        cy = 4 + 2.2 * math.sin(t * 0.5 + 1)
-        cx = 4 + 2.2 * math.sin(t * 0.9 + 2)
-        r = 2.3 + 0.8 * math.sin(t * 1.3)
+        cz = C + 2.2 * S * math.sin(t * 0.7)
+        cy = C + 2.2 * S * math.sin(t * 0.5 + 1)
+        cx = C + 2.2 * S * math.sin(t * 0.9 + 2)
+        r = (2.3 + 0.8 * math.sin(t * 1.3)) * S
         r_ext, r_int = r * r, (r - 1) * (r - 1)
         c.apagar()
         for z in range(max(0, int(cz - r)), min(N, int(cz + r) + 2)):
@@ -869,9 +891,9 @@ async def rayo(c, rayos=6):
     # Tormenta: nubes en el techo, un rayo zigzagueante con una rama,
     # destello de todo el cubo y parpadeo.
     for _ in range(rayos):
-        nube = [(_r(), _r()) for _ in range(28)]
+        nube = [(_r(), _r()) for _ in range(28 * N2 // 81)]
         camino = []
-        y, x = _r(5) + 2, _r(5) + 2
+        y, x = _r(N - 4) + 2, _r(N - 4) + 2
         for z in range(M, -1, -1):
             camino.append((z, y, x))
             y, x = _limitar_borde(y + _r(3) - 1), _limitar_borde(x + _r(3) - 1)
@@ -895,7 +917,7 @@ async def rayo(c, rayos=6):
         dibujar(0, False)
         await _paso(c, 400 + _r(900))
         for k in range(1, N + 1, 2):                      # el rayo baja
-            dibujar(k, k > 5)
+            dibujar(k, k > N - 4)
             await _paso(c, 25)
         c.encender()                                      # destello
         await _paso(c, 40)
@@ -909,14 +931,14 @@ async def rayo(c, rayos=6):
 
 async def nieve(c, duracion=14000):
     # Copos que caen meciendose y se acumulan en el piso; al final se derrite.
-    altura = bytearray(81)
+    altura = bytearray(N2)
     copos = []          # [z, y, x, fase]
     sigue = _durante(duracion)
 
     def dibujar_piso():
-        for col in range(81):
+        for col in range(N2):
             for z in range(altura[col]):
-                c.led(z, col // 9, col % 9, 1)
+                c.led(z, col // N, col % N, 1)
 
     while sigue() or copos:
         if sigue() and _r(3) == 0:
@@ -927,7 +949,7 @@ async def nieve(c, duracion=14000):
             f[0] -= 0.12
             f[3] += 0.15
             y, x = f[1], _limitar(_i(f[2] + 0.6 * math.sin(f[3])))
-            col = y * 9 + x
+            col = y * N + x
             if f[0] <= altura[col]:
                 if altura[col] < 3:
                     altura[col] += 1
@@ -936,7 +958,7 @@ async def nieve(c, duracion=14000):
             c.led(_i(f[0]), y, x, 1)
         await _paso(c, 50)
     while any(altura):                                   # se derrite
-        for col in range(81):
+        for col in range(N2):
             if altura[col] and _r(5) == 0:
                 altura[col] -= 1
         c.apagar()
@@ -947,20 +969,20 @@ async def nieve(c, duracion=14000):
 async def pacman(c, vueltas=3):
     # Pac-Man: esfera con una boca que se abre y se cierra, avanza comiendo
     # una fila de puntos. Tiene un ojo a cada lado.
-    radio = 2.7
+    radio = 2.7 * S
     for _ in range(vueltas):
-        puntos = [1, 3, 5, 7]
-        for paso in range(34):
+        puntos = list(range(1, M, 2))
+        for paso in range(int((N + 6) / 0.45) + 1):
             cx = -3 + paso * 0.45
             apertura = abs(math.sin(paso * 0.6)) * 0.9      # tangente del angulo de la boca
             puntos = [p for p in puntos if p > cx]
             c.apagar()
             for p in puntos:
-                c.led(4, 4, p, 1)
-            for z in range(1, 8):
-                dz = z - 4
-                for y in range(1, 8):
-                    dy = y - 4
+                c.led(H, H, p, 1)
+            for z in range(1, M):
+                dz = z - C
+                for y in range(1, M):
+                    dy = y - C
                     for x in range(max(0, int(cx - radio)), min(N, int(cx + radio) + 2)):
                         dx = x - cx
                         d = dz * dz + dy * dy + dx * dx
@@ -968,7 +990,7 @@ async def pacman(c, vueltas=3):
                             continue
                         if dx > 0 and abs(dz) <= dx * apertura:   # boca
                             continue
-                        if dz == 1 and abs(dy) >= 2 and -0.5 <= dx <= 1:   # ojos
+                        if 0.5 <= dz <= 1.5 and abs(dy) >= 2 and -0.5 <= dx <= 1:   # ojos
                             continue
                         c.led(z, y, x, 1)
             await _paso(c, 60)
@@ -978,11 +1000,11 @@ async def pacman(c, vueltas=3):
 async def arbol(c, duracion=10000):
     # Arbol de navidad: cono con luces que titilan, tronco y estrella.
     cono = []
-    for z in range(1, 8):
-        r = (7 - z) * 0.55 + 0.4
+    for z in range(1, M):
+        r = (M - 1 - z) * 0.55 * S + 0.4
         for y in range(N):
             for x in range(N):
-                d = math.sqrt((y - 4) ** 2 + (x - 4) ** 2)
+                d = math.sqrt((y - C) ** 2 + (x - C) ** 2)
                 if r - 0.8 <= d <= r:
                     cono.append((z, y, x))
     t = 0
@@ -990,14 +1012,14 @@ async def arbol(c, duracion=10000):
     while sigue():
         t += 1
         c.apagar()
-        c.led(0, 4, 4, 1)                                 # tronco
+        c.led(0, H, H, 1)                                 # tronco
         for p in cono:
             if _r(7):                                     # ~15% apagadas: titilan
                 c.led(p[0], p[1], p[2], 1)
         if t % 6 < 4:                                     # estrella que parpadea
-            c.led(M, 4, 4, 1)
+            c.led(M, H, H, 1)
             for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                c.led(M, 4 + dy, 4 + dx, t % 2)
+                c.led(M, H + dy, H + dx, t % 2)
         await _paso(c, 120)
     c.apagar()
 
@@ -1019,6 +1041,209 @@ async def reloj(c, duracion=12000):
         _dibujar_perimetro(c, columnas, s)
         s += 1
         await _paso(c, 90)
+    c.apagar()
+
+
+# ---------------------------------------------------------------------------
+# Del sketch cuboLEDeeprom (Arduino Mega, cubo 10x10x10), para cualquier tamano.
+# No estan en LISTA, para que el modo demo del 9x9x9 siga igual: todas() las
+# incluye.
+
+def _glifo(ch):
+    # Columnas con pixeles de la letra (como _columnas_texto, para una sola)
+    filas = caracter(ch)
+    columnas = []
+    for j in range(8):
+        col = 0
+        for i in range(8):
+            if (filas[i] >> (7 - j)) & 1:
+                col |= 1 << i
+        if col:
+            columnas.append(col)
+    return columnas
+
+
+def _en_cara(c, cara, j, z):
+    # Columna j (0 = izquierda, vista desde afuera) de una cara lateral:
+    # 0 = frente (y=0), 1 = derecha (x=M), 2 = atras (y=M), 3 = izquierda (x=0)
+    if cara == 0:
+        c.led(z, 0, j, 1)
+    elif cara == 1:
+        c.led(z, j, M, 1)
+    elif cara == 2:
+        c.led(z, M, M - j, 1)
+    else:
+        c.led(z, M - j, 0, 1)
+
+
+async def cuenta(c, desde=5):
+    # cuenta(): cuenta regresiva con el numero en las 4 caras, y un destello al final
+    for n in range(desde, -1, -1):
+        columnas = _glifo(str(n))
+        inicio = (N - len(columnas)) // 2
+        for paso in range(10):
+            c.apagar()
+            if paso < 8:
+                for cara in range(4):
+                    for k, col in enumerate(columnas):
+                        for i in range(8):
+                            if (col >> i) & 1:
+                                _en_cara(c, cara, inicio + k, TOPE - i)
+            await _paso(c, 100)
+    c.encender()
+    await _paso(c, 150)
+    c.apagar()
+    await _paso(c, 100)
+
+
+async def giro(c, mensaje="9876543210", espera_ms=50):
+    # rotacion(): cada caracter entra hasta el centro, gira un cuarto de vuelta
+    # sobre el eje vertical y sale por el otro lado
+    for ch in mensaje:
+        columnas = _glifo(ch)
+        mitad = (len(columnas) - 1) / 2
+        pixeles = [(TOPE - i, k - mitad) for k, col in enumerate(columnas) for i in range(8) if (col >> i) & 1]
+        for k in range(H + 1):                            # entra por x
+            c.apagar()
+            for z, u in pixeles:
+                c.led(z, _i(C + u), k, 1)
+            await _paso(c, espera_ms)
+        for paso in range(1, 9):                          # gira 90 grados
+            a = paso * math.pi / 16
+            ca, sa = math.cos(a), math.sin(a)
+            c.apagar()
+            for z, u in pixeles:
+                c.led(z, _i(C + u * ca), _i(C + u * sa), 1)
+            await _paso(c, espera_ms + 10)
+        for k in range(H, N + 1):                         # sale por y
+            c.apagar()
+            for z, u in pixeles:
+                c.led(z, k, _i(C + u), 1)
+            await _paso(c, espera_ms)
+    c.apagar()
+
+
+def _bola(c, cz, cy, cx, r_int2, r_ext2, dentro=True):
+    # Enciende los LEDs con r_int2 <= distancia^2 <= r_ext2 (o los de afuera)
+    for z in range(N):
+        dz = (z - cz) ** 2
+        for y in range(N):
+            dzy = dz + (y - cy) ** 2
+            for x in range(N):
+                d = dzy + (x - cx) ** 2
+                if (r_int2 <= d <= r_ext2) == dentro:
+                    c.led(z, y, x, 1)
+
+
+async def esfera_centro(c, duracion=6000):
+    # esferaCentro(): una esfera solida que crece desde el centro y se encoge
+    sigue = _durante(duracion)
+    while sigue():
+        for r in list(range(1, N + 4)) + list(range(N + 2, 0, -1)):
+            c.apagar()
+            _bola(c, C, C, C, 0, (r * 0.5) ** 2)
+            await _paso(c, 40)
+    c.apagar()
+
+
+async def esfera_cascara(c, duracion=6000):
+    # esferaCascara(): una cascara esferica que crece desde el centro y vuelve
+    sigue = _durante(duracion)
+    while sigue():
+        for r in list(range(1, N + 6)) + list(range(N + 4, 0, -1)):
+            c.apagar()
+            _bola(c, C, C, C, (r * 0.4) ** 2, (r * 0.5) ** 2)
+            await _paso(c, 45)
+    c.apagar()
+
+
+async def esfera_inversa(c, duracion=7000):
+    # esferaInversa(): el cubo lleno y un hueco esferico que crece desde un
+    # punto al azar hasta vaciarlo
+    sigue = _durante(duracion)
+    while sigue():
+        cz, cy, cx = _r(), _r(), _r()
+        for r in range(0, 2 * N + 6):
+            c.apagar()
+            _bola(c, cz, cy, cx, 0, (r * 0.5) ** 2, dentro=False)
+            await _paso(c, 50)
+    c.apagar()
+
+
+async def deslizante(c):
+    # cuboDeslizante(): el contorno de un piso sube dejando un tubo, el tubo se
+    # vacia desde abajo y se repite en los otros dos ejes
+    def contorno(eje, k):
+        for a in range(N):
+            for b in range(N):
+                if a in (0, M) or b in (0, M):
+                    c.led(*((k, a, b), (a, k, b), (a, b, k))[eje], 1)
+
+    for eje in (0, 2, 1):
+        for hasta in range(N):                            # sube
+            c.apagar()
+            for k in range(hasta + 1):
+                contorno(eje, k)
+            await _paso(c, 80)
+        for desde in range(1, N):                         # se vacia
+            c.apagar()
+            for k in range(desde, N):
+                contorno(eje, k)
+            await _paso(c, 80)
+    c.apagar()
+
+
+async def seno(c, duracion=8000):
+    # animacionSeno1/2: anillos cuadrados concentricos que suben y bajan con un
+    # desfase, como una onda que sale del centro
+    anillos = (N + 1) // 2
+    alturas = [min(M, 2 * r) for r in range(anillos)]
+    sentidos = [1] * anillos
+    sigue = _durante(duracion)
+    while sigue():
+        for r in range(anillos):
+            if alturas[r] >= M:
+                sentidos[r] = -1
+            elif alturas[r] <= 0:
+                sentidos[r] = 1
+            alturas[r] += sentidos[r]
+        c.apagar()
+        for y in range(N):
+            for x in range(N):
+                r = min(y, x, M - y, M - x)               # anillo 0 = el borde
+                c.led(alturas[r], y, x, 1)
+        await _paso(c, 60)
+    c.apagar()
+
+
+async def doblez(c, dobleces=12):
+    # folder(): una cara del cubo se dobla sobre una arista hasta quedar en la
+    # cara vecina, y sigue doblandose por otras aristas
+    cara = (0, 0)               # (eje, lado): eje 0 = z, 1 = y, 2 = x; lado 0 o 1
+    anterior = None
+    pasos = 8
+    for _ in range(dobleces):
+        opciones = [(e, l) for e in range(3) if e != cara[0] for l in (0, 1) if (e, l) != anterior]
+        nueva = random.choice(opciones)
+        e1, l1 = cara
+        e2, l2 = nueva
+        e3 = 3 - e1 - e2
+        s1 = 1 if l1 == 0 else -1           # hacia adentro del cubo
+        s2 = 1 if l2 == 0 else -1
+        for paso in range(pasos + 1):
+            a = paso * math.pi / 2 / pasos
+            ca, sa = math.cos(a), math.sin(a)
+            c.apagar()
+            for u in range(N):
+                for d2 in range(2 * N - 1):
+                    d = d2 / 2                      # distancia a la arista
+                    p = [0, 0, 0]
+                    p[e1] = _i(l1 * M + s1 * d * sa)
+                    p[e2] = _i(l2 * M + s2 * d * ca)
+                    p[e3] = u
+                    c.led(p[0], p[1], p[2], 1)
+            await _paso(c, 45 if 0 < paso < pasos else 300)
+        anterior, cara = cara, nueva
     c.apagar()
 
 
@@ -1060,4 +1285,22 @@ LISTA = (
     ("ascensores", ascensores),
 )
 
-POR_NOMBRE = dict(LISTA)
+# Las del sketch del 10x10x10 (ver arriba). No entran en el demo del 9x9x9.
+NUEVAS = (
+    ("cuenta", cuenta),
+    ("giro", giro),
+    ("esfera_centro", esfera_centro),
+    ("esfera_cascara", esfera_cascara),
+    ("esfera_inversa", esfera_inversa),
+    ("deslizante", deslizante),
+    ("seno", seno),
+    ("doblez", doblez),
+)
+
+
+def todas():
+    # Todas las animaciones: las de LISTA y las NUEVAS
+    return LISTA + NUEVAS
+
+
+POR_NOMBRE = dict(LISTA + NUEVAS)

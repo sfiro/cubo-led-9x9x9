@@ -43,6 +43,8 @@
   .cabecera { padding: 16px 16px 12px; border-bottom: 1px solid var(--borde); }
   .cabecera h1 { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: .2px; }
   .cabecera p { margin: 2px 0 0; color: var(--suave); font-size: 13px; }
+  .tamanos a { color: var(--suave); }
+  .tamanos a.activo { color: inherit; font-weight: 650; text-decoration: none; }
   .seccion { padding: 14px 16px; border-bottom: 1px solid var(--borde); }
   .seccion h2 { margin: 0 0 10px; font-size: 12px; font-weight: 600; text-transform: uppercase;
     letter-spacing: .8px; color: var(--suave); }
@@ -130,8 +132,9 @@
 
   <aside class="lateral">
     <header class="cabecera">
-      <h1>Cubo LED 9×9×9 · Simulador</h1>
+      <h1 id="titulo">Cubo LED 9×9×9 · Simulador</h1>
       <p>Corre el mismo <code>animaciones.py</code> de la Pico W.</p>
+      <p class="tamanos">Cubo: <a href="?tam=9" id="tam-9">9×9×9</a> · <a href="?tam=10" id="tam-10">10×10×10</a></p>
     </header>
 
     <section class="seccion">

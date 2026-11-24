@@ -78,11 +78,13 @@ class Runner:
         _preparar(animaciones)
 
     def nombres(self):
-        return ",".join(n for n, _ in animaciones.LISTA)
+        return ",".join(n for n, _ in animaciones.todas())
 
     def elegir(self, nombre):
         if nombre == "demo":
-            funciones = [f for _, f in animaciones.LISTA]
+            # el demo del 9x9x9 es LISTA (como en la Pico); el del 10x10x10, todas
+            lista = animaciones.LISTA if animaciones.N == 9 else animaciones.todas()
+            funciones = [f for _, f in lista]
         elif nombre in animaciones.POR_NOMBRE:
             funciones = [animaciones.POR_NOMBRE[nombre]]
         else:

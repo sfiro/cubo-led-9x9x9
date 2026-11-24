@@ -1,4 +1,4 @@
-// Simulador del cubo LED 9x9x9: visor 3D (Three.js) + controles + editor.
+// Simulador de los cubos LED 9x9x9 y 10x10x10 (con ?tam=10): visor 3D (Three.js) + controles + editor.
 // Python corre en worker.js; aqui solo se dibuja lo que manda.
 
 import * as THREE from "three";
@@ -8,11 +8,16 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
-const N = 9;
+const N = new URLSearchParams(location.search).get("tam") === "10" ? 10 : 9;
 const TOTAL = N * N * N;
 const VELOCIDADES = [0.1, 0.25, 0.5, 1, 2, 4, 8];
 
 const $ = (id) => document.getElementById(id);
+
+// Titulo y selector de tamano
+$("titulo").textContent = `Cubo LED ${N}×${N}×${N} · Simulador`;
+document.title = `Simulador del cubo LED ${N}×${N}×${N}`;
+$("tam-" + N).classList.add("activo");
 
 // ---------------------------------------------------------------- escena 3D
 
@@ -49,7 +54,7 @@ const encendidos = new Uint8Array(TOTAL);
 for (let z = 0; z < N; z++)
   for (let y = 0; y < N; y++)
     for (let x = 0; x < N; x++) {
-      const i = z * 81 + y * 9 + x;
+      const i = (z * N + y) * N + x;
       matriz.compose(posicion(z, y, x), sinRotacion, escalaOff);
       leds.setMatrixAt(i, matriz);
       leds.setColorAt(i, colorOff);
@@ -99,7 +104,7 @@ function ajustarTamano() {
   composer.setSize(w, h);
   camara.aspect = w / h;
   // Alejar la camara en pantallas angostas para que el cubo entre completo.
-  const distancia = 20 * Math.max(1, 1.15 / camara.aspect);
+  const distancia = 20 * (N / 9) * Math.max(1, 1.15 / camara.aspect);
   camara.position.setLength(distancia);
   camara.updateProjectionMatrix();
 }
@@ -141,7 +146,7 @@ lienzo.addEventListener("pointermove", (e) => {
   const hit = rayo.intersectObject(leds)[0];
   if (hit && e.pointerType === "mouse") {
     const i = hit.instanceId;
-    const z = Math.floor(i / 81), y = Math.floor((i % 81) / 9), x = i % 9;
+    const z = Math.floor(i / (N * N)), y = Math.floor((i % (N * N)) / N), x = i % N;
     tip.textContent = `c.led(${z}, ${y}, ${x})  ${encendidos[i] ? "encendido" : "apagado"}`;
     tip.style.left = e.clientX - r.left + 14 + "px";
     tip.style.top = e.clientY - r.top + 14 + "px";
@@ -189,7 +194,7 @@ const ui = {
 let worker = null;
 
 function crearWorker() {
-  worker = new Worker(new URL("worker.js", import.meta.url), { type: "module" });
+  worker = new Worker(new URL(`worker.js?tam=${N}`, import.meta.url), { type: "module" });
   worker.onmessage = (ev) => recibir(ev.data);
   worker.onerror = (e) => {
     consola("Error en el worker: " + (e.message || "desconocido"), "error");

@@ -5,6 +5,7 @@ tiene su propio documento aquí: qué cambió, cómo se usa y cómo probarla.
 
 | Versión | Etiqueta | Fecha | Qué trae |
 |---|---|---|---|
+| [2.0](v2.md) | `cubo10-v2.0` | 2026-11-24 | Las 34 animaciones del 9×9×9 en 10×10×10, 8 nuevas del Arduino Mega y el simulador en 10×10×10 |
 | [1.0](v1.md) | `cubo10-v1.0` | 2026-11-22 | El driver de la Pico para el 10×10×10 (16 niveles de brillo), el diagnóstico y 5 animaciones |
 
 ## Volver a una versión anterior

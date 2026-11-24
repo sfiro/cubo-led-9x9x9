@@ -1,7 +1,10 @@
 # Simulador 3D del cubo LED
 
 Una página web que ejecuta **el mismo `pico_w/animaciones.py`** de la Pico W y muestra el cubo
-de 9×9×9 en 3D. Sirve para probar animaciones antes de cargarlas en el cubo real.
+en 3D. Sirve para probar animaciones antes de cargarlas en el cubo real.
+
+Muestra el cubo de 9×9×9, o el de 10×10×10 si se abre con `?tam=10`, o con el enlace de la
+página. En ese caso llama a `animaciones.configurar(10)`, como la Pico del 10×10×10.
 
 ## Qué tiene
 - **Visor 3D**: los 729 LEDs con columnas y pisos. Se puede girar y hacer zoom con el mouse o el

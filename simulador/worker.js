@@ -15,6 +15,9 @@ const ARCHIVOS = {
 // Estado de los controles; la pagina lo actualiza con mensajes.
 const estado = { pausado: false, velocidad: 1, repetir: true, pasos: 0, arg: "" };
 
+// Tamano del cubo: worker.js?tam=10 para el 10x10x10
+const TAM = new URL(import.meta.url).searchParams.get("tam") === "10" ? 10 : 9;
+
 let mp = null;
 let cola = Promise.resolve();
 
@@ -51,6 +54,7 @@ async function iniciar() {
   }
   await mp.runPythonAsync(
     "import sys\nif '/lib' not in sys.path: sys.path.append('/lib')\n" +
+    `import cubo, animaciones\ncubo.TAM = ${TAM}\nanimaciones.configurar(${TAM})\n` +
     "import sim\nfrom sim_runner import runner\nsim.listo(runner.nombres())");
 }
 

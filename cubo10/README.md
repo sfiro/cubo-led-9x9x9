@@ -64,7 +64,8 @@ sobran: pasan por toda la cadena y se pierden al final.
 2. Copia a la Pico, con [Thonny](https://thonny.org) o con `mpremote`. **Ojo:** de `pico_w/` solo
    va `cubo.py`. El `diagnostico.py`, el `main.py` y el `config_ejemplo.py` de `pico_w/` son del
    9×9×9; los del 10×10×10 están en `cubo10/pico/`.
-   - [`pico_w/cubo.py`](../pico_w/cubo.py): el driver, el mismo del 9×9×9;
+   - de `pico_w/`: [`cubo.py`](../pico_w/cubo.py) (el driver), [`animaciones.py`](../pico_w/animaciones.py)
+     y [`fuente.py`](../pico_w/fuente.py), los mismos del 9×9×9;
    - [`pico/diagnostico.py`](pico/diagnostico.py);
    - [`pico/main.py`](pico/main.py);
    - [`pico/config_ejemplo.py`](pico/config_ejemplo.py). Si cambias pines o brillo, cópialo como
@@ -82,15 +83,24 @@ sobran: pasan por toda la cadena y se pierden al final.
      niveles de brillo.
 4. Si todo pasa, copia `main.py` y reinicia la Pico: el cubo arranca solo.
    ```bash
-   mpremote fs cp cubo10/pico/main.py :main.py + reset
+   mpremote fs cp pico_w/animaciones.py :animaciones.py + fs cp pico_w/fuente.py :fuente.py + fs cp cubo10/pico/main.py :main.py + reset
    ```
+   Recorre las 41 animaciones en modo demo.
+
+## Animaciones
+Son las mismas del 9×9×9 ([`pico_w/animaciones.py`](../pico_w/animaciones.py)): `configurar(10)`
+las pasa a 10×10×10. Además hay 8 del sketch del Arduino Mega: `cuenta`, `giro`,
+`esfera_centro`, `esfera_cascara`, `esfera_inversa`, `deslizante`, `seno` y `doblez`.
+
+Para verlas sin el cubo, en el **simulador** con `?tam=10`:
+<https://sfiro.github.io/cubo-led-9x9x9/simulador/?tam=10>
 
 ## Plan
 
 | Versión | Qué trae |
 |---|---|
-| **v1** | El driver de la Pico para el 10×10×10, el diagnóstico y 5 animaciones para probarlo |
-| v2 | Las animaciones de `cuboLEDeeprom` y del 9×9×9 en 10×10×10, y el simulador |
+| v1 | El driver de la Pico para el 10×10×10, el diagnóstico y 5 animaciones para probarlo |
+| **v2** | Las animaciones de `cuboLEDeeprom` y del 9×9×9 en 10×10×10, y el simulador |
 | v3 | La Raspberry Pi 3B+ por USB y la página web: botones de animaciones, "tu nombre en el cubo", "graba tu video" y turnos |
 | v4 | El QR por internet: `cubo.ingenioabstracto.co` con un túnel de Cloudflare, y el código que muestra el cubo para jugar solo en la tienda |
 | v5 | Mover el cubo con el giroscopio del celular, dibujar, y descuentos para la tienda |

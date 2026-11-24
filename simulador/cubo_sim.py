@@ -7,27 +7,29 @@ from binascii import hexlify
 
 import sim
 
-TAM = 9
-LEDS_PISO = 81
-TOTAL = 729
+TAM = 9                 # el worker lo cambia a 10 con ?tam=10 en la direccion
 
 
 class Cubo:
     def __init__(self, *args, **kwargs):
-        self.vox = bytearray(TOTAL)
-        self._ceros = bytes(TOTAL)
-        self._unos = b"\x01" * TOTAL
+        self.tam = n = kwargs.get("tam") or TAM
+        total = n * n * n
+        self.vox = bytearray(total)
+        self._ceros = bytes(total)
+        self._unos = b"\x01" * total
         self.fuera = 0          # LEDs dibujados fuera del cubo (se ignoran)
 
     def led(self, z, y, x, v=1):
-        if 0 <= z < TAM and 0 <= y < TAM and 0 <= x < TAM:
-            self.vox[z * 81 + y * 9 + x] = 1 if v else 0
+        n = self.tam
+        if 0 <= z < n and 0 <= y < n and 0 <= x < n:
+            self.vox[(z * n + y) * n + x] = 1 if v else 0
         else:
             self.fuera += 1
 
     def leer(self, z, y, x):
-        if 0 <= z < TAM and 0 <= y < TAM and 0 <= x < TAM:
-            return self.vox[z * 81 + y * 9 + x]
+        n = self.tam
+        if 0 <= z < n and 0 <= y < n and 0 <= x < n:
+            return self.vox[(z * n + y) * n + x]
         return 0
 
     def apagar(self):
@@ -38,8 +40,8 @@ class Cubo:
 
     def plano(self, eje, k, v=1):
         # eje 0: piso z = k, eje 1: fila y = k, eje 2: columna x = k
-        for a in range(TAM):
-            for b in range(TAM):
+        for a in range(self.tam):
+            for b in range(self.tam):
                 if eje == 0:
                     self.led(k, a, b, v)
                 elif eje == 1:
