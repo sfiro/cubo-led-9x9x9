@@ -61,7 +61,9 @@ sobran: pasan por toda la cadena y se pierden al final.
 ## Instalación en la Pico
 1. Instala MicroPython 1.22 o más nuevo: mantén apretado BOOTSEL, conecta el USB y copia el
    `.uf2` de <https://micropython.org/download/RPI_PICO/> a la unidad `RPI-RP2`.
-2. Copia a la Pico, con [Thonny](https://thonny.org) o con `mpremote`:
+2. Copia a la Pico, con [Thonny](https://thonny.org) o con `mpremote`. **Ojo:** de `pico_w/` solo
+   va `cubo.py`. El `diagnostico.py`, el `main.py` y el `config_ejemplo.py` de `pico_w/` son del
+   9×9×9; los del 10×10×10 están en `cubo10/pico/`.
    - [`pico_w/cubo.py`](../pico_w/cubo.py): el driver, el mismo del 9×9×9;
    - [`pico/diagnostico.py`](pico/diagnostico.py);
    - [`pico/main.py`](pico/main.py);
